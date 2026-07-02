@@ -1,0 +1,12 @@
+{
+  "CreatorSkills": {
+    "eyebrow": "Không gian sáng tạo riêng tư", "title": "Quản lý skill của bạn", "description": "Tạo skill riêng tư đã được quét và dùng chúng từ các MCP client đã kết nối. Skill không bao giờ xuất hiện trong marketplace công khai.",
+    "newSkill": "Thêm skill riêng tư", "yourSkills": "Skill riêng tư của bạn", "empty": "Bạn chưa tạo skill riêng tư nào.", "privateBadge": "Riêng tư", "active": "Sẵn sàng MCP", "draft": "Bản nháp", "archived": "Đã lưu trữ", "version": "Phiên bản", "updated": "Cập nhật", "contentHidden": "Nội dung được bảo vệ không hiển thị trong bản xem trước dashboard.",
+    "fields": {"title": "Tên skill", "slug": "Slug duy nhất", "description": "Mô tả", "domain": "Danh mục", "version": "Phiên bản", "clients": "Client tương thích", "sourceUrl": "URL nguồn (không bắt buộc)", "license": "Giấy phép SPDX (không bắt buộc)", "content": "Nội dung SKILL.md"},
+    "placeholders": {"title": "Quy trình nghiên cứu của tôi", "slug": "quy-trinh-nghien-cuu", "description": "Mô tả skill giúp agent hoàn thành công việc gì.", "sourceUrl": "https://github.com/...", "license": "MIT", "content": "# Skill của tôi\n\nMô tả quy trình, giới hạn và kết quả mong đợi..."},
+    "domains": {"agent-first": "Agent-first", "security": "Bảo mật", "productivity": "Năng suất", "design": "Thiết kế", "marketing": "Marketing", "development": "Lập trình", "research": "Nghiên cứu"},
+    "clients": {"codex": "Codex", "claude-code": "Claude Code", "cursor": "Cursor", "generic-mcp": "MCP client khác"},
+    "securityTitle": "Cổng xuất bản riêng tư 7 bước", "securityDescription": "Mỗi lần đăng đều qua xác thực danh tính, RLS chỉ chủ sở hữu, chuẩn hóa đầu vào, quét tĩnh nội dung, phiên bản SHA-256 bất biến, bắt buộc chế độ riêng tư và kiểm tra khóa MCP trên từng yêu cầu.",
+    "submit": "Quét và thêm skill", "submitting": "Đang quét...", "success": "Skill riêng tư đã hoạt động và sẵn sàng qua MCP.", "scanFailed": "Skill chưa vượt qua quét tĩnh. Hãy xem các mục kiểm tra bên dưới.", "createFailed": "Không thể tạo skill. Hãy kiểm tra slug chưa bị dùng và migration database đã được áp dụng.", "invalidForm": "Hãy kiểm tra lại các trường rồi thử lại.", "scanChecks": "Kết quả quét gần nhất", "passed": "Đạt", "failed": "Cần xem lại", "mcpHint": "Dùng list_purchased_skills trong MCP client để thấy skill riêng tư, sau đó gọi get_skill_content với ID của skill."
+  }
+}

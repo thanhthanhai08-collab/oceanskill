@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - Chi tiết Module AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "tertiary": "#00dce5",
+                        "primary-fixed": "#dde1ff",
+                        "outline-variant": "#434656",
+                        "on-surface": "#e2e2eb",
+                        "on-primary-container": "#efefff",
+                        "on-tertiary": "#003739",
+                        "secondary": "#e9b3ff",
+                        "surface-dim": "#111319",
+                        "on-primary-fixed": "#001356",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "secondary-fixed": "#f6d9ff",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "surface-variant": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "background": "#111319",
+                        "on-primary": "#002388",
+                        "on-tertiary-container": "#bbfbff",
+                        "surface-container-low": "#191b22",
+                        "on-primary-fixed-variant": "#0035be",
+                        "tertiary-fixed": "#63f7ff",
+                        "on-secondary-fixed": "#310048",
+                        "on-secondary": "#510074",
+                        "primary-container": "#2e5bff",
+                        "tertiary-container": "#00797e",
+                        "inverse-primary": "#124af0",
+                        "surface-container-high": "#282a30",
+                        "on-tertiary-fixed": "#002021",
+                        "error-container": "#93000a",
+                        "outline": "#8e90a2",
+                        "secondary-container": "#7d01b1",
+                        "on-background": "#e2e2eb",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#373940",
+                        "on-secondary-container": "#e5a9ff",
+                        "on-error-container": "#ffdad6",
+                        "surface-tint": "#b8c3ff",
+                        "surface": "#111319",
+                        "primary": "#b8c3ff",
+                        "surface-container-highest": "#33343b",
+                        "inverse-surface": "#e2e2eb",
+                        "inverse-on-surface": "#2e3037",
+                        "on-surface-variant": "#c4c5d9",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#b8c3ff",
+                        "surface-container-lowest": "#0c0e14"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base-unit": "8px",
+                        "max-width": "1440px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glowing-border {
+            position: relative;
+        }
+        .glowing-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #124af0, #e9b3ff);
+            z-index: -1;
+            border-radius: inherit;
+            filter: blur(12px);
+            opacity: 0.3;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(184, 195, 255, 0.5);
+        }
+    </style>
+<script>
+        function toggleFaq(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                el.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-xl docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">nskill</a>
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-sm text-label-sm" href="#">Chợ ứng dụng</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">Bảng xếp hạng</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">Giới thiệu</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="hidden md:flex gap-2">
+<button class="px-4 py-2 border border-primary text-primary font-label-sm text-label-sm rounded-lg hover:bg-primary/10 transition-colors">Đăng nhập</button>
+<button class="px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:bg-primary/90 transition-colors">Đăng ký</button>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24 space-y-24">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter lg:gap-16 items-start">
+<!-- Visual / Media -->
+<div class="space-y-6">
+<div class="aspect-video rounded-xl overflow-hidden glass-panel relative group cursor-pointer border border-white/10">
+<img alt="Ảnh bìa cho module AI hiển thị mạng nơ-ron kỹ thuật số trừu tượng." class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Hình ảnh trừu tượng công nghệ cao về mạng nơ-ron trong không gian vũ trụ. Các luồng điện xanh dương và tím neon rực sáng trên nền tối." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj4w3ibveN1Y99KysmsnD84tfb1n42tiuWX7lYGMyenqMh3JGs8Mtrrucojr38rM_iTWRRys9zASPuhc1HDxaWKsf5T1CfbTBKKwxHXAu_DOQPYFZ9qv6cQJc_pq-P1BA06ChPhUbwK8vUYT1D3acZSQA0yMnrvXZfZl5nYHl6AHUwcwO9lfNdVnWX9KE06_tnnWMYCA_dxMPvLVoUUKzeAAa2zgTyYoGZ7R-Nk7KHau0T4qIfQKhJSPnR2pSEE_oG2u1cN6CG5mv-"/>
+<div class="absolute inset-0 bg-background/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/50">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+<img class="w-32 h-24 rounded-lg object-cover border-2 border-primary cursor-pointer opacity-100" data-alt="Cận cảnh xử lý dữ liệu kỹ thuật số trong giao diện tương lai. Mã xanh neon rơi xuống màn hình tối." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6K00va1Aut05wWL3V8OPw98t6a4HF3f50JuRGvle3-Z_gE7D8rpcyK4RSA40Qq6pqhlPA6j-kVROpS_PMbv8rcCWyEhetBvRoZDaA38-qOiCQI7qxze8lUzzpGs1lAIuyT0WwD3c1x8kLzhscvTkzdMVSAeZiz0m-2VadryiPu4JIPvXuoqsEfawsEElqiyHzKw8qtc4RZtcfxbmlIZhncLe79C4LRSdOadWpff4BKA4Cc9IE1BwfGt_T4VM5qO6OLnXqt3FW3TK6"/>
+<img class="w-32 h-24 rounded-lg object-cover border border-white/10 cursor-pointer opacity-60 hover:opacity-100 transition-opacity" data-alt="Hình ảnh trừu tượng của giá máy chủ phát sáng ánh sáng tím và lục lam trong phòng tối." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtbr6T1dRe_fcjWNvQnESuKG7n4lUH4Sj6vDXQhQze7Jppy0KVvsf_-B4N6l8l-n3O7wJV0KX-Ro0PxjsCR4dFGQBf_WqUhm5yYRpL7T9uIM7m944xku_2XV11_-Cpoj_dbl6-qbd-R89S35Oqvpey76PnXy7qKtg8RJXV7YNsc_34OiuUlZAfwwEaDNU0rLJZOIjVOXjq6pjRefHZP3ACO3rPuNlbUqUpiOcDgh6Rh55DmIw52oCEM41-In1Tagyycv5ZAGusJhiF"/>
+</div>
+</div>
+<!-- Details & Purchase -->
+<div class="space-y-8">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="px-3 py-1 bg-tertiary/15 text-tertiary font-label-sm text-label-sm rounded-full">NLP</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">v2.4.1</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg glow-text mb-4">Neural Nexus Oracle</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                        Module tổng hợp ngôn ngữ hiệu suất cao chuyên về suy luận logic phức tạp và thích ứng ngữ cảnh zero-shot.
+                    </p>
+</div>
+<div class="flex items-center gap-6 py-4 border-y border-white/5">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-white/10" data-alt="Chân dung nhà phát triển nam trong môi trường tối, tâm trạng với ánh sáng xanh tinh tế." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiJ1RV1f9TCIsukA7grlOmBtlAhPauYNpSx498tTpBZsrK69Qur8YfUQL1g2wiVgfsEl37ZcYzih7DvndERQRH1eBAW8HopuO9h1Vn5SDu-v5zrOiFeatdXPkW8LZD7J4YTVqRL9XXob-kieTt2j2_1SBZgETklWRdKza8fvigYKsIG6p1whWva2D0Jvb3e3T2KP5Ko1jsduWFc8Kqx9WaMMiOUhauTKCnCoDz9Bh9EMJu-6KdUd8bdSLI_FuluTS64ZY-tdpLs0cv"/>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">Synthetix Labs</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary" data-icon="verified" data-weight="fill">verified</span>
+                                Nhà xuất bản đã xác minh
+                            </div>
+</div>
+</div>
+<div class="w-px h-10 bg-white/5"></div>
+<div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="font-headline-md text-headline-md">4.9</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">128 Đánh giá</div>
+</div>
+<div class="w-px h-10 bg-white/5"></div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">2,400+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Đã bán</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex items-center justify-between glowing-border">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Giấy phép Thương mại</div>
+<div class="flex items-end gap-3">
+<div class="font-display-lg text-display-lg text-primary">$499</div>
+<div class="font-headline-md text-headline-md text-on-surface-variant line-through mb-1 opacity-60">$599</div>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="px-8 py-3 bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-headline-md text-headline-md rounded-lg hover:opacity-90 transition-opacity">
+                            Mua ngay
+                        </button>
+<button class="px-8 py-3 border border-primary text-primary font-headline-md text-headline-md rounded-lg hover:bg-primary/10 transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Thêm vào giỏ
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Tutorial Video Section -->
+<section class="space-y-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Video Hướng dẫn</h2>
+<div class="aspect-video w-full max-w-4xl rounded-xl overflow-hidden glass-panel relative group border border-white/10 flex items-center justify-center">
+<img alt="Thumbnail cho video hướng dẫn." class="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" data-alt="Hình thu nhỏ cho video hướng dẫn cho thấy giao diện điều khiển AI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6K00va1Aut05wWL3V8OPw98t6a4HF3f50JuRGvle3-Z_gE7D8rpcyK4RSA40Qq6pqhlPA6j-kVROpS_PMbv8rcCWyEhetBvRoZDaA38-qOiCQI7qxze8lUzzpGs1lAIuyT0WwD3c1x8kLzhscvTkzdMVSAeZiz0m-2VadryiPu4JIPvXuoqsEfawsEElqiyHzKw8qtc4RZtcfxbmlIZhncLe79C4LRSdOadWpff4BKA4Cc9IE1BwfGt_T4VM5qO6OLnXqt3FW3TK6"/>
+<div class="absolute inset-0 bg-background/20 flex items-center justify-center cursor-pointer">
+<div class="w-20 h-20 rounded-full bg-primary/80 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-on-primary text-4xl" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Reviews & Ratings -->
+<section class="space-y-8">
+<h2 class="font-headline-md text-headline-md text-on-surface">Đánh giá &amp; Nhận xét Cộng đồng</h2>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="col-span-1 glass-panel p-8 rounded-xl space-y-6 flex flex-col items-center justify-center text-center">
+<div class="font-display-lg text-display-lg text-primary">4.9</div>
+<div class="flex text-secondary text-2xl gap-1">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star_half" data-weight="fill">star_half</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Dựa trên 128 đánh giá</div>
+</div>
+<div class="col-span-2 space-y-6">
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">JD</div>
+<div>
+<div class="font-body-md text-body-md text-on-surface">John Doe</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">2 ngày trước</div>
+</div>
+</div>
+<div class="flex text-secondary text-sm">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Tuyệt vời! Hiệu suất suy luận logic vượt ngoài mong đợi. Đã tích hợp thành công vào quy trình làm việc của chúng tôi.</p>
+</div>
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold">AS</div>
+<div>
+<div class="font-body-md text-body-md text-on-surface">Alice Smith</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">1 tuần trước</div>
+</div>
+</div>
+<div class="flex text-secondary text-sm">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined text-outline-variant" data-icon="star_border">star_border</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Rất mạnh mẽ. Tài liệu hướng dẫn hơi phức tạp nhưng hỗ trợ rất nhiệt tình. Khuyên dùng cho các dự án phức tạp.</p>
+</div>
+<button class="text-primary hover:text-primary-fixed-dim font-label-sm text-label-sm flex items-center gap-2">
+                            Xem tất cả 128 đánh giá <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- FAQs Section -->
+<section class="space-y-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Câu hỏi thường gặp (FAQ)</h2>
+<div class="space-y-4 max-w-4xl">
+<div class="glass-panel rounded-xl border border-white/5 overflow-hidden">
+<button class="w-full px-6 py-4 flex justify-between items-center bg-surface-container-low hover:bg-surface-container transition-colors" onclick="toggleFaq('faq-1')">
+<span class="font-body-lg text-body-lg text-on-surface text-left">Giấy phép thương mại bao gồm những gì?</span>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" data-icon="expand_more" id="icon-faq-1">expand_more</span>
+</button>
+<div class="px-6 py-4 border-t border-white/5 bg-surface/50 hidden" id="faq-1">
+<p class="font-body-md text-body-md text-on-surface-variant">Giấy phép thương mại cho phép bạn sử dụng module này trong các sản phẩm thương mại không giới hạn số lượng người dùng. Bao gồm quyền truy cập vào các bản cập nhật trong 1 năm.</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl border border-white/5 overflow-hidden">
+<button class="w-full px-6 py-4 flex justify-between items-center bg-surface-container-low hover:bg-surface-container transition-colors" onclick="toggleFaq('faq-2')">
+<span class="font-body-lg text-body-lg text-on-surface text-left">Module này có hỗ trợ API REST không?</span>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" data-icon="expand_more" id="icon-faq-2">expand_more</span>
+</button>
+<div class="px-6 py-4 border-t border-white/5 bg-surface/50 hidden" id="faq-2">
+<p class="font-body-md text-body-md text-on-surface-variant">Có, module cung cấp giao diện API RESTful đầy đủ, tương thích với hầu hết các ngôn ngữ lập trình hiện đại. Tài liệu chi tiết được đính kèm.</p>
+</div>
+</div>
+<div class="glass-panel rounded-xl border border-white/5 overflow-hidden">
+<button class="w-full px-6 py-4 flex justify-between items-center bg-surface-container-low hover:bg-surface-container transition-colors" onclick="toggleFaq('faq-3')">
+<span class="font-body-lg text-body-lg text-on-surface text-left">Yêu cầu hệ thống tối thiểu là gì?</span>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" data-icon="expand_more" id="icon-faq-3">expand_more</span>
+</button>
+<div class="px-6 py-4 border-t border-white/5 bg-surface/50 hidden" id="faq-3">
+<p class="font-body-md text-body-md text-on-surface-variant">Cần tối thiểu 16GB VRAM và GPU hỗ trợ CUDA 11.x trở lên để đạt hiệu suất tối ưu khi suy luận.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 full-width py-16">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-2 lg:col-span-1 space-y-4">
+<div class="font-headline-md text-headline-md font-bold text-primary">nskill</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    © 2024 nskill. Chợ ứng dụng cao cấp cho trí tuệ nhân tạo và các module AI hiệu suất cao.
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Chính sách Bảo mật</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Điều khoản Dịch vụ</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Điều khoản Sử dụng AI</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Chính sách Cookie</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Về chúng tôi</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Liên hệ</a>
+</div>
+</div>
+</footer>
+</body></html>

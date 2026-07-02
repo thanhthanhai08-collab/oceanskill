@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - AI Module Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "tertiary": "#00dce5",
+                        "primary-fixed": "#dde1ff",
+                        "outline-variant": "#434656",
+                        "on-surface": "#e2e2eb",
+                        "on-primary-container": "#efefff",
+                        "on-tertiary": "#003739",
+                        "secondary": "#e9b3ff",
+                        "surface-dim": "#111319",
+                        "on-primary-fixed": "#001356",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "secondary-fixed": "#f6d9ff",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "surface-variant": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "background": "#111319",
+                        "on-primary": "#002388",
+                        "on-tertiary-container": "#bbfbff",
+                        "surface-container-low": "#191b22",
+                        "on-primary-fixed-variant": "#0035be",
+                        "tertiary-fixed": "#63f7ff",
+                        "on-secondary-fixed": "#310048",
+                        "on-secondary": "#510074",
+                        "primary-container": "#2e5bff",
+                        "tertiary-container": "#00797e",
+                        "inverse-primary": "#124af0",
+                        "surface-container-high": "#282a30",
+                        "on-tertiary-fixed": "#002021",
+                        "error-container": "#93000a",
+                        "outline": "#8e90a2",
+                        "secondary-container": "#7d01b1",
+                        "on-background": "#e2e2eb",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#373940",
+                        "on-secondary-container": "#e5a9ff",
+                        "on-error-container": "#ffdad6",
+                        "surface-tint": "#b8c3ff",
+                        "surface": "#111319",
+                        "primary": "#b8c3ff",
+                        "surface-container-highest": "#33343b",
+                        "inverse-surface": "#e2e2eb",
+                        "inverse-on-surface": "#2e3037",
+                        "on-surface-variant": "#c4c5d9",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#b8c3ff",
+                        "surface-container-lowest": "#0c0e14"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base-unit": "8px",
+                        "max-width": "1440px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glowing-border {
+            position: relative;
+        }
+        .glowing-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #124af0, #e9b3ff);
+            z-index: -1;
+            border-radius: inherit;
+            filter: blur(12px);
+            opacity: 0.3;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(184, 195, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-xl docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">nskill</a>
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-sm text-label-sm" href="#">Marketplace</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="hidden md:flex gap-2">
+<button class="px-4 py-2 border border-primary text-primary font-label-sm text-label-sm rounded-lg hover:bg-primary/10 transition-colors">Login</button>
+<button class="px-4 py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:bg-primary/90 transition-colors">Sign-up</button>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24 space-y-24">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter lg:gap-16 items-start">
+<!-- Visual / Media -->
+<div class="space-y-6">
+<div class="aspect-video rounded-xl overflow-hidden glass-panel relative group cursor-pointer border border-white/10">
+<img alt="Cover image for an AI module showing abstract digital neural networks." class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sleek, high-tech abstract visualization of a neural network in a deep space setting. Electric blue and neon violet pathways pulse with light against a dark, void-like background. The scene exudes a sense of immense processing power and synthetic intelligence. Soft holographic blooms and sharp crystalline structures intersect, representing high-performance AI logic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj4w3ibveN1Y99KysmsnD84tfb1n42tiuWX7lYGMyenqMh3JGs8Mtrrucojr38rM_iTWRRys9zASPuhc1HDxaWKsf5T1CfbTBKKwxHXAu_DOQPYFZ9qv6cQJc_pq-P1BA06ChPhUbwK8vUYT1D3acZSQA0yMnrvXZfZl5nYHl6AHUwcwO9lfNdVnWX9KE06_tnnWMYCA_dxMPvLVoUUKzeAAa2zgTyYoGZ7R-Nk7KHau0T4qIfQKhJSPnR2pSEE_oG2u1cN6CG5mv-"/>
+<div class="absolute inset-0 bg-background/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/50">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
+<img class="w-32 h-24 rounded-lg object-cover border-2 border-primary cursor-pointer opacity-100" data-alt="Close up of digital data processing in a futuristic interface. Neon blue code cascading down a dark screen, highlighting the high-tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6K00va1Aut05wWL3V8OPw98t6a4HF3f50JuRGvle3-Z_gE7D8rpcyK4RSA40Qq6pqhlPA6j-kVROpS_PMbv8rcCWyEhetBvRoZDaA38-qOiCQI7qxze8lUzzpGs1lAIuyT0WwD3c1x8kLzhscvTkzdMVSAeZiz0m-2VadryiPu4JIPvXuoqsEfawsEElqiyHzKw8qtc4RZtcfxbmlIZhncLe79C4LRSdOadWpff4BKA4Cc9IE1BwfGt_T4VM5qO6OLnXqt3FW3TK6"/>
+<img class="w-32 h-24 rounded-lg object-cover border border-white/10 cursor-pointer opacity-60 hover:opacity-100 transition-opacity" data-alt="Abstract rendering of a server rack glowing with violet and teal lights in a dark room. Conveying the immense computational power of the module." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtbr6T1dRe_fcjWNvQnESuKG7n4lUH4Sj6vDXQhQze7Jppy0KVvsf_-B4N6l8l-n3O7wJV0KX-Ro0PxjsCR4dFGQBf_WqUhm5yYRpL7T9uIM7m944xku_2XV11_-Cpoj_dbl6-qbd-R89S35Oqvpey76PnXy7qKtg8RJXV7YNsc_34OiuUlZAfwwEaDNU0rLJZOIjVOXjq6pjRefHZP3ACO3rPuNlbUqUpiOcDgh6Rh55DmIw52oCEM41-In1Tagyycv5ZAGusJhiF"/>
+</div>
+</div>
+<!-- Details & Purchase -->
+<div class="space-y-8">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="px-3 py-1 bg-tertiary/15 text-tertiary font-label-sm text-label-sm rounded-full">NLP</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">v2.4.1</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg glow-text mb-4">Neural Nexus Oracle</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                        High-performance language synthesis module specializing in complex logical reasoning and zero-shot contextual adaptations.
+                    </p>
+</div>
+<div class="flex items-center gap-6 py-4 border-y border-white/5">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-white/10" data-alt="A portrait of a male developer in a dark, moody environment with subtle blue lighting. Professional and intense." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiJ1RV1f9TCIsukA7grlOmBtlAhPauYNpSx498tTpBZsrK69Qur8YfUQL1g2wiVgfsEl37ZcYzih7DvndERQRH1eBAW8HopuO9h1Vn5SDu-v5zrOiFeatdXPkW8LZD7J4YTVqRL9XXob-kieTt2j2_1SBZgETklWRdKza8fvigYKsIG6p1whWva2D0Jvb3e3T2KP5Ko1jsduWFc8Kqx9WaMMiOUhauTKCnCoDz9Bh9EMJu-6KdUd8bdSLI_FuluTS64ZY-tdpLs0cv"/>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface">Synthetix Labs</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary" data-icon="verified" data-weight="fill">verified</span>
+                                Verified Publisher
+                            </div>
+</div>
+</div>
+<div class="w-px h-10 bg-white/5"></div>
+<div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="star" data-weight="fill">star</span>
+<span class="font-headline-md text-headline-md">4.9</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">128 Reviews</div>
+</div>
+<div class="w-px h-10 bg-white/5"></div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">2,400+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Sold</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex items-center justify-between glowing-border">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-1">Commercial License</div>
+<div class="font-display-lg text-display-lg text-primary">$499</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="px-8 py-3 bg-gradient-to-r from-primary-container to-secondary-container text-on-primary font-headline-md text-headline-md rounded-lg hover:opacity-90 transition-opacity">
+                            Buy Now
+                        </button>
+<button class="px-8 py-3 border border-primary text-primary font-headline-md text-headline-md rounded-lg hover:bg-primary/10 transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 full-width py-16">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-2 lg:col-span-1 space-y-4">
+<div class="font-headline-md text-headline-md font-bold text-primary">nskill</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    © 2024 nskill. The premium marketplace for synthetic intelligence and high-performance AI modules.
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">AI Terms of Use</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Cookie Policy</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">About Us</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

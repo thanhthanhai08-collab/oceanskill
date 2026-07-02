@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - Unleash Human Potential with Synthetic Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#191b22",
+                        "primary-container": "#2e5bff",
+                        "inverse-primary": "#124af0",
+                        "outline-variant": "#434656",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#efefff",
+                        "on-secondary-fixed": "#310048",
+                        "on-secondary-container": "#e5a9ff",
+                        "on-secondary": "#510074",
+                        "on-surface": "#e2e2eb",
+                        "on-primary-fixed-variant": "#0035be",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "surface-bright": "#373940",
+                        "secondary-fixed": "#f6d9ff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "on-surface-variant": "#c4c5d9",
+                        "on-error": "#690005",
+                        "outline": "#8e90a2",
+                        "secondary-container": "#7d01b1",
+                        "surface-dim": "#111319",
+                        "primary": "#b8c3ff",
+                        "on-tertiary-fixed": "#002021",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "surface-container-highest": "#33343b",
+                        "surface-variant": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "background": "#111319",
+                        "inverse-surface": "#e2e2eb",
+                        "surface-container-high": "#282a30",
+                        "surface": "#111319",
+                        "primary-fixed-dim": "#b8c3ff",
+                        "inverse-on-surface": "#2e3037",
+                        "tertiary-container": "#00797e",
+                        "on-tertiary-container": "#bbfbff",
+                        "surface-tint": "#b8c3ff",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-tertiary": "#003739",
+                        "on-background": "#e2e2eb",
+                        "tertiary": "#00dce5",
+                        "secondary": "#e9b3ff",
+                        "on-primary": "#002388",
+                        "primary-fixed": "#dde1ff",
+                        "on-primary-fixed": "#001356",
+                        "tertiary-fixed": "#63f7ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base-unit": "8px",
+                        "max-width": "1440px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "display-lg-mobile": ["Geist"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0A0C12;
+            color: #e2e2eb;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .featured-glow {
+            border: 1px solid transparent;
+            background: linear-gradient(#0A0C12, #0A0C12) padding-box,
+                        linear-gradient(to right, #2e5bff, #e5a9ff) border-box;
+            box-shadow: 0 0 12px rgba(46, 91, 255, 0.3);
+        }
+        .btn-primary {
+            background-color: #2e5bff;
+            color: #ffffff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-white/10 shadow-xl">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="flex items-center gap-gutter">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">nskill</a>
+<div class="relative hidden md:block w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-[#050608] border border-outline-variant rounded-lg py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" placeholder="Search skills..." type="text"/>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary rounded-lg px-3 py-2 transition-all" href="#">Marketplace</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary rounded-lg px-3 py-2 transition-all" href="#">Leaderboard</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors hover:bg-primary/10 hover:text-primary rounded-lg px-3 py-2 transition-all" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center justify-center p-2 text-on-surface-variant hover:text-on-surface hover:bg-primary/10 rounded-lg transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-container px-4 py-2 transition-colors" href="#">Login</a>
+<a class="font-label-sm text-label-sm btn-primary px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" href="#">Sign-up</a>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative pt-32 pb-24 px-margin-mobile md:px-margin-desktop overflow-hidden">
+<div class="absolute inset-0 z-0 pointer-events-none opacity-20" style="background-image: radial-gradient(circle at 50% 30%, #2e5bff 0%, transparent 50%);"></div>
+<div class="max-w-max-width mx-auto relative z-10 flex flex-col items-center text-center">
+<div class="glass-panel px-4 py-1.5 rounded-full mb-8 inline-flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">v2.4 Marketplace Now Live</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-6 max-w-4xl">
+                    Unleash Human Potential with <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Synthetic Intelligence</span>.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl">
+                    The premium marketplace for high-performance AI skills and modules. Elevate your workflows with elite, pre-trained synthetic talent.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="btn-primary font-body-md text-body-md px-8 py-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2" href="#">
+                        Explore Marketplace <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+<a class="glass-panel font-body-md text-body-md text-on-surface px-8 py-4 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center" href="#">
+                        View Top Creators
+                    </a>
+</div>
+</div>
+</section>
+<!-- Featured Skills Bento Grid -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-max-width mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Featured Skills</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Top-rated modules for immediate deployment.</p>
+</div>
+<a class="hidden md:flex font-label-sm text-label-sm text-primary items-center gap-1 hover:underline" href="#">View All <span class="material-symbols-outlined text-[16px]">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1 (Featured) -->
+<div class="glass-panel rounded-xl overflow-hidden featured-glow flex flex-col group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Abstract visualization of natural language processing" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sleek, high-tech abstract visualization of glowing neural network pathways forming text characters. The scene is illuminated in electric blues and neon violets against a deep space void background. The aesthetic is premium, futuristic, and highly detailed, representing natural language processing in a high-end AI marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh0j8zEu_BycRkOIIAn_bu3rZ-b8VkhtN2kbsxYGAIheaw2BArseuZeAy7eEMktVqY3HLAETz-6d1OvRQvVqhxCASsHJiZX0DaZcVHNau1j3cRkCkLKD4cid-7ky0I1f5_FRuSDXX0Umxo9sgdbc8VqeSbIiYHMo43p-wKoBkJvwsPcewT9kgz2aVN5egiTzRwEHVug_yqWuXxylmCNUNM5gKVgbI4QJg3Z83yAHGjcmYg5GBsrigfI6rDL1WTWqnL1RykniESoTpn"/>
+<div class="absolute top-4 left-4 glass-panel px-2 py-1 rounded font-label-sm text-label-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-[14px]">star</span> 4.9
+                            </div>
+<div class="absolute top-4 right-4 bg-tertiary/15 text-tertiary border border-tertiary/30 px-2 py-1 rounded font-label-sm text-label-sm uppercase">
+                                NLP
+                            </div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Natural Language Logic</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4 flex items-center gap-2">
+                                By <span class="text-on-surface">@Synthetix</span> <span class="material-symbols-outlined text-primary text-[14px]">verified</span>
+</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-2">Advanced reasoning and contextual understanding module for complex text analysis.</p>
+<div class="mt-auto flex justify-between items-center pt-4 border-t border-white/5">
+<span class="font-headline-md text-headline-md text-on-surface">$120<span class="font-body-md text-body-md text-on-surface-variant">/mo</span></span>
+<button class="btn-primary p-2 rounded-lg hover:opacity-90"><span class="material-symbols-outlined text-[20px]">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Data analytics visualization" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" data-alt="A sophisticated data visualization dashboard rendered in 3D floating in a dark void. Holographic charts and graphs glow with electric blue and cyan accents. The style is ultra-modern, crisp, and analytical, fitting a premium synthetic intelligence platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf-ma4gGTrfD_FkNDUpj_pxJj16_JplZcUTn3d0o5aklOaYCAH85ujwg4umOwpKcB_cgC0g-0zYJUZ3gBp_3jsynMbvCEgDS_sK2d6AnrJNxd6qGHoZAVSx-O3AJeQi0NyPs6l44e5aX3MAqFNEW0jitJk90mbezlB8sL_uCwAiojACqT8etKARignLbkORxWuC94uylRLmPO-GcpIulnBUc2Ec5rzGX-1BdfnpZ4ewSmO4TkhaXFO168Uf_Z1fg4HbjL0nVMjsp-r"/>
+<div class="absolute top-4 left-4 glass-panel px-2 py-1 rounded font-label-sm text-label-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-[14px]">star</span> 4.8
+                            </div>
+<div class="absolute top-4 right-4 bg-secondary/15 text-secondary border border-secondary/30 px-2 py-1 rounded font-label-sm text-label-sm uppercase">
+                                Data
+                            </div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Predictive Analytics Pro</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4 flex items-center gap-2">
+                                By <span class="text-on-surface">@DataMinds</span>
+</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-2">High-accuracy forecasting models for market trends and user behavior.</p>
+<div class="mt-auto flex justify-between items-center pt-4 border-t border-white/5">
+<span class="font-headline-md text-headline-md text-on-surface">$85<span class="font-body-md text-body-md text-on-surface-variant">/mo</span></span>
+<button class="glass-panel p-2 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined text-[20px]">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-panel rounded-xl overflow-hidden flex flex-col group cursor-pointer">
+<div class="h-48 relative overflow-hidden bg-surface-container-high">
+<img alt="Abstract generative art" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" data-alt="A mesmerizing piece of generative digital art featuring fluid, swirling abstract shapes in deep purples and bright cyans. The composition is dynamic and sleek, set against a pitch-black background, conveying advanced creative AI capabilities in a futuristic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT2zFhccSJNWrLyxv7Y2tgCnbkSDbJN4VFjMo51_DlHg5b7HqKLH_ZauZFO5e7CwRdjDFGdpJwMp4VPsNccrOYbNpuuKu2K2a1dxpX4siP47Pg0MPeB36goCzO4W1jIkGM1hA975mxidNSmQeofkki4FnmU_2eU76VThGPiNuV0TCTnPw_fXvt1O3jDfvPjATB-5VOsTt6YtnFyw7Ze7y8kqyy7QvWJrC8e57ItH62C_NdY2rmQTSZ9T9R59AxoNoGbsXgINHN47a0"/>
+<div class="absolute top-4 left-4 glass-panel px-2 py-1 rounded font-label-sm text-label-sm text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-[14px]">star</span> 4.9
+                            </div>
+<div class="absolute top-4 right-4 bg-primary/15 text-primary border border-primary/30 px-2 py-1 rounded font-label-sm text-label-sm uppercase">
+                                Vision
+                            </div>
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Generative Art Master</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4 flex items-center gap-2">
+                                By <span class="text-on-surface">@VisualAI</span> <span class="material-symbols-outlined text-primary text-[14px]">verified</span>
+</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-2">Produce stunning, high-fidelity visual assets from simple text descriptions.</p>
+<div class="mt-auto flex justify-between items-center pt-4 border-t border-white/5">
+<span class="font-headline-md text-headline-md text-on-surface">$150<span class="font-body-md text-body-md text-on-surface-variant">/mo</span></span>
+<button class="glass-panel p-2 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined text-[20px]">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center md:hidden">
+<a class="btn-primary font-body-md text-body-md px-6 py-3 rounded-lg inline-block" href="#">View All Skills</a>
+</div>
+</div>
+</section>
+<!-- Top Creators Section -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-max-width mx-auto">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-12 text-center">Top Intelligence Architects</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<!-- Creator 1 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-primary/30 group-hover:border-primary transition-colors p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-high">
+<img alt="Avatar of a creator" class="w-full h-full object-cover" data-alt="A highly professional, sleek headshot of a synthetic intelligence architect. The lighting is cinematic and slightly moody with a subtle blue rim light, set against a dark background. The subject conveys expertise and premium quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAllVqPsW03-GTLQCoavKZbloi9fw4FYeNztgcWl1Eb0habMo-2ZDJ4gHmPKE8hNufNH5RCvy7CbUslqbZtqMEVyZredaRaEMKvQ4O7s6Ac-Dr4XWMDD6h5Rwcwr70PPbwi1tFndCgXuxlYLP6U2qsZ1RpWVoowTHg-K0SYBBxM23EDdGli4hGj9EVLjbZ7k4uX_1ym6oUxrKFqZKXxw76VvCC_rP0IulIz-Vvc5pjFKnEC320cWoE5qHyUppG2MUz1IPzbpIKxwEAU"/>
+</div>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors flex items-center gap-1 justify-center">@Synthetix <span class="material-symbols-outlined text-primary text-[14px]">verified</span></h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">14 Modules</p>
+</div>
+<!-- Creator 2 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-transparent group-hover:border-secondary transition-colors p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-high">
+<img alt="Avatar of a creator" class="w-full h-full object-cover" data-alt="A sharp, modern portrait of an AI engineer. High-contrast lighting with a subtle neon violet glow on one side. Dark, minimalist background. The aesthetic is clean, futuristic, and high-tech." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyrz6Zj_sfM52iqd_4JWL6YsCxART80kePQ8J2pJ80Pl-oUrnM6n3c4_erOWcfmlto1uU4H1Cs6ooDyQWgivzkDlXik26NJHJtmTIXMGpA_1tt3A0xTv7incb3IamJQXZ5nAEYXfgDkMhiOhM5cbuLvFlxC-7nSu3Mn4iN2E1q263MXfbOBt3ZDVM7cL446GH7B3Hx-PO1JQP0_beM2jr6no9vnptP8IC-WhDDFzaBvpzm8Fx76EKIEVO8AgpyBJW2DaQamX0FqKQf"/>
+</div>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-secondary transition-colors">@DataMinds</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">8 Modules</p>
+</div>
+<!-- Creator 3 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-transparent group-hover:border-tertiary transition-colors p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-high">
+<img alt="Avatar of a creator" class="w-full h-full object-cover" data-alt="A stylized, premium headshot of a female digital creator. Illuminated by soft white and cyan light against a deep space dark background. The mood is confident and innovative, fitting a top-tier marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEBkOgOD3znOcVEdJY3ZEn2xP8UFka5FUru7tAGwr4iQFnC89grVnTgANx5_QJ-O7BuIG60ADr7-COBq9mEIOrPPaJvT1X3WTEuY_8DtvHsIakO0mnuCZ1SyI4t7l33__aZ_KZuLeaMPDPIMeDw8GYqolKCYifKu8tpFmjgpepUFKTOqVVbWVct7wbnafeFDEldAbhyOFyGmyXctGOmANtmDo0skv5fgGzUvlThPDe8bCLdcmdOgRE-MhZOGz_joMM7hxkSMHAt0_g"/>
+</div>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-tertiary transition-colors flex items-center gap-1 justify-center">@VisualAI <span class="material-symbols-outlined text-primary text-[14px]">verified</span></h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">22 Modules</p>
+</div>
+<!-- Creator 4 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-transparent group-hover:border-primary transition-colors p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center">
+<span class="font-headline-md text-headline-md text-on-surface-variant">NQ</span>
+</div>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">@NeuralQuest</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">5 Modules</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Chatbot FAB -->
+<div class="fixed bottom-8 right-8 z-50">
+<button aria-label="AI Assistant" class="w-14 h-14 rounded-full bg-gradient-to-tr from-primary-container to-secondary-container shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border border-white/20">
+<span class="material-symbols-outlined text-white text-[28px]">smart_toy</span>
+</button>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-lowest full-width py-16 border-t border-white/5 flat no shadows">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-2 lg:col-span-1 mb-8 lg:mb-0">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-4">nskill</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 max-w-sm">
+                    © 2024 nskill. The premium marketplace for synthetic intelligence and high-performance AI modules.
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-2">Legal</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">AI Terms of Use</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Cookie Policy</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-2">Company</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">About Us</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

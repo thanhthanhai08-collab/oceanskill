@@ -1,0 +1,3 @@
+{
+  "Leaderboard": {"eyebrow": "Chỉ số danh mục", "titleBefore": "Bảng xếp hạng", "titleAccent": "mức sẵn sàng", "description": "So sánh kỹ năng đang hoạt động theo metadata đã xác minh, độ phủ agent, giấy phép và chất lượng phát hành.", "tabSkills": "Kỹ năng hàng đầu", "tabReadiness": "Điểm sẵn sàng", "scoreLabel": "Sẵn sàng", "integrationsLabel": "tích hợp", "advertisement": "Vị trí dành cho quảng cáo", "methodology": "Điểm sẵn sàng được tính từ metadata và độ phủ tương thích. Hệ thống không giả định lượt bán, đánh giá hoặc dữ liệu sử dụng mà schema hiện tại chưa thu thập."}
+}

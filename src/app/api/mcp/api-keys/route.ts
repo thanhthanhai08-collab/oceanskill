@@ -1,0 +1,20 @@
+import {NextResponse} from "next/server";
+import {createApiKey} from "@/lib/mcp/api-keys";
+import {createClient} from "@/lib/supabase/server";
+
+export async function POST(request: Request) {
+  const supabase = await createClient();
+  const {data} = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return NextResponse.json({error: "unauthorized"}, {status: 401});
+  let body: unknown;
+  try { body = await request.json(); } catch { return NextResponse.json({error: "invalid_json"}, {status: 400}); }
+  const name = typeof body === "object" && body !== null && "name" in body ? String(body.name) : "";
+  try {
+    const created = await createApiKey(userId, name);
+    return NextResponse.json(created, {status: 201, headers: {"Cache-Control": "no-store"}});
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown";
+    return NextResponse.json({error: message === "Invalid API key name" ? "invalid_name" : "api_key_create_failed"}, {status: message === "Invalid API key name" ? 400 : 500});
+  }
+}

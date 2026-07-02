@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Repository-local agent/tooling sources are not part of the application.
+    ".agents/**",
+    "stitch-skills/**",
+    "stitch-oceanskill/**",
+    "scripts/**",
   ]),
 ]);
 

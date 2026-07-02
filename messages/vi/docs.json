@@ -1,0 +1,23 @@
+{
+  "Docs": {
+    "eyebrow": "Tài liệu OceanSkill", "title": "Kết nối kỹ năng đầu tiên trong vài phút", "description": "Nắm luồng cốt lõi, sao chép cấu hình MCP an toàn, hiểu các công cụ hiện có và lý do nội dung được bảo vệ chỉ giao sau xác thực.",
+    "tutorial": "Hướng dẫn nhập môn", "howTo": "Cách thực hiện", "reference": "Tham chiếu", "explanation": "Giải thích", "onThisPage": "Trong trang này",
+    "quickstartTitle": "Bắt đầu nhanh: kết nối OceanSkill MCP", "quickstartDescription": "Từ tài khoản đến kỹ năng có thể khám phá trong ba bước nhìn thấy được.",
+    "steps": {
+      "account": {"title": "Tạo tài khoản và khóa API", "description": "Đăng nhập dashboard và tạo khóa riêng cho client bạn muốn kết nối."},
+      "configure": {"title": "Thêm MCP server", "description": "Mở phần cài đặt MCP của agent client rồi thêm endpoint OceanSkill cùng khóa xác thực."},
+      "verify": {"title": "Kiểm tra khám phá kỹ năng", "description": "Yêu cầu client liệt kê skill OceanSkill, sau đó mở trang chi tiết công khai để đối chiếu phiên bản."}
+    },
+    "configTitle": "Ví dụ cấu hình", "configDescription": "Chỉ dùng placeholder trong tài liệu. Không commit khóa API thật vào Git.", "copyHint": "Thay endpoint và khóa bằng giá trị trong dashboard của bạn.",
+    "toolsTitle": "Tham chiếu công cụ MCP", "toolsDescription": "OceanSkill hiện công bố các công cụ cấp quy trình sau.",
+    "tools": {
+      "search": {"name": "search_skills", "description": "Tìm metadata của skill active theo truy vấn người dùng."},
+      "list": {"name": "list_purchased_skills", "description": "Liệt kê skill khả dụng cho tài khoản đã xác thực."},
+      "content": {"name": "get_skill_content", "description": "Yêu cầu nội dung được bảo vệ của một phiên bản skill active."}
+    },
+    "securityTitle": "Vì sao nội dung nằm sau MCP", "securityDescription": "Trang công khai giúp người dùng đánh giá skill. Xác thực, RLS, kiểm tra khóa, credit và usage bảo vệ hướng dẫn được giao cho agent.",
+    "securityPoints": {"public": "Công khai: tên, mô tả, domain, tương thích, phiên bản và giấy phép.", "private": "Được bảo vệ: toàn bộ hướng dẫn SKILL.md và artifact riêng.", "owner": "Theo chủ sở hữu: khóa API, credit, đơn hàng và usage event."},
+    "troubleshootingTitle": "Xử lý sự cố", "troubleshooting": {"auth": "401 hoặc khóa không hợp lệ: kiểm tra khóa còn hoạt động và thuộc đúng tài khoản.", "empty": "Không có skill: bỏ bộ lọc và kiểm tra catalog có bản phát hành active.", "credits": "Không đủ credit: mở dashboard để xem số dư và lượt gọi MCP gần đây."},
+    "ctaTitle": "Sẵn sàng kết nối?", "ctaDescription": "Tạo tài khoản, xem marketplace rồi hỏi OceanGuide nếu bạn gặp vướng mắc.", "openDashboard": "Mở dashboard", "askChatbot": "Hỏi OceanGuide"
+  }
+}

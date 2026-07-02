@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - Marketplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-low": "#191b22",
+                        "primary-container": "#2e5bff",
+                        "inverse-primary": "#124af0",
+                        "outline-variant": "#434656",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#efefff",
+                        "on-secondary-fixed": "#310048",
+                        "on-secondary-container": "#e5a9ff",
+                        "on-secondary": "#510074",
+                        "on-surface": "#e2e2eb",
+                        "on-primary-fixed-variant": "#0035be",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "surface-bright": "#373940",
+                        "secondary-fixed": "#f6d9ff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "on-surface-variant": "#c4c5d9",
+                        "on-error": "#690005",
+                        "outline": "#8e90a2",
+                        "secondary-container": "#7d01b1",
+                        "surface-dim": "#111319",
+                        "primary": "#b8c3ff",
+                        "on-tertiary-fixed": "#002021",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "surface-container-highest": "#33343b",
+                        "surface-variant": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "background": "#111319",
+                        "inverse-surface": "#e2e2eb",
+                        "surface-container-high": "#282a30",
+                        "surface": "#111319",
+                        "primary-fixed-dim": "#b8c3ff",
+                        "inverse-on-surface": "#2e3037",
+                        "tertiary-container": "#00797e",
+                        "on-tertiary-container": "#bbfbff",
+                        "surface-tint": "#b8c3ff",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-tertiary": "#003739",
+                        "on-background": "#e2e2eb",
+                        "tertiary": "#00dce5",
+                        "secondary": "#e9b3ff",
+                        "on-primary": "#002388",
+                        "primary-fixed": "#dde1ff",
+                        "on-primary-fixed": "#001356",
+                        "tertiary-fixed": "#63f7ff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base-unit": "8px",
+                        "max-width": "1440px",
+                        "margin-desktop": "64px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "display-lg-mobile": ["Geist"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "display-lg-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .featured-card {
+            position: relative;
+        }
+        .featured-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            background: linear-gradient(45deg, #b8c3ff, #e9b3ff);
+            z-index: -1;
+            border-radius: inherit;
+            filter: blur(4px);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="docked full-width top-0 sticky z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-xl">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">nskill</a>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-sm text-label-sm" href="#">Marketplace</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">About</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 mr-2"><button class="flex items-center justify-center p-2 text-on-surface-variant hover:text-on-surface hover:bg-primary/10 rounded-lg transition-all scale-95 active:scale-90 duration-200" title="Toggle Dark/Light Mode"><span class="material-symbols-outlined">dark_mode</span></button><div class="h-4 w-[1px] bg-outline-variant/30"></div><div class="flex items-center gap-1 font-label-sm text-label-sm"><button class="text-primary font-bold">EN</button><span class="text-outline-variant">/</span><button class="text-on-surface-variant hover:text-on-surface transition-colors">VI</button></div></div><div class="hidden md:flex relative group cursor-pointer hover:bg-primary/10 hover:text-primary rounded-lg transition-all p-2 scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+</div>
+<button class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm">Login</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-sm text-label-sm hover:bg-primary/90 transition-colors shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">Sign-up</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-gutter flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar Filters -->
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-8 hidden md:flex">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Categories</h3>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="form-checkbox h-5 w-5 rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Logic &amp; Reasoning</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="form-checkbox h-5 w-5 rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Creative Generation</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="form-checkbox h-5 w-5 rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Data Analysis</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="form-checkbox h-5 w-5 rounded border-outline bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-background" type="checkbox"/>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Automation</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Price Range</h3>
+<div class="flex flex-col gap-4">
+<input class="w-full accent-primary" max="1000" min="0" type="range"/>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span class="">$0</span>
+<span class="">$1000+</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Rating</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded border border-outline-variant bg-surface-container-low text-on-surface hover:border-primary transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<button class="p-2 rounded border border-outline-variant bg-surface-container-low text-on-surface hover:border-primary transition-colors">4+</button>
+<button class="p-2 rounded border border-outline-variant bg-surface-container-low text-on-surface hover:border-primary transition-colors">3+</button>
+</div>
+</div>
+</aside>
+<!-- Leaderboard Sidebar -->
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-8 hidden lg:flex">
+<div>
+<h3 class="font-headline-md text-lg text-on-surface mb-4">Xếp hạng</h3>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-white/5 relative overflow-hidden group hover:bg-white/[0.05] transition-colors cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#FFD700] to-[#FFA500]"></div>
+<div class="font-display-lg text-2xl font-bold text-[#FFD700] w-8 text-center drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]">1</div>
+<div class="flex flex-col">
+<span class="font-label-sm font-bold text-on-surface group-hover:text-primary transition-colors">Cognitive Core V4</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant">12.4k Lượt bán</span>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-white/5 relative overflow-hidden group hover:bg-white/[0.05] transition-colors cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#C0C0C0] to-[#A9A9A9]"></div>
+<div class="font-display-lg text-2xl font-bold text-[#C0C0C0] w-8 text-center drop-shadow-[0_0_8px_rgba(192,192,192,0.3)]">2</div>
+<div class="flex flex-col">
+<span class="font-label-sm font-bold text-on-surface group-hover:text-primary transition-colors">DataStream Protocol</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant">8.9k Lượt bán</span>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-white/5 relative overflow-hidden group hover:bg-white/[0.05] transition-colors cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#CD7F32] to-[#A0522D]"></div>
+<div class="font-display-lg text-2xl font-bold text-[#CD7F32] w-8 text-center drop-shadow-[0_0_8px_rgba(205,127,50,0.3)]">3</div>
+<div class="flex flex-col">
+<span class="font-label-sm font-bold text-on-surface group-hover:text-primary transition-colors">Aura Synth</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant">5.2k Lượt bán</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-lg text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+            Thịnh hành
+        </h3>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between group cursor-pointer p-2 hover:bg-surface-container-low rounded-lg transition-colors -mx-2">
+<span class="font-body-md text-sm text-on-surface-variant group-hover:text-on-surface transition-colors truncate">Quantum Predictor</span>
+<span class="material-symbols-outlined text-error text-[16px]">trending_up</span>
+</div>
+<div class="flex items-center justify-between group cursor-pointer p-2 hover:bg-surface-container-low rounded-lg transition-colors -mx-2">
+<span class="font-body-md text-sm text-on-surface-variant group-hover:text-on-surface transition-colors truncate">NeuroLingo Chat</span>
+<span class="material-symbols-outlined text-error text-[16px]">trending_up</span>
+</div>
+<div class="flex items-center justify-between group cursor-pointer p-2 hover:bg-surface-container-low rounded-lg transition-colors -mx-2">
+<span class="font-body-md text-sm text-on-surface-variant group-hover:text-on-surface transition-colors truncate">CodeWeaver JS</span>
+<span class="material-symbols-outlined text-error text-[16px]">trending_up</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Product Grid Area -->
+<div class="flex-grow flex flex-col gap-8">
+<!-- Search & Sort Bar -->
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-container-low p-2 rounded-xl border border-white/5">
+<div class="relative w-full sm:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-[#050608] border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-outline-variant" placeholder="Tìm kiếm module AI..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sắp xếp:</span>
+<select class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 cursor-pointer">
+<option>Đề xuất</option>
+<option>Đánh giá cao</option>
+<option>Mới nhất</option>
+</select>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Card 1 (Featured) -->
+<div class="glass-card rounded-xl overflow-hidden group hover:bg-white/[0.05] transition-all duration-300 featured-card flex flex-col h-full">
+<div class="h-48 w-full bg-surface-container-highest relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 mix-blend-overlay"></div>
+<img alt="Abstract visualization of a highly advanced neural network architecture in a sleek, dark futuristic setting. Glowing electric blue and violet nodes connect in a complex three-dimensional web against a deep void. The lighting is high-contrast, emphasizing precision and boundless synthetic intelligence. The style represents high-tech futurism typical of premium AI marketplace modules." class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXX_BTE8xs3xzywO4k2RGXNQ9UxAatGEDX6szf-5iXWAr2aoSMDLbNdJThuTmt6XOK_-edM8XGm7xdMwX97bXSwrdVS62XXaogxx04UKY8ikrJPoZbM5gosKOnt8xYMQEYUKMuyliDEcpZwyHD96Q95TJupg-51MmtfEtKc0ew5ds3t1VxfK1xzQ1oMTollCuO2puMq6yHYlZvLwbuw2MJkYvv3nXPggA_ZbX2nDULmMfVTbRaH-W4OKemf1EJKxWt_kF-cB3KcGTh"/>
+<div class="absolute top-2 left-2 bg-gradient-to-r from-primary to-secondary text-on-primary px-2 py-1 rounded font-label-sm text-[10px] uppercase tracking-wider font-bold shadow-lg">Featured</div>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Cognitive Core V4</h4>
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm ml-1">4.9</span>
+</div>
+</div>
+<p class="font-body-md text-sm text-on-surface-variant line-clamp-2 mb-4">Advanced logical reasoning module optimized for complex problem-solving and algorithmic strategy generation.</p>
+<div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+<div class="flex flex-wrap gap-2">
+<span class="bg-secondary/15 text-secondary px-2 py-1 rounded-full font-label-sm text-[10px]">Logic</span>
+<span class="bg-tertiary/15 text-tertiary px-2 py-1 rounded-full font-label-sm text-[10px]">Python</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-auto pb-4">
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-on-surface text-xs font-bold overflow-hidden border border-outline-variant">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5Rwk0w3dtJCJsY80Vg0WYNAMF56PJI89opas_pkuJXqyAijbVZ-p8m4pmklhe2j5w-48fvORDf4TWbG1jUD-pom9U9YOSqfCNFpuD9jsWtdjeefx8aHRs7Hfq8eNiXFtwBoszrayzHWmsW2oLOK5z0d0MeUHZMlelni_JK6RLtkjTqcyBuy0Rr6SsaW5NJOOamG6MfcYfR1MIYoNycWN5kXizLw89JcLsgx8yRZClcVCUqUWWaqxVLKPhZweE6a61hbfM43UHNfpx"/>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Bởi <span class="text-on-surface font-medium hover:text-primary cursor-pointer transition-colors">NeuralLabs</span></span>
+</div>
+<div class="mt-auto pt-4 border-t border-white/10 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">$299<span class="text-sm text-on-surface-variant font-normal">/tháng</span></span>
+<span class="font-label-sm text-[10px] text-on-surface-variant mt-1">12.4k+ Đã bán</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-sm text-label-sm hover:bg-primary/90 transition-colors shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">Thêm vào giỏ</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-card rounded-xl overflow-hidden group hover:bg-white/[0.05] transition-all duration-300 flex flex-col h-full">
+<div class="h-48 w-full bg-surface-container-highest relative overflow-hidden">
+<img alt="A sleek, abstract digital rendering representing creative generation algorithms. Fluid, glowing ribbons of neon cyan and magenta intertwine smoothly against a pitch-black background. The composition suggests dynamic movement and artistic synthesis within a high-performance computational environment. It perfectly aligns with the sleek, high-tech futurism of an AI marketplace." class="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-7izwSEVy-OUxaVd9qn5xeKqkhVc_bc9kcwrDJT8h0cQ83-Ci1aduISRjs5oeaJbvgcGIRq2ELZP1h-_vixMIdQaiVA-ltsK2eEfR70lWGWAdUlLj6PG3F3QySytgd-7dNuRmxiZjmCFbWTh_jjnNMxzik2nfJnqRSeBrmLsRSHLUlj0Pr1YXBYqYXr1qjGffocob0tV33mY445fU7am8sE247Qe37JZdGTkBTURGka5GLDTew7ES7VGJJow1NVjnx8FVrPZm4xHr"/>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Aura Synth</h4>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm ml-1">4.6</span>
+</div>
+</div>
+<p class="font-body-md text-sm text-on-surface-variant line-clamp-2 mb-4">High-fidelity texture and environmental generation model for digital artists and world-builders.</p>
+<div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+<div class="flex flex-wrap gap-2">
+<span class="bg-primary/15 text-primary px-2 py-1 rounded-full font-label-sm text-[10px]">Creative</span>
+<span class="bg-tertiary/15 text-tertiary px-2 py-1 rounded-full font-label-sm text-[10px]">Visuals</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-auto pb-4">
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-on-surface text-xs font-bold overflow-hidden border border-outline-variant">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjrr1PnurglEwgeep_rmnYNEkzsCRKq3EfMZjjzrYLXOiRfK5qpGhf9QdX-f1K--je_Tt0K030YnKAA9QQNEKDzyc-beqygPYUtuAwwwM3SsALSqCgv7IWOxINOuYoQPuwVHGm2M4278deFRVhS0JhGAiiIUa2989ilPkONc36yQ_v7SbglYl4wb8R6rdXj69nbZ-1dw7cX3Kb_kVhUvEO5YOeDiR9Vls6kje1t7gPh2FYplpLjbJMwJofZAdidXuq5ipT6jKintfG"/>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Bởi <span class="text-on-surface font-medium hover:text-primary cursor-pointer transition-colors">VisionaryAI</span></span>
+</div>
+<div class="mt-auto pt-4 border-t border-white/10 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">$149<span class="text-sm text-on-surface-variant font-normal">/tháng</span></span>
+<span class="font-label-sm text-[10px] text-on-surface-variant mt-1">5.2k+ Đã bán</span>
+</div>
+<button class="bg-transparent border border-primary text-primary hover:bg-primary/10 px-4 py-2 rounded-lg font-label-sm text-label-sm transition-colors">Thêm vào giỏ</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-card rounded-xl overflow-hidden group hover:bg-white/[0.05] transition-all duration-300 flex flex-col h-full">
+<div class="h-48 w-full bg-surface-container-highest relative overflow-hidden">
+<img alt="A macro view of a high-end server rack illuminated by sterile, cool white and subtle blue LED lights in a pitch-black datacenter. The image focuses on the precise geometry of network cables and metallic surfaces. It evokes professional reliability, automation, and synthetic talent readiness in a dark, high-contrast aesthetic." class="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIHIzoAPQ8PdfI5t1jj4bC3oUh9m1b1-pCXyoaFOeI7ZhYviLPxDSp52B-g36FrRXTdl3hsJ9BaOcS2kLcv2gjOvumNtsJgospx6DkpEnxpsajYzy5DqJnrCBUB7jgLr4R1RXspInoFe5ogyr6QUeJ3MkSEKiTYxC5EOQn6tuidjP-XotyQfbeScpUCT3QadrqYvx7twtpnJnECQPfZPlkKTeHxdujOUMr3NCBB-oIv11ZO2CZFXA1DPiIIVItGiivg2CoZPraeRiD"/>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-lg font-bold text-on-surface group-hover:text-primary transition-colors">DataStream Protocol</h4>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm ml-1">4.8</span>
+</div>
+</div>
+<p class="font-body-md text-sm text-on-surface-variant line-clamp-2 mb-4">Autonomous pipeline management for high-throughput data parsing and real-time analytics.</p>
+<div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+<div class="flex flex-wrap gap-2">
+<span class="bg-tertiary/15 text-tertiary px-2 py-1 rounded-full font-label-sm text-[10px]">Automation</span>
+<span class="bg-secondary/15 text-secondary px-2 py-1 rounded-full font-label-sm text-[10px]">Data</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-auto pb-4">
+<div class="w-6 h-6 rounded-full bg-surface-bright flex items-center justify-center text-on-surface text-xs font-bold overflow-hidden border border-outline-variant">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrwIobp6Cn9Ow7jRD0ab2bD_XggLFnkjJK8l-M6SVjM3863yKBIbt1T-t6v3oxk4xQo4-VbTudjuUXQyX2_QtTRSYSYk3tHC6O8ToWmLUmo5AgN9NsQH90T1QmRszwIcrGLe7fCkP7C0QCL3uDuOmSydFIBmp-CkBHwmTJ7Shn4MZ0LFBjNw3HZqpYWuhZdvpnVqcVTTgzcTTsVXy7aTX7VYJSOtwcGXaC2vSRQ16jDhTxIvAaKJSE0mtStjc370GsuLK5CugGFoWr"/>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Bởi <span class="text-on-surface font-medium hover:text-primary cursor-pointer transition-colors">StreamTech</span></span>
+</div>
+<div class="mt-auto pt-4 border-t border-white/10 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">$499<span class="text-sm text-on-surface-variant font-normal">/tháng</span></span>
+<span class="font-label-sm text-[10px] text-on-surface-variant mt-1">8.9k+ Đã bán</span>
+</div>
+<button class="bg-transparent border border-primary text-primary hover:bg-primary/10 px-4 py-2 rounded-lg font-label-sm text-label-sm transition-colors">Thêm vào giỏ</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="full-width py-16 bg-surface-container-lowest border-t border-white/5 mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="col-span-1 md:col-span-2 lg:col-span-1">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-4">nskill</div>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-80 mb-6">© 2024 nskill. The premium marketplace for synthetic intelligence and high-performance AI modules.</p>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider mb-2">Legal</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">AI Terms of Use</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider mb-2">Company</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">About Us</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Contact</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Cookie Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,60 @@
+{
+  "Home": {
+    "heroBadge": "Private beta · Đã mở giao nhận qua MCP",
+    "heroTitlePart1": "Khai phóng tiềm năng con người bằng",
+    "heroTitlePart2": "Trí tuệ tổng hợp.",
+    "heroSearchPlaceholder": "Tìm kỹ năng, quy trình hoặc tình huống dùng agent...",
+    "heroSearchButton": "Tìm kỹ năng",
+    "heroDescription": "Khám phá kỹ năng đã kiểm duyệt, kết nối với coding agent bạn đang dùng và chỉ nhận hướng dẫn được bảo vệ sau khi xác thực.",
+    "heroExplore": "Khám phá kho kỹ năng",
+    "heroCreators": "Xem bảng xếp hạng",
+    "heroSignal": "Giao nhận kỹ năng bảo mật",
+    "featuredEyebrow": "Danh mục tuyển chọn",
+    "featuredTitle": "Kỹ năng cho mục tiêu tiếp theo",
+    "featuredSubtitle": "Lọc theo mục tiêu kinh doanh rồi kết nối quy trình chuẩn production với agent của bạn.",
+    "filters": {"all": "Tất cả", "marketing": "Marketing", "sales": "Bán hàng", "agent-first": "Agent-first"},
+    "filterEmpty": "Chưa có kỹ năng đã phát hành phù hợp danh mục này. Bạn có thể xem toàn bộ marketplace hoặc quay lại khi danh mục được cập nhật.",
+    "viewAll": "Xem tất cả",
+    "viewSkill": "Xem kỹ năng",
+    "creatorsEyebrow": "Những người tạo nên quy trình",
+    "creatorsTitle": "Tác giả nổi bật",
+    "creatorsSubtitle": "Các nhà tuyển chọn và xây dựng đang biến kinh nghiệm lặp lại thành kỹ năng agent đáng tin cậy.",
+    "verifiedCreator": "Tác giả OceanSkill",
+    "creatorDescriptions": {
+      "ocean-labs": "Tuyển chọn quy trình bảo mật, đa dụng cho nghiên cứu, kỹ thuật và vận hành agent.",
+      "agent-ops": "Xây dựng hệ thống agent-first thực tiễn, tập trung vào ủy quyền, độ tin cậy và khả năng thực thi lặp lại.",
+      "growth-systems": "Thiết kế quy trình marketing và doanh thu kết nối insight, nội dung và hành động có thể đo lường."
+    },
+    "collectionsEyebrow": "Bộ kỹ năng thịnh hành",
+    "collectionsTitle": "Bộ sưu tập hot",
+    "collectionsSubtitle": "Các nhóm kỹ năng được kết hợp theo mục tiêu và quy trình phổ biến.",
+    "collectionBadge": "Bộ sưu tập tuyển chọn",
+    "collections": {
+      "agent-starter": {"title": "Bộ khởi động Agent", "description": "Nền tảng thực tế cho lập kế hoạch, ủy quyền, review và thực thi agent an toàn."},
+      "growth-engine": {"title": "Cỗ máy tăng trưởng", "description": "Nghiên cứu, định vị, chiến dịch và nội dung cho đội ngũ marketing hiện đại."},
+      "revenue-ops": {"title": "Vận hành doanh thu", "description": "Khám phá nhu cầu, đánh giá cơ hội, theo dõi và phân tích tài khoản cho đội bán hàng tập trung."}
+    },
+    "mcpTitle": "Đưa mọi kỹ năng vào đúng công cụ bạn đang dùng.",
+    "mcpDescription": "OceanSkill MCP giao hướng dẫn kỹ năng được bảo vệ tới các agent client tương thích. Trải nghiệm duyệt vẫn đơn giản; xác thực, credit và lượt dùng được kiểm soát tại ranh giới dịch vụ.",
+    "mcpCta": "Kết nối OceanSkill MCP",
+    "mcpDocsCta": "Đọc tài liệu MCP",
+    "mcpSteps": {
+      "discover": {"title": "Khám phá", "description": "Đánh giá metadata công khai, độ tương thích và mức sẵn sàng."},
+      "connect": {"title": "Kết nối", "description": "Thêm OceanSkill MCP vào agent client tương thích bạn yêu thích."},
+      "invoke": {"title": "Gọi kỹ năng", "description": "Chỉ yêu cầu nội dung được bảo vệ khi quy trình thực sự cần."}
+    },
+    "knowledgeEyebrow": "Đọc và hỏi",
+    "knowledgeTitle": "Trung tâm kiến thức OceanSkill",
+    "knowledgeSubtitle": "Đọc hướng dẫn thực tế hoặc hỏi OceanGuide để nhận câu trả lời có nguồn.",
+    "openBlog": "Mở blog",
+    "chatbotCardTitle": "Hỏi trước khi kết nối",
+    "chatbotCardDescription": "OceanGuide trả lời về cài đặt MCP, chọn skill, usage, credit và bảo mật từ nguồn công khai đã tuyển chọn.",
+    "askOceanGuide": "Hỏi OceanGuide",
+    "aboutEyebrow": "Vì sao là OceanSkill",
+    "aboutTitle": "Marketplace được thiết kế quanh ranh giới tin cậy của agent.",
+    "aboutDescription": "Trang công khai cung cấp đủ metadata để đánh giá. Toàn bộ SKILL.md vẫn được bảo vệ và chỉ giao qua MCP đã xác thực; lượt dùng và credit được kiểm soát bằng Supabase.",
+    "metricSkills": "kỹ năng đã kiểm duyệt trong danh mục",
+    "metricDelivery": "giao nhận trực tiếp vào agent client",
+    "metricSecurity": "kiểm soát dữ liệu người dùng theo từng dòng"
+  }
+}

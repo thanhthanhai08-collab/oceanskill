@@ -1,0 +1,7 @@
+{
+  "Blog": {
+    "eyebrow": "OceanSkill journal", "title": "Practical notes for building with AI agents", "description": "Guides and explanations about MCP, agent skills, security, and outcome-focused workflows.",
+    "featured": "Latest article", "allArticles": "All articles", "readArticle": "Read article", "minuteRead": "min read", "advertisement": "Reserved for advertisement", "inArticleAdvertisement": "Reserved for in-article advertisement",
+    "save": "Save article", "saved": "Saved", "relatedTitle": "Related articles", "relatedDescription": "Continue with another practical guide.", "back": "Back to blog", "published": "Published", "updated": "Updated", "by": "By"
+  }
+}

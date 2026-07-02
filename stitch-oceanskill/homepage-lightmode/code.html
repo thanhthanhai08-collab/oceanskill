@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - The premium marketplace for synthetic intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#b2fff3",
+                        "on-surface": "#131b2e",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#434656",
+                        "on-tertiary-fixed": "#00201d",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#2e5bff",
+                        "surface-dim": "#d2d9f4",
+                        "outline": "#747688",
+                        "inverse-on-surface": "#eef0ff",
+                        "primary-fixed": "#dde1ff",
+                        "background": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#b8c3ff",
+                        "on-primary-container": "#efefff",
+                        "on-background": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#712ae2",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "on-primary-fixed": "#001356",
+                        "on-primary-fixed-variant": "#0035be",
+                        "on-secondary-container": "#fffbff",
+                        "primary": "#0040e0",
+                        "tertiary-fixed": "#89f5e7",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-variant": "#dae2fd",
+                        "error-container": "#ffdad6",
+                        "surface": "#faf8ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "surface-tint": "#124af0",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "inverse-primary": "#b8c3ff",
+                        "tertiary-container": "#007b71",
+                        "surface-container": "#eaedff",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary-fixed": "#eaddff",
+                        "inverse-surface": "#283044",
+                        "tertiary": "#006058",
+                        "on-secondary-fixed": "#25005a",
+                        "secondary-container": "#8a4cfc",
+                        "outline-variant": "#c4c5d9",
+                        "surface-container-low": "#f2f3ff",
+                        "surface-bright": "#faf8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max-width": "1280px",
+                        "stack-xs": "4px",
+                        "unit": "8px",
+                        "stack-xl": "48px",
+                        "stack-sm": "8px",
+                        "stack-lg": "24px",
+                        "margin-desktop": "32px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-xl": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "code": ["Geist"],
+                        "label-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "code": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 sticky top-0 z-50 shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max-width mx-auto">
+<!-- Brand -->
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">nskill</a>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Marketplace</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md" href="#">About</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-stack-md">
+<!-- Language/Theme Toggles -->
+<div class="hidden md:flex items-center gap-stack-xs bg-surface-container-low rounded-full px-2 py-1">
+<button class="font-label-md text-label-md text-on-surface px-2 py-1 rounded-full bg-surface shadow-sm">EN</button>
+<button class="font-label-md text-label-md text-on-surface-variant px-2 py-1 rounded-full hover:bg-surface-variant transition-colors">VI</button>
+</div>
+<button aria-label="Toggle Theme" class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="light_mode">light_mode</span>
+</button>
+<button aria-label="Cart" class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="font-label-md text-label-md text-on-surface bg-surface border border-outline-variant px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors hidden md:block">Login</button>
+<button class="font-label-md text-label-md text-on-primary bg-primary px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors hidden md:block">Sign-up</button>
+<!-- Mobile Menu Toggle -->
+<button aria-label="Menu" class="md:hidden text-on-surface p-2">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="py-stack-xl md:py-24 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto flex flex-col md:flex-row items-center gap-gutter">
+<div class="flex-1 space-y-stack-md">
+<div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full font-label-md text-label-md mb-stack-sm">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                    New Platform Update v2.4
+                </div>
+<h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-on-surface">Unleash Human Potential with Synthetic Intelligence.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Access top-tier AI modules crafted by expert Intelligence Architects. Elevate your workflow, creativity, and analytical power today.</p>
+<div class="flex flex-col sm:flex-row gap-stack-sm pt-stack-sm">
+<button class="font-body-md text-body-md font-semibold text-on-primary bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),_0_2px_4px_-2px_rgb(0_0_0_/_0.1)]">Explore Marketplace</button>
+<button class="font-body-md text-body-md font-semibold text-on-surface bg-surface border border-outline-variant px-6 py-3 rounded-lg hover:bg-surface-variant transition-colors">Become an Architect</button>
+</div>
+</div>
+<div class="flex-1 w-full mt-stack-xl md:mt-0">
+<div class="relative w-full aspect-square md:aspect-[4/3] rounded-xl overflow-hidden shadow-xl border border-outline-variant/50 bg-surface-container-low flex items-center justify-center">
+<img alt="Abstract visualization of artificial intelligence" class="object-cover w-full h-full opacity-90 mix-blend-multiply" data-alt="A clean, abstract visualization of artificial intelligence networks. Connecting lines and glowing nodes form a complex geometric pattern on a pristine white background. Subtle hints of electric blue highlight key connections, representing data flow in a high-tech, light-mode environment. The lighting is soft and diffused, creating a professional, modern corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLtgQEQCB3h7sCbuXfzfP73ClEf6m31Xh3hTmI81SDyVt8ZxKoJPWczqyTeX05J7ppqyrAinOK_6LkvbX7lG1FanR1HCYj59hNkSSGPebj2US_YQK4U5mutWAA4fDvbUSlIkvYAr3vC6M9XXfOm59kEkZJdDzbwFON_F9d6WKHXNloS1w7FOBtP0BrUfGDUgviZN1YWtgFx5HyFm1dPc_sOcWKn1W15r9vzeBRiSDKQE3Lhvb48_qfdrna9KZ2d7BzW-IyRRQjVy4T"/>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+</div>
+</div>
+</section>
+<!-- Featured Skills Section (Bento Grid) -->
+<section class="py-stack-xl px-margin-mobile md:px-margin-desktop bg-surface-container-lowest border-y border-outline-variant/30">
+<div class="max-w-container-max-width mx-auto">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-lg text-headline-md md:text-headline-lg text-on-surface mb-stack-xs">Featured Skills</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Top performing modules this week.</p>
+</div>
+<a class="hidden md:flex items-center gap-1 font-label-md text-label-md text-primary hover:text-primary/80 transition-colors" href="#">
+                        View All <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Skill Card 1 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-stack-lg hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),_0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all flex flex-col group cursor-pointer">
+<div class="w-12 h-12 bg-primary-container text-primary rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface mb-stack-xs">Natural Language Logic</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md flex-grow">Advanced conversational AI module fine-tuned for complex reasoning and multi-step deduction tasks.</p>
+<div class="flex justify-between items-center pt-stack-sm border-t border-outline-variant/50">
+<span class="font-label-md text-label-md text-primary bg-primary/10 px-2 py-1 rounded">Logic</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">45.00 NXC</span>
+</div>
+</div>
+<!-- Skill Card 2 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-stack-lg hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),_0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all flex flex-col group cursor-pointer">
+<div class="w-12 h-12 bg-secondary/10 text-secondary rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface mb-stack-xs">Predictive Analytics Pro</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md flex-grow">Data forecasting model capable of identifying non-obvious market trends with high accuracy.</p>
+<div class="flex justify-between items-center pt-stack-sm border-t border-outline-variant/50">
+<span class="font-label-md text-label-md text-secondary bg-secondary/10 px-2 py-1 rounded">Data</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">85.50 NXC</span>
+</div>
+</div>
+<!-- Skill Card 3 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-stack-lg hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),_0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all flex flex-col group cursor-pointer">
+<div class="w-12 h-12 bg-tertiary/10 text-tertiary rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface mb-stack-xs">Generative Art Master</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md flex-grow">Creates stunning, high-resolution conceptual artwork based on nuanced emotional prompts.</p>
+<div class="flex justify-between items-center pt-stack-sm border-t border-outline-variant/50">
+<span class="font-label-md text-label-md text-tertiary bg-tertiary/10 px-2 py-1 rounded">Creative</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">60.00 NXC</span>
+</div>
+</div>
+</div>
+<a class="md:hidden mt-stack-md flex items-center justify-center gap-1 font-label-md text-label-md text-primary w-full py-3 border border-outline-variant rounded-lg" href="#">
+                    View All Skills
+                </a>
+</div>
+</section>
+<!-- Top Architects Section -->
+<section class="py-stack-xl px-margin-mobile md:px-margin-desktop bg-surface">
+<div class="max-w-container-max-width mx-auto text-center mb-stack-lg">
+<h2 class="font-headline-lg text-headline-md md:text-headline-lg text-on-surface mb-stack-xs">Top Intelligence Architects</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">The brilliant minds behind our most powerful synthetic models.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter max-w-4xl mx-auto">
+<!-- Architect 1 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-stack-sm border-2 border-surface shadow-sm group-hover:border-primary transition-colors">
+<img alt="Avatar of Alex Chen" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT-KYVswOeFB8S_6YX22tkB5--yZbWYim0MQmNSApp4AmagY-z9XHJYnQfV_1WGMtaff8g3gmW_f9jZy0t-7oAicHvPkEHAlgZmPy0a38gRqTzX2X2BQN3tTWWwlLSd5YcxOchEdNlvkevBQoGErBij7Kirrg9JSQ_zsRX6gHybXpG1NtZrV5JkzGCbVIZEe3XTo8JjDXBpEah12pg84HiZloLtAUI-jMrwsHPu-kr2oyt0JMtj71yAiR5vW8xGv5gCESLVEjoe4om"/>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Alex Chen</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Logic Systems</p>
+</div>
+<!-- Architect 2 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-stack-sm border-2 border-surface shadow-sm group-hover:border-secondary transition-colors">
+<img alt="Avatar of Sarah Jenkins" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcYbJcVh7Di89H8va1b1_LEO3swpOhd1YQitl3WrFMkSKxXSdT6D03-f8s4qzzFQf8JMiP7U6eyfEBQf-3rOddgVHZmMiRJMoFCzWhxeF0MYNkKL-0U60DNj84FxKa9U9jofX0ECFIn7Q2_L078tmwjp0NmBS03BtsAGSVKSv2D_ZoouSekfBmKElctJlGbwSJttYqI4bT6ikN0Du7BRRpXhdVOGKrLoAq1WxlQZ8EJKQ0OdVrBzPd_FjxgRdmgAwQp4vY34rLacwk"/>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Sarah Jenkins</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Predictive AI</p>
+</div>
+<!-- Architect 3 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-stack-sm border-2 border-surface shadow-sm group-hover:border-tertiary transition-colors">
+<img alt="Avatar of Marcus Roe" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGXVyehJ97cboBaoNxwAv-alHAFZHEsrZCpETDlktO-OUytOlaFuqwXh_Kt-EWdwuy2T7NsICqYdWbtWTXvUHMsvkUyTXxNgnwnDb8tWPW0POGUTDb2livdK_pfQrv_bTXDHDAObnaIY842i1IuhVcOZqgb6m1184C36Y7nqJweq42YOwMk-mUQo2MK-25ziinOL6GZtXydK24wxpC7fgZa-EIH2hDnio90vkCmj2JSAA81Br81g-h3gjJSszHwV0XVVfshyHcOM1g"/>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Marcus Roe</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Generative Art</p>
+</div>
+<!-- Architect 4 -->
+<div class="flex flex-col items-center text-center group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden mb-stack-sm border-2 border-surface shadow-sm group-hover:border-primary transition-colors">
+<img alt="Avatar of Elena Rostova" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAWBOT0xTUAx4vzKCRvxwwHOCy4dShuo6fdMEya8DTN-zqt1oLYKmOEB0c2hCH36v84KiFzLK8Dj8s8_TSe5ZEF7mY2dU_hB5rqNTVu0DKe6WxGAFJy4Luuomf6pvZaPyOFhU1DSmmaeUFSZFVZ90xQs5_2M-VJ8X0bgi9fYHHYY5Z--td9Fb2rGb-q9fTcCXQN4PskDTd6SxJGPVmj53hzDCHbIS59Wj9WXEo27ZhaaSDy3VDwN6Bjgu4ojlNknQgRXLmdrhjYOgs"/>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Elena Rostova</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Neural Networks</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/30 py-16">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-desktop max-w-container-max-width mx-auto">
+<div class="col-span-1 md:col-span-2 lg:col-span-1 mb-stack-lg lg:mb-0">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-stack-sm">nskill</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">
+                    The premium marketplace for synthetic intelligence and high-performance AI modules.
+                </p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-on-surface mb-stack-md uppercase tracking-wider">Platform</h4>
+<ul class="space-y-stack-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Marketplace</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Leaderboard</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Architect Hub</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-on-surface mb-stack-md uppercase tracking-wider">Company</h4>
+<ul class="space-y-stack-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Careers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-on-surface mb-stack-md uppercase tracking-wider">Legal</h4>
+<ul class="space-y-stack-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">AI Terms of Use</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="px-margin-desktop max-w-container-max-width mx-auto mt-12 pt-8 border-t border-outline-variant/30 text-center md:text-left">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                © 2024 nskill. All rights reserved.
+            </p>
+</div>
+</footer>
+</body></html>

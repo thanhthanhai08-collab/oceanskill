@@ -1,0 +1,15 @@
+{
+  "projectId": "local-export",
+  "title": "OceanSkill",
+  "deviceType": "DESKTOP",
+  "Last Sync Time": "2026-07-01T18:31:56.0734883+07:00",
+  "syncStatus": "Local files reused; Stitch MCP project listing timed out",
+  "screens": {
+    "home-light": {"label": "homepage-lightmode", "sourceScreen": "stitch-oceanskill/homepage-lightmode", "dimensions": [1100, 1600], "canvasPosition": null},
+    "home-dark": {"label": "homepage-darkmode", "sourceScreen": "stitch-oceanskill/homepage-darkmode", "dimensions": [967, 1600], "canvasPosition": null},
+    "marketplace": {"label": "skill marketplace", "sourceScreen": "stitch-oceanskill/skill marketplace", "dimensions": [1398, 1600], "canvasPosition": null},
+    "skill-detail": {"label": "skill detail", "sourceScreen": "stitch-oceanskill/skill detail", "dimensions": [800, 1600], "canvasPosition": null},
+    "leaderboard": {"label": "leader board", "sourceScreen": "stitch-oceanskill/leader board", "dimensions": [1347, 1600], "canvasPosition": null},
+    "dashboard": {"label": "dashboard user", "sourceScreen": "stitch-oceanskill/dashboard user", "dimensions": [1405, 1600], "canvasPosition": null}
+  }
+}

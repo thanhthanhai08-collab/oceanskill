@@ -1,0 +1,6 @@
+{
+  "Dashboard": {
+    "eyebrow": "Không gian riêng", "hello": "Xin chào, {name}", "description": "Theo dõi skill riêng tư, credit, khóa MCP, lượt sử dụng gần đây và lệnh thanh toán tại một nơi.",
+    "roleLabel": "Thành viên OceanSkill", "overview": "Tổng quan", "skills": "Skill của tôi", "apiKeys": "Khóa API MCP", "usage": "Lượt dùng gần đây", "settings": "Bảo mật", "availableCredits": "Credit khả dụng", "topUp": "Xem nạp credit", "activeKeys": "Khóa đang hoạt động", "mcpCalls": "Tổng lượt gọi MCP", "mcpCallsDescription": "Toàn bộ lượt gọi OceanSkill MCP đã được ghi nhận cho tài khoản này.", "ordersCount": "Đơn hàng", "orders": "Lệnh thanh toán", "emptyKeys": "Chưa có khóa API. Hãy tạo khóa khi kết nối MCP client đầu tiên.", "emptyUsage": "Chưa ghi nhận lượt sử dụng nào.", "emptyOrders": "Chưa có lệnh thanh toán nào.", "active": "Hoạt động", "revoked": "Đã thu hồi", "securityTitle": "Truy cập được xác minh ở server", "securityDescription": "Dashboard xác minh JWT đã ký bằng Supabase getClaims(); mọi truy vấn vẫn bị giới hạn theo người sở hữu bởi Row Level Security."
+  }
+}

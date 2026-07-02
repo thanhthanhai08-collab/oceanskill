@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill - Leaderboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-low": "#191b22",
+                      "primary-container": "#2e5bff",
+                      "inverse-primary": "#124af0",
+                      "outline-variant": "#434656",
+                      "tertiary-fixed-dim": "#00dce5",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#efefff",
+                      "on-secondary-fixed": "#310048",
+                      "on-secondary-container": "#e5a9ff",
+                      "on-secondary": "#510074",
+                      "on-surface": "#e2e2eb",
+                      "on-primary-fixed-variant": "#0035be",
+                      "on-secondary-fixed-variant": "#7200a3",
+                      "surface-bright": "#373940",
+                      "secondary-fixed": "#f6d9ff",
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#e9b3ff",
+                      "on-surface-variant": "#c4c5d9",
+                      "on-error": "#690005",
+                      "outline": "#8e90a2",
+                      "secondary-container": "#7d01b1",
+                      "surface-dim": "#111319",
+                      "primary": "#b8c3ff",
+                      "on-tertiary-fixed": "#002021",
+                      "error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#004f53",
+                      "surface-container-highest": "#33343b",
+                      "surface-variant": "#33343b",
+                      "surface-container": "#1e1f26",
+                      "background": "#111319",
+                      "inverse-surface": "#e2e2eb",
+                      "surface-container-high": "#282a30",
+                      "surface": "#111319",
+                      "primary-fixed-dim": "#b8c3ff",
+                      "inverse-on-surface": "#2e3037",
+                      "tertiary-container": "#00797e",
+                      "on-tertiary-container": "#bbfbff",
+                      "surface-tint": "#b8c3ff",
+                      "surface-container-lowest": "#0c0e14",
+                      "on-tertiary": "#003739",
+                      "on-background": "#e2e2eb",
+                      "tertiary": "#00dce5",
+                      "secondary": "#e9b3ff",
+                      "on-primary": "#002388",
+                      "primary-fixed": "#dde1ff",
+                      "on-primary-fixed": "#001356",
+                      "tertiary-fixed": "#63f7ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "base-unit": "8px",
+                      "max-width": "1440px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "display-lg-mobile": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-border-rank-1 {
+            position: relative;
+        }
+        .glow-border-rank-1::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(45deg, #2e5bff, #7d01b1);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .glow-border-rank-1::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(45deg, #2e5bff, #7d01b1);
+            filter: blur(12px);
+            opacity: 0.3;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        .glow-border-rank-1:hover::after {
+            opacity: 0.5;
+        }
+      </style>
+</head>
+<body class="bg-[#0A0C12] text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-white/10 shadow-xl">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-max-width mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline-md text-headline-md font-bold tracking-tighter text-primary" href="#">
+                    nskill
+                </a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">Marketplace</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-label-sm text-label-sm" href="#">Leaderboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-sm text-label-sm" href="#">About</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="hidden md:flex items-center gap-3">
+<button class="font-label-sm text-label-sm text-on-surface hover:text-primary transition-colors py-2 px-4">
+                        Login
+                    </button>
+<button class="font-label-sm text-label-sm bg-primary-container text-on-primary-container py-2 px-4 rounded-lg hover:bg-inverse-primary transition-all scale-95 active:scale-90 duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+                        Sign-up
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-24 flex flex-col gap-16">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center gap-6">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">
+                Global Network <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Rankings</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Discover the highest-performing synthetic intelligence modules and the elite creators defining the future of the nskill marketplace.
+            </p>
+</section>
+<!-- Tabs -->
+<section class="flex justify-center w-full">
+<div class="flex bg-surface-container-high p-1 rounded-xl border border-white/5 shadow-inner">
+<button class="px-6 py-3 rounded-lg bg-surface-container-lowest text-primary border border-white/10 shadow-sm font-label-sm text-label-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="model_training">model_training</span>
+                    Top Skills
+                </button>
+<button class="px-6 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 font-label-sm text-label-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="engineering">engineering</span>
+                    Top Creators
+                </button>
+<button class="px-6 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 font-label-sm text-label-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+                    Most Popular
+                </button>
+</div>
+</section>
+<!-- Leaderboard List -->
+<section class="flex flex-col gap-4 w-full max-w-5xl mx-auto">
+<!-- Rank 1 -->
+<article class="glass-card rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 glow-border-rank-1 relative z-10 transition-transform duration-300 hover:-translate-y-1">
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="flex flex-col items-center justify-center min-w-[60px]">
+<span class="material-symbols-outlined text-tertiary-fixed text-[32px] mb-1" data-icon="trophy" data-weight="fill">trophy</span>
+<span class="font-headline-md text-headline-md text-primary">#1</span>
+</div>
+<div class="w-16 h-16 rounded-lg bg-surface-container-high border border-white/10 overflow-hidden flex-shrink-0">
+<img alt="Module Avatar" class="w-full h-full object-cover mix-blend-luminosity opacity-80" data-alt="A sleek, futuristic digital avatar for an AI module. The image features a glowing, abstract neural network node in vibrant electric blue and violet against a deep, dark obsidian background. The style is high-tech minimalism, conveying advanced processing power and synthetic intelligence within a premium digital marketplace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhEg2tuJBMrHGzVUpEDbe_AItyAbNa30CUtPpQ_CHiai1rhtOGmrb2hfXnRfPXwirpI0kSg9FOuqlIjRl2A-5FpJVI7PwWeEBNA1MQk7AOIwmJWG0JfmNVNl30rzGNJi_bxF35g4qfexfsifkuZWpwHax9OEF7vspivGBGXfkKA-FpBzYLdBzpRURHVHPu45nidlXJnHbw0pxAx-vK-7rM6iElA9E6zW9Vg1w5yJgE4xvKgfn1nLnrT752wUE8dVM2mYxuJsODiQ7-"/>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-md text-headline-md text-on-surface leading-tight">Nexus Quant-7</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+                            by <span class="text-primary hover:underline cursor-pointer">@VoidTech</span>
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="verified">verified</span>
+</p>
+</div>
+</div>
+<div class="flex-grow"></div>
+<div class="flex items-center gap-6 md:gap-12 w-full md:w-auto justify-between md:justify-end border-t border-white/10 md:border-none pt-4 md:pt-0 mt-4 md:mt-0">
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Category</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-tertiary/10 px-2 py-1 rounded w-fit">Predictive Analytics</span>
+</div>
+<div class="flex flex-col gap-1 text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Compute Score</span>
+<span class="font-headline-md text-headline-md text-on-surface">9,842</span>
+</div>
+</div>
+</article>
+<!-- Rank 2 -->
+<article class="glass-card rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-6 relative transition-transform duration-300 hover:-translate-y-1 hover:bg-white/[0.05]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container rounded-l-xl"></div>
+<div class="flex items-center gap-6 w-full md:w-auto pl-2">
+<div class="flex flex-col items-center justify-center min-w-[60px]">
+<span class="font-headline-md text-headline-md text-on-surface-variant">#2</span>
+</div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 overflow-hidden flex-shrink-0">
+<div class="w-full h-full bg-gradient-to-br from-secondary-container to-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[24px]" data-icon="language">language</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-body-lg text-body-lg font-semibold text-on-surface leading-tight">OmniGlot Synth</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+                            by <span class="hover:text-primary cursor-pointer transition-colors">@PolyMath_AI</span>
+</p>
+</div>
+</div>
+<div class="flex-grow"></div>
+<div class="flex items-center gap-6 md:gap-12 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col gap-1 hidden sm:flex">
+<span class="font-label-sm text-label-sm text-secondary bg-secondary/10 px-2 py-1 rounded w-fit">NLP Translation</span>
+</div>
+<div class="flex flex-col gap-1 text-right">
+<span class="font-headline-md text-headline-md text-on-surface">8,510</span>
+</div>
+</div>
+</article>
+<!-- Rank 3 -->
+<article class="glass-card rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-6 relative transition-transform duration-300 hover:-translate-y-1 hover:bg-white/[0.05]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container rounded-l-xl"></div>
+<div class="flex items-center gap-6 w-full md:w-auto pl-2">
+<div class="flex flex-col items-center justify-center min-w-[60px]">
+<span class="font-headline-md text-headline-md text-on-surface-variant">#3</span>
+</div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 overflow-hidden flex-shrink-0">
+<div class="w-full h-full bg-gradient-to-br from-tertiary-container to-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[24px]" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-body-lg text-body-lg font-semibold text-on-surface leading-tight">Aegis Vision 2.0</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+                            by <span class="hover:text-primary cursor-pointer transition-colors">@SecurTech</span>
+</p>
+</div>
+</div>
+<div class="flex-grow"></div>
+<div class="flex items-center gap-6 md:gap-12 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col gap-1 hidden sm:flex">
+<span class="font-label-sm text-label-sm text-tertiary bg-tertiary/10 px-2 py-1 rounded w-fit">Computer Vision</span>
+</div>
+<div class="flex flex-col gap-1 text-right">
+<span class="font-headline-md text-headline-md text-on-surface">8,104</span>
+</div>
+</div>
+</article>
+<!-- Rank 4 -->
+<article class="glass-card rounded-xl p-4 flex items-center gap-4 transition-colors hover:bg-white/[0.05]">
+<div class="flex items-center justify-center min-w-[40px] pl-2">
+<span class="font-body-lg text-body-lg text-on-surface-variant">4</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 flex-grow">
+<h3 class="font-body-md text-body-md font-medium text-on-surface w-48 truncate">CodeArchitect Pro</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant hidden sm:block">@DevForge</span>
+</div>
+<div class="text-right pr-4">
+<span class="font-body-md text-body-md text-on-surface">7,230</span>
+</div>
+</article>
+<!-- Rank 5 -->
+<article class="glass-card rounded-xl p-4 flex items-center gap-4 transition-colors hover:bg-white/[0.05]">
+<div class="flex items-center justify-center min-w-[40px] pl-2">
+<span class="font-body-lg text-body-lg text-on-surface-variant">5</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 flex-grow">
+<h3 class="font-body-md text-body-md font-medium text-on-surface w-48 truncate">MarketMind Alpha</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant hidden sm:block">@FinTech_Labs</span>
+</div>
+<div class="text-right pr-4">
+<span class="font-body-md text-body-md text-on-surface">6,892</span>
+</div>
+</article>
+</section>
+<!-- Pagination / Load More -->
+<section class="flex justify-center mt-8">
+<button class="font-label-sm text-label-sm text-primary border border-primary/30 px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+                Load Next 50
+            </button>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest full-width py-16 border-t border-white/5 flat no shadows">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+<div class="flex flex-col gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">nskill</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+                    © 2024 nskill. The premium marketplace for synthetic intelligence and high-performance AI modules.
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest mb-2">Legal</h4>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">AI Terms of Use</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Cookie Policy</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest mb-2">Company</h4>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">About Us</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 duration-300" href="#">Contact</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest mb-2">System Status</h4>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(0,220,229,0.8)]"></div>
+<span class="font-body-md text-body-md text-on-surface-variant">All Systems Operational</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

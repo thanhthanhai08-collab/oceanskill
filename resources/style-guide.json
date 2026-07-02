@@ -1,0 +1,11 @@
+{
+  "source": "stitch-oceanskill local export",
+  "colors": {
+    "background": "#111319", "surface": "#111319", "surfaceContainerLowest": "#0c0e14", "surfaceContainerLow": "#191b22", "surfaceContainer": "#1e1f26", "surfaceContainerHigh": "#282a30", "surfaceContainerHighest": "#33343b",
+    "onSurface": "#e2e2eb", "onSurfaceVariant": "#c4c5d9", "primary": "#b8c3ff", "primaryContainer": "#2e5bff", "inversePrimary": "#124af0", "secondary": "#e9b3ff", "secondaryContainer": "#7d01b1", "tertiary": "#00dce5", "outline": "#8e90a2", "outlineVariant": "#434656"
+  },
+  "fontFamilies": {"display": "Geist", "body": "Inter", "label": "JetBrains Mono"},
+  "spacing": {"baseUnit": "8px", "gutter": "24px", "marginMobile": "16px", "marginDesktop": "64px", "maxWidth": "1440px"},
+  "borderRadius": {"default": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+  "typography": {"displayLg": {"size": "48px", "lineHeight": "56px", "weight": 700}, "headlineMd": {"size": "24px", "lineHeight": "32px", "weight": 600}, "bodyLg": {"size": "18px", "lineHeight": "28px", "weight": 400}, "bodyMd": {"size": "16px", "lineHeight": "24px", "weight": 400}, "labelSm": {"size": "12px", "lineHeight": "16px", "weight": 500}}
+}

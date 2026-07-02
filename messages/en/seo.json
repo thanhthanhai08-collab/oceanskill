@@ -1,0 +1,14 @@
+{
+  "SEO": {
+    "siteTitle": "OceanSkill — Production-ready skills for AI agents", "siteDescription": "Discover reviewed AI agent skills, compare compatibility, and securely deliver protected workflows through authenticated MCP calls.",
+    "homeTitle": "OceanSkill — Secure skills for AI agents", "homeDescription": "A curated marketplace for production-ready agent skills with authenticated MCP delivery and Supabase-backed access control.",
+    "marketplaceTitle": "AI Agent Skill Marketplace", "marketplaceDescription": "Browse reviewed skills for Codex, Claude Code, Cursor, and other agent clients. Compare compatibility, releases, and licenses.",
+    "leaderboardTitle": "AI Agent Skill Readiness Rankings", "leaderboardDescription": "Compare active AI agent skills by verified metadata, client compatibility, licensing, and release readiness.",
+    "loginTitle": "Sign in to OceanSkill", "dashboardTitle": "OceanSkill Dashboard", "organizationDescription": "OceanSkill curates and securely delivers production-ready skills for AI agents.",
+    "blogTitle": "AI Agent Guides, MCP and Security", "blogDescription": "Practical OceanSkill articles about MCP, AI agent workflows, Supabase security, and choosing production-ready skills.",
+    "docsTitle": "OceanSkill MCP Documentation", "docsDescription": "Connect OceanSkill MCP, review tool references, troubleshoot access, and understand the protected skill delivery model.",
+    "chatbotTitle": "OceanGuide — OceanSkill Assistant", "chatbotDescription": "Ask a grounded assistant about OceanSkill, MCP configuration, agent skills, credits, usage, and security.",
+    "faqTitle": "OceanSkill FAQ — Skills, MCP and Security", "faqDescription": "Get clear answers about OceanSkill skills, MCP configuration and usage, credits, supported clients, and Supabase-backed security.",
+    "homeBreadcrumb": "Home", "marketplaceBreadcrumb": "Marketplace", "leaderboardBreadcrumb": "Leaderboard", "blogBreadcrumb": "Blog", "docsBreadcrumb": "Documentation", "chatbotBreadcrumb": "OceanGuide", "faqBreadcrumb": "FAQ", "skillCategory": "AI agent skill"
+  }
+}

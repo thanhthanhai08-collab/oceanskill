@@ -1,0 +1,14 @@
+{
+  "SEO": {
+    "siteTitle": "OceanSkill — Kỹ năng chuẩn production cho AI agent", "siteDescription": "Khám phá kỹ năng AI agent đã kiểm duyệt, so sánh độ tương thích và giao nhận quy trình được bảo vệ qua MCP đã xác thực.",
+    "homeTitle": "OceanSkill — Kho kỹ năng bảo mật cho AI agent", "homeDescription": "Marketplace tuyển chọn kỹ năng agent chuẩn production, giao nhận qua MCP đã xác thực và kiểm soát truy cập bằng Supabase.",
+    "marketplaceTitle": "Marketplace kỹ năng cho AI agent", "marketplaceDescription": "Khám phá kỹ năng đã kiểm duyệt cho Codex, Claude Code, Cursor và các agent client khác; so sánh tương thích, phiên bản và giấy phép.",
+    "leaderboardTitle": "Bảng xếp hạng mức sẵn sàng của kỹ năng AI agent", "leaderboardDescription": "So sánh kỹ năng AI agent đang hoạt động theo metadata xác minh, khả năng tương thích, giấy phép và chất lượng phát hành.",
+    "loginTitle": "Đăng nhập OceanSkill", "dashboardTitle": "Dashboard OceanSkill", "organizationDescription": "OceanSkill tuyển chọn và giao nhận bảo mật các kỹ năng chuẩn production cho AI agent.",
+    "blogTitle": "Hướng dẫn AI agent, MCP và bảo mật", "blogDescription": "Bài viết thực tế của OceanSkill về MCP, quy trình AI agent, bảo mật Supabase và cách chọn kỹ năng chuẩn production.",
+    "docsTitle": "Tài liệu OceanSkill MCP", "docsDescription": "Kết nối OceanSkill MCP, tra cứu công cụ, xử lý lỗi truy cập và hiểu mô hình giao nhận skill được bảo vệ.",
+    "chatbotTitle": "OceanGuide — Trợ lý OceanSkill", "chatbotDescription": "Hỏi trợ lý có nguồn về OceanSkill, cấu hình MCP, agent skill, credit, usage và bảo mật.",
+    "faqTitle": "Hỏi đáp OceanSkill — Skill, MCP và bảo mật", "faqDescription": "Giải đáp rõ ràng về skill OceanSkill, cấu hình và lượt dùng MCP, credit, client được hỗ trợ và bảo mật dựa trên Supabase.",
+    "homeBreadcrumb": "Trang chủ", "marketplaceBreadcrumb": "Kho kỹ năng", "leaderboardBreadcrumb": "Bảng xếp hạng", "blogBreadcrumb": "Blog", "docsBreadcrumb": "Tài liệu", "chatbotBreadcrumb": "OceanGuide", "faqBreadcrumb": "Hỏi đáp", "skillCategory": "Kỹ năng AI agent"
+  }
+}

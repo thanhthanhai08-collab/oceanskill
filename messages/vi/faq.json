@@ -1,0 +1,33 @@
+{
+  "FAQ": {
+    "eyebrow": "Kho kiến thức OceanGuide",
+    "title": "Có câu trả lời trước khi bạn cần hỏi",
+    "description": "Tìm hướng dẫn rõ ràng về skill, cách phân phối qua MCP, thanh toán, bảo mật và workspace OceanSkill.",
+    "searchPlaceholder": "Tìm trong câu hỏi thường gặp...",
+    "searchLabel": "Tìm kiếm câu hỏi thường gặp",
+    "all": "Tất cả chủ đề",
+    "noResults": "Chưa có câu trả lời phù hợp. Hãy hỏi OceanGuide bên dưới để được dẫn đến tài liệu gần nhất.",
+    "resultCount": "{count} câu trả lời",
+    "relatedResource": "Mở tài liệu liên quan",
+    "categories": {
+      "getting-started": "Bắt đầu",
+      "mcp": "MCP & lượt dùng",
+      "skills": "Skill",
+      "billing": "Credit & thanh toán",
+      "security": "Bảo mật"
+    },
+    "items": [
+      {"id": "what-is-oceanskill", "category": "getting-started", "question": "OceanSkill là gì?", "answer": "OceanSkill là marketplace tuyển chọn các skill sẵn sàng cho môi trường production của AI agent. Bạn có thể đánh giá metadata, khả năng tương thích và phiên bản công khai trước khi dùng nội dung skill được bảo vệ qua MCP.", "href": "/skills"},
+      {"id": "get-started", "category": "getting-started", "question": "Tôi bắt đầu như thế nào?", "answer": "Tạo tài khoản, mở dashboard, tạo khóa truy cập OceanSkill rồi thêm cấu hình MCP server vào AI agent client được hỗ trợ.", "href": "/docs#quickstart"},
+      {"id": "mcp", "category": "mcp", "question": "MCP làm gì trong OceanSkill?", "answer": "MCP giúp AI client khám phá công cụ và yêu cầu nội dung skill được bảo vệ khi cần. OceanSkill kiểm tra khóa, quyền và lượt dùng còn lại trước khi trả nội dung.", "href": "/docs#configuration"},
+      {"id": "usage", "category": "mcp", "question": "Tôi xem số lượt gọi MCP ở đâu?", "answer": "Khu vực Usage trong dashboard hiển thị tổng số lượt MCP mà tài khoản đã gọi. Mỗi yêu cầu nội dung bảo vệ thành công được ghi lại thành một usage event.", "href": "/dashboard"},
+      {"id": "choose-skill", "category": "skills", "question": "Nên chọn skill như thế nào?", "answer": "Hãy so sánh client hỗ trợ, giấy phép, trạng thái phát hành, danh mục và tín hiệu sẵn sàng. Trang chi tiết cũng hiển thị các skill cùng danh mục để bạn đối chiếu.", "href": "/leaderboard"},
+      {"id": "skill-content", "category": "skills", "question": "Vì sao toàn bộ SKILL.md không được công khai?", "answer": "Trang công khai cung cấp đủ metadata để đánh giá, còn hướng dẫn được bảo vệ chỉ phân phối sau khi xác thực và cấp quyền. Cách này bảo vệ tác giả và tránh nội dung riêng tư bị lập chỉ mục ngoài ý muốn.", "href": "/docs#security"},
+      {"id": "credits", "category": "billing", "question": "Credit hoạt động như thế nào?", "answer": "Credit đại diện cho lượt sử dụng nội dung được bảo vệ. Yêu cầu chỉ được chấp nhận khi tài khoản và khóa hợp lệ, đồng thời số dư hoặc quyền sử dụng cho phép.", "href": "/dashboard"},
+      {"id": "keys", "category": "security", "question": "Khóa truy cập được bảo vệ ra sao?", "answer": "Quyền truy cập được xác thực phía server và dữ liệu tài khoản được cô lập bằng Supabase Postgres Row Level Security. Hãy giữ khóa như mật khẩu, không đưa vào repository công khai hoặc mã chạy trên trình duyệt.", "href": "/docs#security"},
+      {"id": "clients", "category": "getting-started", "question": "AI client nào dùng được OceanSkill?", "answer": "Mỗi skill công bố client tương thích như Codex, Claude Code, Cursor hoặc công cụ hỗ trợ MCP khác. Hãy xem danh sách tương thích trên trang chi tiết skill.", "href": "/skills"}
+    ],
+    "askTitle": "Vẫn còn thắc mắc? Hỏi OceanGuide",
+    "askDescription": "OceanGuide tìm trong kho kiến thức đã tuyển chọn của OceanSkill và dẫn bạn đến trang phù hợp nhất. Trợ lý không tự suy đoán dữ liệu tài khoản hoặc thanh toán."
+  }
+}

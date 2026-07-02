@@ -1,0 +1,33 @@
+{
+  "FAQ": {
+    "eyebrow": "OceanGuide knowledge base",
+    "title": "Answers before you need to ask",
+    "description": "Find clear guidance about skills, MCP delivery, billing, security, and your OceanSkill workspace.",
+    "searchPlaceholder": "Search the FAQ...",
+    "searchLabel": "Search frequently asked questions",
+    "all": "All topics",
+    "noResults": "No matching answer yet. Ask OceanGuide below and we will point you to the closest resource.",
+    "resultCount": "{count, plural, =0 {No answers} =1 {1 answer} other {# answers}}",
+    "relatedResource": "Open related resource",
+    "categories": {
+      "getting-started": "Getting started",
+      "mcp": "MCP & usage",
+      "skills": "Skills",
+      "billing": "Credits & billing",
+      "security": "Security"
+    },
+    "items": [
+      {"id": "what-is-oceanskill", "category": "getting-started", "question": "What is OceanSkill?", "answer": "OceanSkill is a curated marketplace for production-ready AI agent skills. You can evaluate public metadata, compatibility, and releases before securely using protected skill content through MCP.", "href": "/skills"},
+      {"id": "get-started", "category": "getting-started", "question": "How do I get started?", "answer": "Create an account, open your dashboard, generate an OceanSkill access key, then add the MCP server configuration to your supported AI agent client.", "href": "/docs#quickstart"},
+      {"id": "mcp", "category": "mcp", "question": "What does MCP do in OceanSkill?", "answer": "MCP lets your AI client discover tools and request protected skill content at runtime. OceanSkill validates your key, permissions, and available usage before returning content.", "href": "/docs#configuration"},
+      {"id": "usage", "category": "mcp", "question": "Where can I see MCP usage?", "answer": "The dashboard Usage area shows how many MCP calls your account has made. Each successful protected request is recorded as a usage event.", "href": "/dashboard"},
+      {"id": "choose-skill", "category": "skills", "question": "How should I choose a skill?", "answer": "Compare the skill's supported clients, license, release status, category, and readiness signals. Related skills on each detail page help you compare alternatives in the same category.", "href": "/leaderboard"},
+      {"id": "skill-content", "category": "skills", "question": "Why is the full SKILL.md not public?", "answer": "Public pages expose enough metadata to evaluate a skill, while protected instructions are delivered only after authenticated authorization. This protects creators and avoids accidental indexing of private content.", "href": "/docs#security"},
+      {"id": "credits", "category": "billing", "question": "How do credits work?", "answer": "Credits represent available protected usage. A request is accepted only when your account and access key are valid and your balance or entitlement permits the call.", "href": "/dashboard"},
+      {"id": "keys", "category": "security", "question": "How are access keys protected?", "answer": "Access is validated server-side and account data is isolated with Supabase Postgres Row Level Security. Treat keys like passwords: do not place them in public repositories or browser code.", "href": "/docs#security"},
+      {"id": "clients", "category": "getting-started", "question": "Which AI clients can use OceanSkill?", "answer": "Skills declare their compatible clients, such as Codex, Claude Code, Cursor, or other MCP-capable tools. Check the compatibility list on each skill detail page.", "href": "/skills"}
+    ],
+    "askTitle": "Still curious? Ask OceanGuide",
+    "askDescription": "OceanGuide searches the curated OceanSkill knowledge base and links you to the most relevant page. It does not invent account or billing data."
+  }
+}

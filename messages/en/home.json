@@ -1,0 +1,60 @@
+{
+  "Home": {
+    "heroBadge": "Private beta · MCP delivery is live",
+    "heroTitlePart1": "Unleash human potential with",
+    "heroTitlePart2": "Synthetic Intelligence.",
+    "heroSearchPlaceholder": "Search skills, workflows, or agent use cases...",
+    "heroSearchButton": "Search skills",
+    "heroDescription": "Discover reviewed skills, connect them to your existing coding agents, and receive protected instructions only when you are authenticated.",
+    "heroExplore": "Explore marketplace",
+    "heroCreators": "View rankings",
+    "heroSignal": "Protected skill delivery",
+    "featuredEyebrow": "Curated catalog",
+    "featuredTitle": "Skills for your next outcome",
+    "featuredSubtitle": "Filter by business goal, then connect a production-ready workflow to your agent.",
+    "filters": {"all": "All skills", "marketing": "Marketing", "sales": "Sales", "agent-first": "Agent-first"},
+    "filterEmpty": "No published skills match this category yet. Explore the full marketplace or check back as the catalog grows.",
+    "viewAll": "View all",
+    "viewSkill": "View skill",
+    "creatorsEyebrow": "People behind the workflows",
+    "creatorsTitle": "Featured authors",
+    "creatorsSubtitle": "Curators and builders turning repeatable expertise into reliable agent skills.",
+    "verifiedCreator": "OceanSkill creator",
+    "creatorDescriptions": {
+      "ocean-labs": "Curates secure, general-purpose workflows for research, engineering, and agent operations.",
+      "agent-ops": "Builds practical agent-first systems focused on delegation, reliability, and repeatable execution.",
+      "growth-systems": "Designs marketing and revenue workflows that connect insight, content, and measurable action."
+    },
+    "collectionsEyebrow": "Trending bundles",
+    "collectionsTitle": "Hot collections",
+    "collectionsSubtitle": "Outcome-focused skill stacks assembled for common workflows.",
+    "collectionBadge": "Curated collection",
+    "collections": {
+      "agent-starter": {"title": "Agent Starter Stack", "description": "A practical foundation for planning, delegation, review, and safe agent execution."},
+      "growth-engine": {"title": "Growth Engine", "description": "Research, positioning, campaigns, and content workflows for modern marketing teams."},
+      "revenue-ops": {"title": "Revenue Operations", "description": "Discovery, qualification, follow-up, and account intelligence for focused sales teams."}
+    },
+    "mcpTitle": "Bring every skill into the tools you already use.",
+    "mcpDescription": "OceanSkill MCP securely delivers protected skill instructions to compatible agent clients. Your public browsing stays simple; authentication, credits, and usage remain enforced at the service boundary.",
+    "mcpCta": "Connect OceanSkill MCP",
+    "mcpDocsCta": "Read MCP docs",
+    "mcpSteps": {
+      "discover": {"title": "Discover", "description": "Evaluate public metadata, compatibility, and release readiness."},
+      "connect": {"title": "Connect", "description": "Add OceanSkill MCP to your preferred supported agent client."},
+      "invoke": {"title": "Invoke", "description": "Request protected skill content only when your workflow needs it."}
+    },
+    "knowledgeEyebrow": "Learn and ask",
+    "knowledgeTitle": "The OceanSkill knowledge hub",
+    "knowledgeSubtitle": "Read practical guides or ask OceanGuide for a grounded answer.",
+    "openBlog": "Open blog",
+    "chatbotCardTitle": "Ask before you connect",
+    "chatbotCardDescription": "OceanGuide answers questions about MCP setup, choosing skills, usage, credits, and security from curated public sources.",
+    "askOceanGuide": "Ask OceanGuide",
+    "aboutEyebrow": "Why OceanSkill",
+    "aboutTitle": "A marketplace designed around the agent trust boundary.",
+    "aboutDescription": "Public pages reveal enough metadata to evaluate a skill. The complete SKILL.md remains protected and is delivered through authenticated MCP calls, with usage and credits enforced in Supabase.",
+    "metricSkills": "reviewed skills in the current catalog",
+    "metricDelivery": "native delivery into agent clients",
+    "metricSecurity": "row-level access control for user data"
+  }
+}

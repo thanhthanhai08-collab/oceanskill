@@ -1,0 +1,10 @@
+{
+  "SkillDetail": {
+    "back": "Back to marketplace", "protectedTitle": "Protected skill content", "protectedDescription": "The complete SKILL.md is delivered only through authenticated OceanSkill MCP calls. Public pages expose evaluation metadata, never protected instructions.",
+    "availableVia": "Works with", "version": "Version", "license": "License", "start": "Connect with MCP", "verified": "Reviewed", "stepOne": "Sign in and create an API key", "stepTwo": "Add OceanSkill MCP to your client", "stepThree": "Invoke the protected skill when needed", "compatibilityTitle": "Agent compatibility", "compatibilityDescription": "This release has been reviewed for the clients listed below.", "faqTitle": "Frequently asked questions",
+    "faqOneQuestion": "What does the public page reveal?", "faqOneAnswer": "Only catalog metadata such as the title, description, compatibility, license, and current version.",
+    "faqTwoQuestion": "How is the full skill delivered?", "faqTwoAnswer": "After authentication, your MCP client requests the protected content through the OceanSkill service boundary.",
+    "faqThreeQuestion": "How is usage secured?", "faqThreeAnswer": "Supabase Auth verifies identity while row-level security restricts keys, credits, orders, and usage events to their owner.",
+    "advertisement": "Reserved for advertisement", "relatedTitle": "More skills in this category", "relatedDescription": "Continue exploring active skills in {domain}.", "noRelated": "No other active skills are published in this category yet.", "viewSkill": "View skill"
+  }
+}

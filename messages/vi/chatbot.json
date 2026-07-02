@@ -1,0 +1,13 @@
+{
+  "Chatbot": {
+    "eyebrow": "Trợ lý có nguồn beta", "title": "Gặp gỡ OceanGuide", "description": "Hỏi về OceanSkill, cài đặt MCP, chọn skill, credit và bảo mật. Câu trả lời dựa trên catalog công khai và tài liệu.",
+    "welcome": "Xin chào, mình là OceanGuide. Hãy hỏi cách kết nối MCP, chọn skill hoặc hiểu usage của bạn.", "placeholder": "Hỏi một câu về OceanSkill...", "send": "Gửi", "clear": "Xóa hội thoại", "disclaimer": "OceanGuide trả lời từ kiến thức OceanSkill đã tuyển chọn. Trợ lý không truy cập nội dung skill riêng hoặc dữ liệu tài khoản của bạn.", "fallback": "Mình chưa có câu trả lời đủ tin cậy cho câu hỏi đó. Hãy thử hỏi về cài đặt MCP, chọn skill, credit, khóa API hoặc bảo mật Supabase.",
+    "suggestions": ["Kết nối OceanSkill MCP thế nào?", "Nên bắt đầu với skill nào?", "Credit và usage được tính ra sao?"],
+    "knowledge": [
+      {"keywords": ["kết nối", "cài", "mcp", "cấu hình"], "answer": "Mở trang Tài liệu, tạo khóa API riêng trong dashboard, thêm endpoint OceanSkill MCP vào agent client rồi kiểm tra client có thể liệt kê skill active.", "href": "/docs", "source": "Hướng dẫn MCP"},
+      {"keywords": ["skill", "chọn", "bắt đầu", "codex", "claude", "cursor"], "answer": "Hãy bắt đầu bằng một skill có đầu ra dễ kiểm chứng. Kiểm tra client tương thích, phiên bản hiện tại, giấy phép và quyền cần thiết trước khi kết nối.", "href": "/skills", "source": "Kho kỹ năng"},
+      {"keywords": ["credit", "usage", "lượt", "số dư"], "answer": "Dashboard hiển thị số credit hiện tại và tổng lượt gọi MCP. Lệnh gọi nội dung bảo vệ thành công được ghi usage; lượt giữ chỗ thất bại được giải phóng thay vì tính như công việc hoàn tất.", "href": "/dashboard", "source": "Dashboard usage"},
+      {"keywords": ["bảo mật", "rls", "supabase", "riêng", "bảo vệ"], "answer": "Supabase Auth xác minh danh tính, còn Row Level Security giới hạn khóa API, credit, đơn hàng và usage theo chủ sở hữu. Hướng dẫn skill đầy đủ chỉ được giao qua ranh giới MCP đã xác thực.", "href": "/blog/bao-mat-agent-skill-voi-supabase-rls", "source": "Hướng dẫn bảo mật"}
+    ]
+  }
+}

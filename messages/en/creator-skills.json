@@ -1,0 +1,12 @@
+{
+  "CreatorSkills": {
+    "eyebrow": "Private creator workspace", "title": "Manage your skills", "description": "Create scanned private skills and use them from your connected MCP clients. They never appear in the public marketplace.",
+    "newSkill": "Add private skill", "yourSkills": "Your private skills", "empty": "You have not created a private skill yet.", "privateBadge": "Private", "active": "MCP ready", "draft": "Draft", "archived": "Archived", "version": "Version", "updated": "Updated", "contentHidden": "Protected content is hidden from dashboard previews.",
+    "fields": {"title": "Skill title", "slug": "Unique slug", "description": "Description", "domain": "Category", "version": "Version", "clients": "Compatible clients", "sourceUrl": "Source URL (optional)", "license": "SPDX license (optional)", "content": "SKILL.md content"},
+    "placeholders": {"title": "My research workflow", "slug": "my-research-workflow", "description": "Explain what this skill helps your agent accomplish.", "sourceUrl": "https://github.com/...", "license": "MIT", "content": "# My skill\n\nDescribe the workflow, constraints, and expected output..."},
+    "domains": {"agent-first": "Agent-first", "security": "Security", "productivity": "Productivity", "design": "Design", "marketing": "Marketing", "development": "Development", "research": "Research"},
+    "clients": {"codex": "Codex", "claude-code": "Claude Code", "cursor": "Cursor", "generic-mcp": "Other MCP client"},
+    "securityTitle": "7-step private publishing gate", "securityDescription": "Every submission passes identity verification, owner-only RLS, input normalization, static content scanning, immutable SHA-256 versioning, private visibility enforcement, and per-request MCP key authorization.",
+    "submit": "Scan and add skill", "submitting": "Scanning...", "success": "Your private skill is active and ready through MCP.", "scanFailed": "The skill did not pass the static scan. Review the checks below.", "createFailed": "The skill could not be created. Check that the slug is unique and the database migration has been applied.", "invalidForm": "Review the highlighted fields and try again.", "scanChecks": "Latest scan checks", "passed": "Passed", "failed": "Needs review", "mcpHint": "Use list_purchased_skills in your MCP client to see private skills, then call get_skill_content with the skill ID."
+  }
+}

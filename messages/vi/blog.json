@@ -1,0 +1,7 @@
+{
+  "Blog": {
+    "eyebrow": "Tạp chí OceanSkill", "title": "Ghi chú thực tế khi xây dựng với AI agent", "description": "Hướng dẫn và giải thích về MCP, agent skill, bảo mật và quy trình hướng tới kết quả.",
+    "featured": "Bài viết mới nhất", "allArticles": "Tất cả bài viết", "readArticle": "Đọc bài viết", "minuteRead": "phút đọc", "advertisement": "Vị trí dành cho quảng cáo", "inArticleAdvertisement": "Vị trí quảng cáo trong bài",
+    "save": "Lưu bài viết", "saved": "Đã lưu", "relatedTitle": "Bài viết liên quan", "relatedDescription": "Tiếp tục với một hướng dẫn thực tế khác.", "back": "Quay lại blog", "published": "Đăng ngày", "updated": "Cập nhật", "by": "Bởi"
+  }
+}
