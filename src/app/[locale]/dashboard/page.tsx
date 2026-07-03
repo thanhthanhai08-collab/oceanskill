@@ -1,5 +1,6 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
+import {Link} from "@/i18n/navigation";
 import DashboardStat from "@/components/dashboard/DashboardStat";
 import {getDashboardOverview} from "@/lib/dashboard/data";
 import {logout} from "./actions";
@@ -72,10 +73,10 @@ export default async function DashboardPage({params}: DashboardPageProps) {
           )}
         </div>
         {data.usage.length > 0 && (
-          <a href="/dashboard/usage" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
+          <Link href="/dashboard/usage" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
             {t("viewAllUsage")}
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </Link>
         )}
       </section>
 
@@ -107,10 +108,10 @@ export default async function DashboardPage({params}: DashboardPageProps) {
           )}
         </div>
         {data.orders.length > 0 && (
-          <a href="/dashboard/billing/orders" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
+          <Link href="/dashboard/billing/orders" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
             {t("viewAllOrders")}
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </Link>
         )}
       </section>
     </>

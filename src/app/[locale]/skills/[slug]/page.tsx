@@ -7,6 +7,7 @@ import SkillPurchasePanel from "@/components/skills/SkillPurchasePanel";
 import SkillCard from "@/components/skills/SkillCard";
 import AdSlot from "@/components/ads/AdSlot";
 import {getPublicSkill, listRelatedSkills} from "@/lib/catalog/skills";
+import {addPlatformSkill} from "@/app/[locale]/dashboard/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,10 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             <div className="flex items-center gap-3"><span className="rounded-full bg-tertiary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-tertiary">{skill.domain}</span><span className="font-mono text-xs text-on-surface-variant">v{skill.current_version ?? "—"}</span></div>
             <h1 className="mt-5 font-geist text-4xl font-bold tracking-tight sm:text-5xl">{skill.title}</h1>
             <p className="mt-5 text-lg leading-8 text-on-surface-variant">{skill.description}</p>
-            <div className="mt-8"><SkillPurchasePanel skill={skill} labels={{availableVia: t("availableVia"), version: t("version"), license: t("license"), start: t("start"), verified: t("verified")}} /></div>
+            <div className="mt-8"><SkillPurchasePanel skill={skill} labels={{availableVia: t("availableVia"), version: t("version"), license: t("license"), source: t("source"), start: t("start"), verified: t("verified")}} /></div>
+            <form action={addPlatformSkill} className="mt-4 rounded-2xl border border-outline-variant/40 bg-surface-container-low/55 p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+              <input type="hidden" name="skillId" value={skill.id}/><p className="text-sm leading-6 text-on-surface-variant">{t("addToLibraryHint")}</p><button className="mt-3 min-h-11 shrink-0 rounded-xl bg-primary-container px-5 py-3 text-sm font-semibold text-white hover:bg-inverse-primary sm:mt-0">{t("addToLibrary")}</button>
+            </form>
           </div>
         </div>
 

@@ -7,10 +7,14 @@ import type {AuthenticatedMcpKey} from "@/lib/mcp/authentication";
 const metadataFields = "id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
 
 export async function listAvailableSkills(auth: AuthenticatedMcpKey) {
-  const {data, error} = await createAdminClient().from("skills").select(metadataFields)
-    .eq("status", "active").or(`visibility.eq.public,and(visibility.eq.private,owner_id.eq.${auth.userId})`).order("title").limit(100);
-  if (error) throw new Error(`Could not list MCP skills: ${error.message}`);
-  return data ?? [];
+  const admin = createAdminClient();
+  const [privateResult, libraryResult] = await Promise.all([
+    admin.from("skills").select(metadataFields).eq("status", "active").eq("visibility", "private").eq("owner_id", auth.userId).limit(100),
+    admin.from("user_skill_library").select(`skills!inner(${metadataFields})`).eq("user_id", auth.userId).limit(100),
+  ]);
+  if (privateResult.error || libraryResult.error) throw new Error(`Could not list MCP skills: ${(privateResult.error ?? libraryResult.error)?.message}`);
+  const platform = (libraryResult.data ?? []).flatMap((row) => Array.isArray(row.skills) ? row.skills : [row.skills]);
+  return [...(privateResult.data ?? []), ...platform].sort((a, b) => String(a.title).localeCompare(String(b.title)));
 }
 
 export async function searchAvailableSkills(auth: AuthenticatedMcpKey, query: string) {
@@ -29,6 +33,10 @@ export async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string
     .eq("id", skillId).eq("status", "active").eq("skill_versions.scan_status", "passed").maybeSingle();
   if (error) throw new Error(`Could not load MCP skill: ${error.message}`);
   if (!skill || (skill.visibility === "private" && skill.owner_id !== auth.userId)) throw new Error("skill_not_available");
+  if (skill.visibility === "public") {
+    const {data: libraryEntry} = await admin.from("user_skill_library").select("id").eq("user_id", auth.userId).eq("skill_id", skillId).maybeSingle();
+    if (!libraryEntry) throw new Error("skill_not_in_user_library");
+  }
   const reservation = await reserveMcpUsage({userId: auth.userId, apiKeyId: auth.apiKeyId, skillId, toolName: "get_skill_content", requestId});
   if (!reservation || reservation.result === "insufficient_credits") throw new Error("insufficient_credits");
   try {

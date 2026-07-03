@@ -4,7 +4,7 @@ import {useActionState} from "react";
 import {useFormStatus} from "react-dom";
 import {createPrivateSkill, type CreateSkillState} from "@/app/[locale]/dashboard/actions";
 
-type Labels = Readonly<{
+export type CreatorSkillFormLabels = Readonly<{
   fields: Record<string, string>; placeholders: Record<string, string>; domains: Record<string, string>; clients: Record<string, string>;
   submit: string; submitting: string; success: string; scanFailed: string; createFailed: string; invalidForm: string; scanChecks: string; passed: string; failed: string;
 }>;
@@ -13,15 +13,15 @@ const initialState: CreateSkillState = {status: "idle"};
 const domains = ["agent-first", "security", "productivity", "design", "marketing", "development", "research"];
 const clients = ["codex", "claude-code", "cursor", "generic-mcp"];
 
-function SubmitButton({labels}: {labels: Labels}) {
+function SubmitButton({labels}: {labels: CreatorSkillFormLabels}) {
   const {pending} = useFormStatus();
   return <button disabled={pending} className="min-h-11 rounded-xl bg-primary-container px-6 py-3 text-sm font-semibold text-white transition hover:bg-inverse-primary disabled:cursor-wait disabled:opacity-60">{pending ? labels.submitting : labels.submit}</button>;
 }
 
-export default function CreatorSkillForm({labels}: {readonly labels: Labels}) {
+export default function CreatorSkillForm({labels}: {readonly labels: CreatorSkillFormLabels}) {
   const [state, action] = useActionState(createPrivateSkill, initialState);
   const inputClass = "mt-2 min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10";
-  const errorMessage = state.message === "scan_failed" ? labels.scanFailed : state.message === "create_failed" ? labels.createFailed : labels.invalidForm;
+  const errorMessage = state.message === "scan_failed" ? labels.scanFailed : state.message === "create_failed" || state.message === "skill_limit_reached" ? labels.createFailed : labels.invalidForm;
   return <form action={action} className="space-y-6">
     <div className="grid gap-5 sm:grid-cols-2">
       <label className="text-sm font-medium">{labels.fields.title}<input required name="title" maxLength={160} placeholder={labels.placeholders.title} className={inputClass}/></label>

@@ -1,5 +1,6 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
+import {Link} from "@/i18n/navigation";
 import {getDashboardProfile} from "@/lib/dashboard/profile";
 import {createClient} from "@/lib/supabase/server";
 
@@ -110,10 +111,10 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
               </div>
             ))}
           </div>
-          <a href="/dashboard/billing/orders" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
+          <Link href="/dashboard/billing/orders" className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/70">
             {t("viewAllOrders")}
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </Link>
         </section>
       )}
     </>

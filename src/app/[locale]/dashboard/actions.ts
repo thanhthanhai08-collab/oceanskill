@@ -15,6 +15,12 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
   const userId = claimsData?.claims?.sub;
   if (!userId) return {status: "error", message: "unauthorized"};
   try {
+    const [{count, error: countError}, {data: profile, error: profileError}] = await Promise.all([
+      supabase.from("skills").select("id", {count: "exact", head: true}).eq("owner_id", String(userId)),
+      supabase.from("profiles").select("creator_skill_limit").eq("id", String(userId)).maybeSingle(),
+    ]);
+    if (countError || profileError) throw countError ?? profileError;
+    if ((count ?? 0) >= Number(profile?.creator_skill_limit ?? 5)) return {status: "error", message: "skill_limit_reached"};
     const input = parsePrivateSkillForm(formData);
     const scan = scanSkillContent(input.content);
     if (!scan.passed) return {status: "error", message: "scan_failed", checks: scan.checks};
@@ -40,6 +46,20 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
     const code = error instanceof Error && error.message.startsWith("invalid_") ? error.message : error instanceof Error && error.message === "missing_client" ? error.message : "create_failed";
     return {status: "error", message: code};
   }
+}
+
+export async function addPlatformSkill(formData: FormData) {
+  const locale = await getLocale();
+  const skillId = String(formData.get("skillId") ?? "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(skillId)) return;
+  const supabase = await createClient();
+  const {data: claimsData} = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+  if (!userId) redirect(`/${locale}/login?next=/${locale}/skills`);
+  const {error} = await supabase.from("user_skill_library").upsert({user_id: String(userId), skill_id: skillId}, {onConflict: "user_id,skill_id", ignoreDuplicates: true});
+  if (error) throw new Error(`Could not add skill to library: ${error.message}`);
+  revalidatePath(`/${locale}/dashboard/skills`);
+  redirect(`/${locale}/dashboard/skills`);
 }
 
 export async function logout() {
