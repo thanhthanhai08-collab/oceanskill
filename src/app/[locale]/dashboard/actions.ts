@@ -56,8 +56,10 @@ export async function addPlatformSkill(formData: FormData) {
   const {data: claimsData} = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
   if (!userId) redirect(`/${locale}/login?next=/${locale}/skills`);
-  const {error} = await supabase.from("user_skill_library").upsert({user_id: String(userId), skill_id: skillId}, {onConflict: "user_id,skill_id", ignoreDuplicates: true});
-  if (error) throw new Error(`Could not add skill to library: ${error.message}`);
+  const {error} = await supabase.from("user_skill_library").insert({user_id: String(userId), skill_id: skillId});
+  // Adding an existing skill is idempotent. Using INSERT also avoids requiring
+  // UPDATE permission on a table where users are only allowed to add/remove rows.
+  if (error && error.code !== "23505") throw new Error(`Could not add skill to library: ${error.message}`);
   revalidatePath(`/${locale}/dashboard/skills`);
   redirect(`/${locale}/dashboard/skills`);
 }
