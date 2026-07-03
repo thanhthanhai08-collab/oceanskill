@@ -22,7 +22,7 @@ export async function getCreatorSkills() {
   if (!userId) return null;
   const [skillsResult, profileResult] = await Promise.all([
     supabase.from("skills")
-    .select("id,slug,title,description,domain,status,visibility,current_version,compatible_clients,updated_at,skill_versions(version,scan_status,content_hash,scan_summary,created_at)")
+    .select("id,slug,title,description,domain,status,visibility,current_version,compatible_clients,updated_at,skill_versions!skill_versions_skill_id_fkey(version,scan_status,content_hash,scan_summary,created_at)")
     .eq("owner_id", String(userId)).order("updated_at", {ascending: false}),
     supabase.from("profiles").select("creator_skill_limit").eq("id", String(userId)).maybeSingle(),
   ]);
