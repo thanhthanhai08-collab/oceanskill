@@ -1,7 +1,7 @@
 import "server-only";
 import {createClient} from "@/lib/supabase/server";
 
-export type ApiKey = Readonly<{
+export type McpKey = Readonly<{
   id: string;
   name: string;
   key_prefix: string;
@@ -10,7 +10,7 @@ export type ApiKey = Readonly<{
   created_at: string;
 }>;
 
-export async function getUserApiKeys() {
+export async function getUserMcpKeys() {
   const supabase = await createClient();
   const {data: claimsData} = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -22,6 +22,6 @@ export async function getUserApiKeys() {
     .eq("user_id", String(userId))
     .order("created_at", {ascending: false});
 
-  if (error) throw new Error(`Could not load API keys: ${error.message}`);
-  return {claims: claimsData.claims, keys: (data ?? []) as ApiKey[]};
+  if (error) throw new Error(`Could not load MCP keys: ${error.message}`);
+  return {claims: claimsData.claims, keys: (data ?? []) as McpKey[]};
 }

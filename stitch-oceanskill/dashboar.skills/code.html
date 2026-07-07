@@ -1,0 +1,455 @@
+<!DOCTYPE html><html class="dark" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Skills của tôi | nskill</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+<script id="tailwind-config">
+        try {
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        "colors": {
+                            "on-surface": "#e2e2eb",
+                            "secondary": "#e9b3ff",
+                            "on-tertiary-fixed": "#002021",
+                            "surface-dim": "#111319",
+                            "on-secondary-container": "#e5a9ff",
+                            "on-primary-container": "#efefff",
+                            "inverse-surface": "#e2e2eb",
+                            "tertiary": "#00dce5",
+                            "surface-container-low": "#191b22",
+                            "secondary-container": "#7d01b1",
+                            "tertiary-container": "#00797e",
+                            "tertiary-fixed-dim": "#00dce5",
+                            "surface-container-high": "#282a30",
+                            "primary": "#b8c3ff",
+                            "surface-variant": "#33343b",
+                            "surface": "#111319",
+                            "on-surface-variant": "#c4c5d9",
+                            "on-secondary-fixed-variant": "#7200a3",
+                            "primary-container": "#2e5bff",
+                            "on-tertiary-container": "#bbfbff",
+                            "on-primary-fixed-variant": "#0035be",
+                            "on-primary-fixed": "#001356",
+                            "on-tertiary": "#003739",
+                            "inverse-primary": "#124af0",
+                            "surface-container-highest": "#33343b",
+                            "inverse-on-surface": "#2e3037",
+                            "on-tertiary-fixed-variant": "#004f53",
+                            "secondary-fixed": "#f6d9ff",
+                            "on-secondary-fixed": "#310048",
+                            "surface-bright": "#373940",
+                            "error-container": "#93000a",
+                            "surface-container": "#1e1f26",
+                            "primary-fixed": "#dde1ff",
+                            "secondary-fixed-dim": "#e9b3ff",
+                            "on-error": "#690005",
+                            "surface-tint": "#b8c3ff",
+                            "tertiary-fixed": "#63f7ff",
+                            "on-primary": "#002388",
+                            "on-error-container": "#ffdad6",
+                            "on-background": "#e2e2eb",
+                            "primary-fixed-dim": "#b8c3ff",
+                            "outline-variant": "#434656",
+                            "surface-container-lowest": "#0c0e14",
+                            "on-secondary": "#510074",
+                            "background": "#0c0e14",
+                            "outline": "#8e90a2",
+                            "error": "#ffb4ab"
+                        },
+                        "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                        },
+                        "spacing": {
+                            "margin-mobile": "16px",
+                            "max-width": "1440px",
+                            "base-unit": "8px",
+                            "gutter": "24px",
+                            "margin-desktop": "64px"
+                        },
+                        "fontFamily": {
+                            "display-lg": ["Geist"],
+                            "body-lg": ["Inter"],
+                            "label-sm": ["JetBrains Mono"],
+                            "headline-md": ["Geist"],
+                            "body-md": ["Inter"]
+                        },
+                        "fontSize": {
+                            "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                            "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                        }
+                    },
+                },
+            }
+        } catch (_e) {}
+    </script>
+<style>
+        body {
+            background-color: #0c0e14;
+            color: #e2e2eb;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(30, 31, 38, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-glass {
+            background: rgba(12, 14, 20, 0.7);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .featured-border {
+            position: relative;
+        }
+        .featured-border::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(to right, #b8c3ff, #e9b3ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface min-h-screen flex flex-col font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
+<div class="flex justify-between items-center h-16 w-full px-margin-desktop max-w-max-width mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-headline-md font-display-lg font-bold text-on-surface">nskill</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Marketplace</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Leaderboard</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Blog</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Docs</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">dark_mode</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">language</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all">Dashboard</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 max-w-max-width mx-auto w-full">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-80px)] m-4 space-y-4 w-64 sidebar-glass rounded-xl p-4 sticky top-20">
+<div class="flex flex-col gap-1 px-2 py-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-label-sm font-label-sm text-on-surface truncate">thanhthanhai08@gmail.com</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">nskill Pro Member</p>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 border border-white/5 mt-4">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Credit khả dụng</p>
+<div class="flex justify-between items-end">
+<span class="text-2xl font-bold text-on-surface">50</span>
+<button class="text-[10px] px-3 py-1 bg-surface-variant/40 hover:bg-surface-variant rounded border border-white/10 transition-all text-on-surface">Nạp credit</button>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">dashboard</span>
+<span class="text-body-md">Tổng quan</span>
+</a>
+<a class="flex items-center gap-3 bg-primary/10 text-primary rounded-lg p-3 font-bold transition-all" href="#">
+<span class="material-symbols-outlined fill-icon" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="text-body-md">Skills của tôi</span>
+</a><a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">grid_view</span>
+<span class="text-body-md">Bộ sưu tập</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">vpn_key</span>
+<span class="text-body-md">MCP Key</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">insights</span>
+<span class="text-body-md">Lượt sử dụng</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">payments</span>
+<span class="text-body-md">Thanh toán</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">settings</span>
+<span class="text-body-md">Cài đặt</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-error-container/20 hover:text-error rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-error transition-colors">logout</span>
+<span class="text-body-md">Đăng xuất</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop overflow-y-auto">
+<!-- Header Area -->
+<header class="mb-12 flex justify-between items-end">
+<div>
+<span class="text-label-sm font-label-sm text-primary uppercase tracking-[0.2em] block mb-2">My Assets</span>
+<h1 class="text-display-lg font-display-lg text-on-surface mb-3 tracking-tight">Skills của tôi</h1>
+<p class="text-body-lg text-on-surface-variant max-w-2xl">Quản lý và tối ưu hóa các năng lực AI của bạn.</p>
+</div>
+<!-- Button only visible on "Skills tự đăng" tab (simulated by script) -->
+<button class="hidden bg-primary hover:bg-primary-container text-on-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(184,195,255,0.2)]" id="add-skill-btn">
+<span class="material-symbols-outlined">add</span>
+<span class="font-body-md">Thêm skill mới</span>
+</button>
+</header>
+<!-- Content Section -->
+<section class="pb-12">
+<!-- Tab Navigation -->
+<div class="flex items-center gap-8 border-b border-white/5 mb-8 overflow-x-auto no-scrollbar">
+<button class="tab-btn pb-4 px-2 border-b-2 border-primary text-primary font-bold whitespace-nowrap transition-all" data-tab="all">Tất cả skills</button>
+<button class="tab-btn pb-4 px-2 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-all" data-tab="core">Skills nền tảng</button>
+<button class="tab-btn pb-4 px-2 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-all" data-tab="user">Skills tự đăng</button>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Skill Card 1 -->
+<div class="featured-border glass-card rounded-2xl p-6 flex flex-col transition-all hover:-translate-y-1 hover:bg-white/[0.05] group relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full font-label-sm text-[10px] border border-primary/30 uppercase font-bold">Active</span>
+<div class="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-tighter">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                                    Top 1
+                                </div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Agent Alpha v1.2</h3>
+<div class="flex flex-wrap gap-2">
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Logic</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Python</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 line-clamp-2 leading-relaxed">
+                            Xử lý ngôn ngữ tự nhiên cấp độ cao với khả năng suy luận logic đa tầng và tối ưu hóa mã nguồn.
+                        </p>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB0qn5s9zO05ED10fi_40Rq0GTgYi5mNLN6pTYuiOqEBytPlVbuWjHuza_KR00ruN1YtuVV7G4bCC9a6PtmAbff02IyNoieU4p1dibbNlpoLLncWhVwJeHc5co17341Jl5DFB5L1_KVwTnRVGkwaU5xnUnGz0VIFVzKMumvdU8ltfo2rvpGtANTvaWPm_EQcIFi3P19qIXD8AtCmI5X_O9WkYywcP7mnlLX6DubSfcdyk9ab0rf5GYIg">
+<span class="text-[11px] text-on-surface-variant">Alex Nguyen</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-[11px] font-bold">4.9/5 stars</span>
+</div>
+</div>
+</div>
+<!-- Skill Card 2 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col transition-all hover:-translate-y-1 hover:bg-white/[0.05] group relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-2xl flex items-center justify-center text-on-surface-variant group-hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined text-3xl">terminal</span>
+</div>
+<span class="bg-surface-container-highest/50 text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-[10px] uppercase font-bold">Active</span>
+</div>
+<div class="mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Data Analyzer v4.0</h3>
+<div class="flex flex-wrap gap-2">
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Analytics</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">SQL</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 line-clamp-2 leading-relaxed">
+                            Trích xuất và trực quan hóa dữ liệu thời gian thực từ các nguồn phức tạp.
+                        </p>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXU7f4X9vdCN4vEblebOdTpnUvSEkKrnqgArc0Ra5gP9XFyoLeNBINbOmUYIFAD6MqvjljuhQSi1OXCeGlQnesWhbBkUplF9lS5t5GkeiofqxvpXTgc5Dv7VXYQvLakHBYqFLtge-NBTt2-6flnf2CpM_1KzZTveCh4BgvHZ-zMpIzgHsUVBdZg-BJk4doano1n1HkKBCNbpkNHOgBocicLuH6Nut32zRrQ6XnldKIh5lE7f3CpXCCaw">
+<span class="text-[11px] text-on-surface-variant">Sarah Chen</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-[11px]">4.7/5 stars</span>
+</div>
+</div>
+</div>
+<!-- Skill Card 3 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col transition-all hover:-translate-y-1 hover:bg-white/[0.05] group border-dashed border-white/10 relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 bg-error-container/10 rounded-2xl flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-3xl">science</span>
+</div>
+<span class="bg-error-container/10 text-error px-3 py-1 rounded-full font-label-sm text-[10px] border border-error/20 uppercase font-bold">Pending</span>
+</div>
+<div class="mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Vision Pro v0.9</h3>
+<div class="flex flex-wrap gap-2">
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Computer Vision</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 line-clamp-2 leading-relaxed">
+                            Phát hiện vật thể chính xác cao trong điều kiện ánh sáng yếu và môi trường nhiễu.
+                        </p>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA87ZB730CKpLdrzM25uDmdr1MCbxBIubTBGA4EQKuNDSncB_OiSnxWlgBrcVLoJPcNkhSb8UkjRFl6B1xrb3-1Oo58J_iMaN_NZ3Kjj5MFVT86hDbhNXWaLM5nnMgj5Ir-35EYUwUEyJLdSLkoEEu6ha03zA563R3E6quUR7NjzyBK2TZYzvkBIDBn1QrNxLZxgrase5MjcVsruwN6eQEgVV9UFVG9cEWHNMeHLYHKkrfSUPDQRXw2dg">
+<span class="text-[11px] text-on-surface-variant">Liam Smith</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="font-label-sm text-[11px]">N/A stars</span>
+</div>
+</div>
+</div>
+<!-- Skill Card 4 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col transition-all hover:-translate-y-1 hover:bg-white/[0.05] group relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 bg-surface-container-highest rounded-2xl flex items-center justify-center text-on-surface-variant group-hover:text-secondary transition-colors">
+<span class="material-symbols-outlined text-3xl">language</span>
+</div>
+<span class="bg-surface-container-highest/50 text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-[10px] uppercase font-bold">Active</span>
+</div>
+<div class="mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors">Translator X v2.1</h3>
+<div class="flex flex-wrap gap-2">
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">NLP</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">Linguistics</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 line-clamp-2 leading-relaxed">
+                            Dịch thuật đa ngôn ngữ theo ngữ cảnh, hỗ trợ hơn 95 ngôn ngữ với độ trễ cực thấp.
+                        </p>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img alt="Avatar" class="w-6 h-6 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLSIlJbG9yduqDhRMfVNyllWGtPA-uROaLY5sfEvFpUboB6uYLbbeQWVV_0CfM26FUK9GguTkv0osz4A9PITXDN1PsCwjlmtu-sqypehnb4lW7Qm6NR91jpHy0dNjg38a49lbJ-vLKvcOFGXp76asb_oWwZYeqKEUBVM7dPybxfR697zIePmfDxdmKh9YxhKh-zUAyfx-yZGJ9VtMmskaLOcJ4aEvkbQYFxR8za9fsMyp6Ueepz_5dYA">
+<span class="text-[11px] text-on-surface-variant">Elena Rossi</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-[11px]">4.5/5 stars</span>
+</div>
+</div>
+</div>
+<!-- Add New Skill Placeholder -->
+<button class="border-2 border-dashed border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group hover:border-primary/50 hover:bg-primary/5 transition-all">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary transition-all">
+<span class="material-symbols-outlined text-4xl">add</span>
+</div>
+<div class="text-center">
+<p class="font-bold text-on-surface group-hover:text-primary transition-colors">Tạo Skill mới</p>
+<p class="text-xs text-on-surface-variant">Bắt đầu kiếm tiền từ talent của bạn</p>
+</div>
+</button>
+</div>
+<!-- Stats Section -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="glass-card rounded-2xl p-6 border-l-4 border-l-primary relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-2">Tổng Skills</p>
+<h4 class="text-4xl font-bold text-on-surface">12</h4>
+</div>
+<div class="glass-card rounded-2xl p-6 border-l-4 border-l-secondary relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-2">Doanh thu tháng</p>
+<h4 class="text-4xl font-bold text-on-surface">$2.4k</h4>
+</div>
+<div class="glass-card rounded-2xl p-6 border-l-4 border-l-tertiary relative"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-2">Xếp hạng Seller</p>
+<h4 class="text-4xl font-bold text-on-surface uppercase">Pro</h4>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer Area -->
+<footer class="bg-surface-container-lowest border-t border-white/5 py-16 mt-16">
+<div class="max-w-max-width mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+<div class="col-span-1 md:col-span-2"><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<span class="text-headline-md font-display-lg font-bold text-on-surface block mb-6">nskill</span>
+<p class="text-on-surface-variant text-body-md max-w-sm leading-relaxed">
+                        Kho kỹ năng được tuyển chọn, bảo mật và sẵn sàng đưa thẳng vào quy trình làm việc của AI agent. Xây dựng tương lai AI an toàn.
+                    </p>
+<div class="flex gap-6 mt-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">brand_awareness</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">code</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">terminal</span></a>
+</div>
+</div>
+<div><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<h6 class="text-label-sm font-bold uppercase tracking-widest text-on-surface mb-8">Nền tảng</h6>
+<ul class="space-y-4">
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Kho kỹ năng</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Bảng xếp hạng</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Blog</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Tài liệu</a></li>
+</ul>
+</div>
+<div><button class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-on-surface-variant hover:bg-error/20 hover:text-error transition-all opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-sm">close</span></button>
+<h6 class="text-label-sm font-bold uppercase tracking-widest text-on-surface mb-8">Công ty</h6>
+<ul class="space-y-4">
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Giới thiệu</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Chính sách bảo mật</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Điều khoản sử dụng</a></li>
+<li class=""><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Hỗ trợ</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-label-sm text-on-surface-variant">© 2024 nskill. All rights reserved.</p>
+<div class="flex gap-6">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Powered by MCP</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Enterprise Ready</span>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        const tabs = document.querySelectorAll('.tab-btn');
+        const addSkillBtn = document.getElementById('add-skill-btn');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update tab styles
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary', 'font-bold');
+                    t.classList.add('border-transparent', 'text-on-surface-variant');
+                });
+                tab.classList.remove('border-transparent', 'text-on-surface-variant');
+                tab.classList.add('border-primary', 'text-primary', 'font-bold');
+
+                // Toggle Add Skill button visibility
+                if (tab.getAttribute('data-tab') === 'user') {
+                    addSkillBtn.classList.remove('hidden');
+                } else {
+                    addSkillBtn.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+
+</body></html>

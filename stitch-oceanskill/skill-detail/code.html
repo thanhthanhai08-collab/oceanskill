@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>nskill | Chi tiết kỹ năng - Data Analyzer v4.0</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .featured-glow {
+            position: relative;
+        }
+        .featured-glow::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(to right, #b8c3ff, #e9b3ff);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2e5bff;
+            border-radius: 10px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#282a30",
+                    "secondary-fixed": "#f6d9ff",
+                    "tertiary-fixed-dim": "#00dce5",
+                    "surface-container-highest": "#33343b",
+                    "error-container": "#93000a",
+                    "surface-variant": "#33343b",
+                    "on-tertiary-fixed-variant": "#004f53",
+                    "on-secondary-fixed-variant": "#7200a3",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1e1f26",
+                    "on-tertiary": "#003739",
+                    "on-surface-variant": "#c4c5d9",
+                    "surface": "#111319",
+                    "tertiary-fixed": "#63f7ff",
+                    "outline-variant": "#434656",
+                    "surface-bright": "#373940",
+                    "surface-container-low": "#191b22",
+                    "on-surface": "#e2e2eb",
+                    "on-error": "#690005",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#e5a9ff",
+                    "on-primary": "#002388",
+                    "on-tertiary-fixed": "#002021",
+                    "inverse-surface": "#e2e2eb",
+                    "on-primary-container": "#efefff",
+                    "on-secondary": "#510074",
+                    "primary-fixed": "#dde1ff",
+                    "surface-container-lowest": "#0c0e14",
+                    "tertiary-container": "#00797e",
+                    "primary": "#b8c3ff",
+                    "surface-tint": "#b8c3ff",
+                    "on-primary-fixed": "#001356",
+                    "secondary-container": "#7d01b1",
+                    "surface-dim": "#111319",
+                    "on-primary-fixed-variant": "#0035be",
+                    "tertiary": "#00dce5",
+                    "primary-fixed-dim": "#b8c3ff",
+                    "on-tertiary-container": "#bbfbff",
+                    "secondary-fixed-dim": "#e9b3ff",
+                    "outline": "#8e90a2",
+                    "background": "#111319",
+                    "secondary": "#e9b3ff",
+                    "on-background": "#e2e2eb",
+                    "inverse-primary": "#124af0",
+                    "inverse-on-surface": "#2e3037",
+                    "primary-container": "#2e5bff",
+                    "on-secondary-fixed": "#310048"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-width": "1440px",
+                    "margin-mobile": "16px",
+                    "base-unit": "8px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "label-sm": ["JetBrains Mono"],
+                    "display-lg-mobile": ["Geist"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30">
+<!-- Main Content Area -->
+<main class="min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex justify-between items-center w-full px-16 py-4 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-white/10"><div class="flex items-center gap-8"><div class="flex gap-6"><a class="text-on-surface-variant hover:text-primary transition-all duration-300 font-body-md text-body-md" href="#">Marketplace</a><a class="text-on-surface-variant hover:text-primary transition-all duration-300 font-body-md text-body-md" href="#">Leaderboard</a><a class="text-on-surface-variant hover:text-primary transition-all duration-300 font-body-md text-body-md" href="#">Blog</a><a class="text-on-surface-variant hover:text-primary transition-all duration-300 font-body-md text-body-md" href="#">Docs</a></div></div><div class="flex items-center gap-6"><div class="relative group"><input class="bg-surface-container-lowest border border-white/10 rounded-full px-4 py-1.5 text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all" placeholder="Search skills..." type="text"/><span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span></div><button class="bg-primary hover:bg-primary-container text-on-primary font-bold px-6 py-2 rounded-full transition-all active:scale-95">Dashboard</button><div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container cursor-pointer"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMZtvo2BJaCCa918ylD50is3NsMJflbOoa1x1Bm3O83QtwwU5BnhGNNkJDzx80d05GxIbg5DccqeixBKC3XkMzHwAVIkpwQlraczFRVzj83EvVXSyP-fqKCci4SMlBn_aPIme2BIsxhW3fiXlwVB2nB1Hm_a6NYjLvnGCxsZYeEDq85qWd5vdXeVo85QC7JpoohGbTc66kY-BHb3MH_pPiadmk3Co4lCVUEo_BQp-3zOR9oBJ_5JXdHw"/></div></div></header>
+<!-- Skill Details Content -->
+<section class="max-w-max-width mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Main Column: Hero & Sections -->
+<div class="lg:col-span-8 space-y-12">
+<!-- Hero Section -->
+<div class="glass-card rounded-2xl p-8 overflow-hidden relative">
+<!-- Atmospheric Background Glow -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none"></div>
+<div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+<!-- Skill Icon / Preview -->
+<div class="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl featured-glow bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center p-0.5">
+<div class="w-full h-full bg-surface-container-low rounded-[22px] flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+</div>
+<div class="flex-1 space-y-4"><div class="flex justify-end mb-2">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-white transition-colors text-xs font-bold border border-white/5">
+<span class="material-symbols-outlined text-sm">share</span>
+        Chia sẻ
+    </button>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label-sm text-[10px] uppercase">Phân tích dữ liệu</span>
+<span class="px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-secondary font-label-sm text-[10px] uppercase">Doanh nghiệp</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-[10px] uppercase">v4.0.2</span>
+</div>
+<div>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-tight">Data Analyzer v4.0</h1>
+<p class="text-on-surface-variant font-body-lg mt-2">Trí tuệ nhân tạo tiên tiến để mô hình hóa thống kê thời gian thực và nhận diện mẫu trên các tập dữ liệu đa vector.</p>
+</div>
+<div class="flex items-center gap-6 pt-2">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+<img alt="Tác giả" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8HyNNt7caurrwxm6VXJ6c0PnGMnqQuFKDMEgQ84uTQUedOU68d0DVp2wxmyOGPd8JUS7bX8CGc-GMxa5ZJqCVJOfAw00h8_UsF1SvTsKJX5FG_s-5U-mdavF2SIQ0jg7mu-pxheEcctk0OTuc2W36FSqNUbi3e9qb-jMbMss7f9zb2XK6p9EQ2lNTl9_Lstj0cdqvlqoSMmgwbZ3sN3lAXhE8dAB2klY7zpup2d0t0aiAoftoNHDiiQ"/>
+</div>
+<span class="font-body-md text-on-surface">Bởi <span class="text-primary font-bold cursor-pointer hover:underline">NeuralSystems</span></span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-bold">Top 1</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+<span class="">1.2k Đã bán</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sequential Content Sections -->
+<div class="space-y-12">
+<!-- Section: Description -->
+<section class="space-y-6" id="description">
+<h3 class="font-headline-md text-on-surface px-2">Mô tả kỹ năng</h3>
+<div class="glass-card rounded-2xl p-8 space-y-6">
+<h4 class="text-xl font-bold text-on-surface">Phân tích mạnh mẽ ngay trong tầm tay</h4>
+<p class="text-on-surface-variant leading-relaxed">
+                            Data Analyzer v4.0 là một kỹ năng MCP (Model Context Protocol) chuyên dụng được thiết kế cho các LLM để xử lý các tác vụ thao tác dữ liệu phức tạp. Cho dù bạn đang xử lý các tệp xuất CSV khổng lồ, luồng API trực tiếp hay dữ liệu văn bản không cấu trúc, kỹ năng này cung cấp sự chặt chẽ về toán học và cấu trúc logic cần thiết cho các thông tin chi tiết cấp chuyên nghiệp.
+                        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+<div class="p-4 rounded-xl bg-surface-container-high space-y-2">
+<span class="material-symbols-outlined text-primary">auto_graph</span>
+<h4 class="font-bold text-on-surface">Mô hình hóa dự đoán</h4>
+<p class="text-sm text-on-surface-variant">Tích hợp sẵn các mô-đun hồi quy và dự báo để lập bản đồ xu hướng tương lai.</p>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-high space-y-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<h4 class="font-bold text-on-surface">Phát hiện bất thường</h4>
+<p class="text-sm text-on-surface-variant">Tự động xác định các điểm ngoại lệ và hỏng dữ liệu bằng bộ lọc thần kinh.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Installation -->
+<section class="space-y-6" id="installation">
+<h3 class="font-headline-md text-on-surface px-2">Hướng dẫn cài đặt</h3>
+<div class="glass-card rounded-2xl p-8 space-y-8">
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-4">Thiết lập tích hợp MCP</h4>
+<p class="text-on-surface-variant mb-6">Kết nối Data Analyzer v4.0 với môi trường cục bộ hoặc đám mây của bạn theo các bước sau.</p>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">1</div>
+<div>
+<h4 class="font-bold text-on-surface">Cài đặt nskill CLI</h4>
+<div class="mt-3 bg-surface-container-lowest rounded-lg p-4 font-label-sm text-tertiary relative group">
+<code>npm install -g @nskill/cli-tool</code>
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">2</div>
+<div>
+<h4 class="font-bold text-on-surface">Xác thực bằng Mã MCP</h4>
+<div class="mt-3 bg-surface-container-lowest rounded-lg p-4 font-label-sm text-tertiary relative group">
+<code>nskill auth --key YOUR_V4_ACCESS_KEY</code>
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">3</div>
+<div>
+<h4 class="font-bold text-on-surface">Kích hoạt kỹ năng</h4>
+<div class="mt-3 bg-surface-container-lowest rounded-lg p-4 font-label-sm text-tertiary relative group">
+<code>nskill enable analyzer-v4</code>
+<button class="absolute top-3 right-3 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: FAQ -->
+<section class="space-y-6" id="faq">
+<h3 class="font-headline-md text-on-surface px-2">Câu hỏi thường gặp</h3>
+<div class="glass-card rounded-2xl p-4 overflow-hidden divide-y divide-white/5">
+<details class="group p-4" open="">
+<summary class="flex justify-between items-center cursor-pointer list-none font-bold text-on-surface">
+<span class="">Cái này có hoạt động với GPT-4 và Claude 3 Opus không?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant leading-relaxed">
+                                Có, Data Analyzer v4.0 hoàn toàn tương thích với bất kỳ mô hình nào hỗ trợ Model Context Protocol. Chúng tôi khuyên dùng các mô hình có cửa sổ ngữ cảnh 128k+ để đạt hiệu suất tối ưu với các tập dữ liệu lớn.
+                            </div>
+</details>
+<details class="group p-4">
+<summary class="flex justify-between items-center cursor-pointer list-none font-bold text-on-surface">
+<span class="">Dữ liệu của tôi có được gửi đến máy chủ nskill không?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant leading-relaxed">
+                                Không. Tính toán diễn ra trong môi trường của riêng bạn hoặc ngữ cảnh của nhà cung cấp LLM. nskill chỉ xử lý việc xác minh giấy phép và phân phối mã nhị phân.
+                            </div>
+</details>
+<details class="group p-4">
+<summary class="flex justify-between items-center cursor-pointer list-none font-bold text-on-surface">
+<span class="">Những loại tệp nào được hỗ trợ?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant leading-relaxed">
+                                Hỗ trợ trực tiếp cho .csv, .json, .xlsx, .parquet và các bản xuất SQL.
+                            </div>
+</details>
+</div>
+</section>
+<!-- Section: Reviews -->
+<section class="space-y-6" id="reviews">
+<h3 class="font-headline-md text-on-surface px-2">Đánh giá (128)</h3>
+<div class="space-y-8">
+<!-- Rating Summary -->
+<div class="glass-card rounded-2xl p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+<div class="text-center">
+<div class="text-5xl font-display-lg text-primary">4.9</div>
+<div class="flex justify-center gap-1 text-primary my-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-sm text-on-surface-variant">Dựa trên 128 đánh giá</p>
+</div>
+<div class="md:col-span-2 space-y-3">
+<div class="flex items-center gap-4">
+<span class="text-sm w-4">5</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+<span class="text-sm text-on-surface-variant w-8">85%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm w-4">4</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[12%]"></div>
+</div>
+<span class="text-sm text-on-surface-variant w-8">12%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm w-4">3</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[2%]"></div>
+</div>
+<span class="text-sm text-on-surface-variant w-8">2%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm w-4">2</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[1%]"></div>
+</div>
+<span class="text-sm text-on-surface-variant w-8">1%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm w-4">1</span>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[0%]"></div>
+</div>
+<span class="text-sm text-on-surface-variant w-8">0%</span>
+</div>
+</div>
+</div>
+<!-- Individual Reviews -->
+<div class="space-y-4"><div class="glass-card rounded-2xl p-6 space-y-6 mb-8 border border-primary/20"><div class="flex flex-col gap-4"><div><h4 class="font-bold text-on-surface mb-1">Viết đánh giá</h4><p class="text-sm text-on-surface-variant">Chia sẻ trải nghiệm của bạn về kỹ năng này để giúp người dùng khác.</p></div><div class="flex gap-1 text-primary"><span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">star</span><span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">star</span><span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">star</span><span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">star</span><span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">star</span></div><textarea class="w-full bg-surface-container-lowest border border-white/10 rounded-xl p-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all min-h-[120px]" placeholder="Chia sẻ trải nghiệm của bạn về kỹ năng này..."></textarea><div class="flex justify-end"><button class="bg-primary hover:bg-primary-container text-on-primary font-bold px-8 py-2.5 rounded-full transition-all active:scale-95 shadow-lg shadow-primary/20">Gửi đánh giá</button></div></div></div>
+<div class="glass-card rounded-2xl p-6 space-y-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container">AL</div>
+<div>
+<h5 class="font-bold text-on-surface">Alex Lindholm</h5>
+<p class="text-xs text-on-surface-variant">Đã mua • 2 ngày trước</p>
+</div>
+</div>
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="text-on-surface-variant">Hoàn toàn thiết yếu cho quy trình làm việc dữ liệu của tôi. Tính năng phát hiện bất thường đã giúp tôi tiết kiệm hàng giờ dọn dẹp thủ công ngày hôm qua. Phiên bản 4.0 là một bước tiến lớn về tốc độ.</p>
+</div>
+<div class="glass-card rounded-2xl p-6 space-y-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="Sarah Chen" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBR43yq3qdwpyhvoqYqOgnbPFm3WeWB8d7dAc_nf678ts2N24T4vQG1EknJfL99tg2CdFZ2eOD6cMRI4iTqvCwnJRgB3HfzLWjeq-VjA8m4iTN9Lk4W8BtsaHR3xbLCbcyoLYAjOd2yGmdZxzMxy5tMV5mcme_hZ6jX00QtAO7ALYbdtOdfMP2og7HN54AqVa8q9yKNnjm-PYOui-UFw0wPIdSZMBqUPJhSb_ylb4zy7P6fwGEgTk7IA"/>
+</div>
+<div>
+<h5 class="font-bold text-on-surface">Sarah Chen</h5>
+<p class="text-xs text-on-surface-variant">Đã mua • 1 tuần trước</p>
+</div>
+</div>
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+</div>
+<p class="text-on-surface-variant">Kỹ năng tuyệt vời, mặc dù việc thiết lập ban đầu với CLI hơi khó khăn trên Windows. Khi đã chạy thì nó thật hoàn hảo.</p>
+</div>
+</div>
+<button class="w-full py-4 rounded-xl border border-white/10 hover:bg-surface-container-highest transition-colors font-semibold text-on-surface-variant">
+                            Tải thêm 126 đánh giá
+                        </button>
+</div>
+</section>
+</div>
+</div>
+<!-- Right Column: Actions & Sidebar -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Purchase Card -->
+<div class="glass-card rounded-2xl p-8 sticky top-24 space-y-8 featured-glow"><div class="space-y-6">
+<div class="flex justify-between items-center">
+<h6 class="text-xs font-label-sm text-on-surface-variant uppercase tracking-widest">TƯƠNG THÍCH</h6>
+<div class="flex items-center gap-1.5 text-tertiary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold">Đã xác minh nguồn</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-sm text-[10px] border border-white/5">Codex</span>
+<span class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-sm text-[10px] border border-white/5">Antigravity</span>
+<span class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-sm text-[10px] border border-white/5">Gemini CLI</span>
+<span class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-sm text-[10px] border border-white/5">Claude Code</span>
+<span class="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface font-label-sm text-[10px] border border-white/5">Cursor</span>
+</div>
+</div>
+<div class="space-y-4 pt-6 border-t border-white/5">
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Phiên bản</span>
+<span class="text-sm font-label-sm text-on-surface">1.0.0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Giấy phép</span>
+<span class="text-sm font-label-sm text-on-surface">Apache-2.0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Nguồn chính thức</span>
+<a class="flex items-center gap-1 text-sm font-label-sm text-primary hover:underline" href="#">
+            GitHub
+            <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+</div>
+<div class="pt-4"><div class="flex flex-col gap-3">
+<button class="w-full py-4 bg-primary text-on-primary rounded-xl font-bold text-lg hover:bg-primary-container transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 group">
+        Thêm vào kỹ năng của tôi
+        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">add_circle</span>
+</button>
+<button class="w-full py-4 border border-primary/30 text-primary rounded-xl font-bold text-lg hover:bg-primary/10 transition-all flex items-center justify-center gap-2">
+        Thêm vào bộ sưu tập
+        <span class="material-symbols-outlined">bookmark</span>
+</button>
+</div></div></div>
+<!-- More from Creator -->
+<div class="space-y-4">
+<div class="flex justify-between items-center px-2">
+<h4 class="font-bold text-on-surface">Thêm từ NeuralSystems</h4>
+<a class="text-xs text-primary hover:underline" href="#">Xem tất cả</a>
+</div>
+<div class="space-y-3">
+<a class="glass-card rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container-highest transition-all group" href="#">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">translate</span>
+</div>
+<div class="flex-1">
+<h5 class="text-sm font-bold text-on-surface">Universal Translator Pro</h5>
+<p class="text-xs text-on-surface-variant">Dịch thuật phương ngữ thời gian thực</p>
+</div>
+<span class="text-sm font-bold">$89</span>
+</a>
+<a class="glass-card rounded-xl p-4 flex items-center gap-4 hover:bg-surface-container-highest transition-all group" href="#">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">security</span>
+</div>
+<div class="flex-1">
+<h5 class="text-sm font-bold text-on-surface">AuditSentinel AI</h5>
+<p class="text-xs text-on-surface-variant">Quét lỗ hổng mã nguồn</p>
+</div>
+<span class="text-sm font-bold">$120</span>
+</a>
+</div>
+</div>
+<!-- Related Skills -->
+<div class="space-y-4 pt-4">
+<h4 class="font-bold text-on-surface px-2">Kỹ năng liên quan</h4>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-card rounded-xl p-4 space-y-3 group cursor-pointer hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">database</span>
+</div>
+<h5 class="text-xs font-bold leading-tight">SQL Architect v2</h5>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-on-surface-variant">4.8 ★</span>
+<span class="text-[10px] font-bold">$45</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 space-y-3 group cursor-pointer hover:border-primary/50 transition-colors">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">chart_data</span>
+</div>
+<h5 class="text-xs font-bold leading-tight">Insight Visualizer</h5>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-on-surface-variant">4.9 ★</span>
+<span class="text-[10px] font-bold">$79</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-32 pt-16 border-t border-white/5 grid grid-cols-1 md:grid-cols-4 gap-12 px-8 pb-16"><div class="col-span-1 md:col-span-2"><h3 class="font-headline-md text-headline-md text-primary font-bold mb-6">nskill</h3><p class="text-on-surface-variant text-body-md max-w-sm mb-8">Kho kỹ năng được tuyển chọn, bảo mật và sẵn sàng đưa thẳng vào quy trình làm việc của AI agent của bạn.</p><p class="text-on-surface-variant font-label-sm text-label-sm">© 2024 nskill. Bảo lưu mọi quyền.</p></div><div><h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest mb-6">Nền tảng</h4><ul class="space-y-4 text-on-surface-variant text-body-md"><li><a class="hover:text-primary transition-colors" href="#">Kho kỹ năng</a></li><li><a class="hover:text-primary transition-colors" href="#">Bảng xếp hạng</a></li><li><a class="hover:text-primary transition-colors" href="#">Blog</a></li><li><a class="hover:text-primary transition-colors" href="#">Tài liệu</a></li></ul></div><div><h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-widest mb-6">Công ty</h4><ul class="space-y-4 text-on-surface-variant text-body-md"><li><a class="hover:text-primary transition-colors" href="#">Giới thiệu</a></li><li><a class="hover:text-primary transition-colors" href="#">Chính sách bảo mật</a></li><li><a class="hover:text-primary transition-colors" href="#">Điều khoản dịch vụ</a></li><li><a class="hover:text-primary transition-colors" href="#">Hỗ trợ</a></li></ul></div></footer>
+</main>
+<!-- Mobile Bottom Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-xl border-t border-white/10 z-50 flex justify-around p-4">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px]">Trang chủ</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="text-[10px]">Kỹ năng</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px]">Khám phá</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px]">Hồ sơ</span>
+</a>
+</div>
+<script>
+    // FAQ Toggle functionality
+    document.querySelectorAll('details').forEach((el) => {
+        el.addEventListener('toggle', (event) => {
+            if (el.open) {
+                document.querySelectorAll('details').forEach((other) => {
+                    if (other !== el) other.removeAttribute('open');
+                });
+            }
+        });
+    });
+</script>
+</body></html>

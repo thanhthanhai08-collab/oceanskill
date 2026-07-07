@@ -20,10 +20,12 @@ export default async function DashboardSkillsPage({params}: {readonly params: Pr
     emptyAll: t("emptyAll"), emptyPlatform: t("emptyPlatform"),
     addSkill: t("addSkill"), addSkillHint: t("addSkillHint"), limitTitle: t("limitTitle"), limitDescription: t("limitDescription", {limit}), upgradePlan: t("upgradePlan"), close: t("close"),
     securityDescription: t("securityDescription"),
+    removeSkill: t("removeSkill"), removeFailed: t("removeFailed"),
+    totalSkills: t("totalSkills"), monthlyRevenue: t("monthlyRevenue"), sellerRank: t("sellerRank"),
   };
 
   return <>
-    <header><p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{t("eyebrow")}</p><h1 className="mt-3 font-geist text-3xl font-bold tracking-tight sm:text-4xl">{t("title")}</h1><p className="mt-3 max-w-3xl leading-7 text-on-surface-variant">{t("description")}</p></header>
+    <header><p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t("eyebrow")}</p><h1 className="mt-3 font-geist text-5xl font-bold tracking-tight">{t("title")}</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{t("description")}</p></header>
 
     <DashboardSkillsTabs library={library} uploaded={creatorData.skills} locale={locale} limit={limit} atLimit={atLimit} labels={tabsLabels} cardLabels={cardLabels} formLabels={formLabels}/>
   </>;

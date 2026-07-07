@@ -17,15 +17,15 @@ export default function DashboardNav({labels, locale}: {readonly labels: Dashboa
   };
 
   return (
-    <nav className="mt-4 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+    <nav className="mt-8 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
       {dashboardNavItems.map((item) => {
         const active = isActive(item.href);
         return (
           <Link
             key={item.label}
             href={item.href as "/dashboard"}
-            className={`flex min-h-11 items-center gap-2 rounded-xl px-3 py-3 text-sm transition hover:bg-surface-container sm:gap-3 ${
-              active ? "bg-primary/10 text-primary" : "text-on-surface-variant"
+            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-surface-variant/20 hover:text-on-surface ${
+              active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant"
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">{item.icon}</span>

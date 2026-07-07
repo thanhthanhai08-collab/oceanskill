@@ -2,7 +2,7 @@ import "server-only";
 import {createHash, randomBytes} from "node:crypto";
 import {createAdminClient} from "@/lib/supabase/admin";
 
-export async function createApiKey(userId: string, name: string) {
+export async function createMcpKey(userId: string, name: string) {
   const normalizedName = name.trim();
   if (!normalizedName || normalizedName.length > 80) throw new Error("Invalid API key name");
   const rawKey = `nsk_${randomBytes(32).toString("base64url")}`;

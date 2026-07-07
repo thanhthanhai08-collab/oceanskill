@@ -1,0 +1,429 @@
+<!DOCTYPE html><html class="dark" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>nskill | Thanh toán</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#b8c3ff",
+                    "background": "#111319",
+                    "outline-variant": "#434656",
+                    "surface-dim": "#111319",
+                    "surface-container-low": "#191b22",
+                    "on-tertiary-fixed": "#002021",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#310048",
+                    "surface-variant": "#33343b",
+                    "on-tertiary-container": "#bbfbff",
+                    "inverse-surface": "#e2e2eb",
+                    "primary-fixed-dim": "#b8c3ff",
+                    "error": "#ffb4ab",
+                    "on-primary": "#002388",
+                    "inverse-on-surface": "#2e3037",
+                    "on-secondary-container": "#e5a9ff",
+                    "tertiary": "#00dce5",
+                    "on-secondary": "#510074",
+                    "primary-fixed": "#dde1ff",
+                    "surface-bright": "#373940",
+                    "error-container": "#93000a",
+                    "secondary": "#e9b3ff",
+                    "inverse-primary": "#124af0",
+                    "outline": "#8e90a2",
+                    "on-background": "#e2e2eb",
+                    "on-primary-container": "#efefff",
+                    "secondary-fixed": "#f6d9ff",
+                    "on-primary-fixed-variant": "#0035be",
+                    "on-secondary-fixed-variant": "#7200a3",
+                    "primary-container": "#2e5bff",
+                    "surface-container-high": "#282a30",
+                    "on-surface-variant": "#c4c5d9",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed": "#63f7ff",
+                    "surface-container": "#1e1f26",
+                    "tertiary-fixed-dim": "#00dce5",
+                    "primary": "#b8c3ff",
+                    "tertiary-container": "#00797e",
+                    "secondary-container": "#7d01b1",
+                    "surface-container-highest": "#33343b",
+                    "on-tertiary-fixed-variant": "#004f53",
+                    "on-tertiary": "#003739",
+                    "on-surface": "#e2e2eb",
+                    "on-primary-fixed": "#001356",
+                    "secondary-fixed-dim": "#e9b3ff",
+                    "surface": "#111319",
+                    "surface-container-lowest": "#0c0e14"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-width": "1440px",
+                    "gutter": "24px",
+                    "base-unit": "8px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "label-sm": ["JetBrains Mono"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0C12;
+            color: #e2e2eb;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .featured-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            border: 1px solid transparent;
+            background-clip: padding-box;
+        }
+        .featured-card::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            z-index: -1;
+            padding: 1px;
+            background: linear-gradient(to bottom right, #b8c3ff, #7d01b1);
+            border-radius: inherit;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(184, 195, 255, 0.15);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md bg-background text-on-background min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-background sticky top-0 z-50 border-b border-outline-variant/30">
+<div class="flex justify-between items-center h-16 w-full px-margin-desktop max-w-max-width mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-headline-md font-display-lg font-bold text-on-surface">nskill</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Marketplace</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Leaderboard</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Blog</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Docs</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors duration-200" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center bg-surface-container rounded-full px-4 py-1.5 border border-outline-variant/20">
+<span class="material-symbols-outlined text-on-surface-variant text-body-md mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-sm w-48 placeholder-on-surface-variant/50" placeholder="Tìm kiếm tài năng AI..." type="text">
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">dark_mode</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">language</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-sm scale-95 active:scale-90 transition-transform">Dashboard</button>
+</div>
+</div>
+</header>
+<div class="flex max-w-max-width mx-auto">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-80px)] m-4 space-y-4 w-64 sticky top-20">
+<div class="bg-surface-container/50 backdrop-blur-xl border-r border-white/5 h-full rounded-xl flex flex-col p-4 shadow-xl">
+<!-- User Profile Section -->
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-on-surface font-body-md truncate">thanhthanhai08@gmail.com</p>
+<p class="text-primary text-label-sm">nskill Pro Member</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="text-label-sm">My Skills</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">vpn_key</span>
+<span class="text-label-sm">MCP API Key</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="text-label-sm">Usage</span>
+</a>
+<!-- Active State for Payments -->
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg p-3 font-bold Active: scale-98 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-tertiary-container/20 text-tertiary border border-tertiary/30 p-3 rounded-lg text-label-sm hover:bg-tertiary/10 transition-all">
+                        Top-up Credits
+                    </button>
+<a class="flex items-center gap-3 text-on-surface-variant p-3 hover:bg-surface-variant/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-label-sm">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 p-4 md:p-8 space-y-12">
+<!-- Header Section -->
+<section class="space-y-1">
+<h1 class="text-headline-md font-display-lg text-on-surface">Thanh toán</h1>
+<p class="text-body-md text-on-surface-variant">Quản lý credit và lịch sử giao dịch của bạn.</p>
+</section>
+<!-- Credit Balance Card -->
+<section>
+<div class="featured-card glow-effect rounded-2xl p-8 flex flex-col md:flex-row justify-between items-center gap-6" style="background: linear-gradient(135deg, rgb(26, 28, 46) 0%, rgb(45, 27, 78) 100%); border: 1px solid rgba(184, 195, 255, 0.3); box-shadow: rgba(125, 1, 177, 0.2) 0px 0px 30px;">
+<div class="space-y-2 text-center md:text-left">
+<p class="text-label-sm uppercase tracking-widest text-primary">Số credit khả dụng</p>
+<div class="flex items-baseline gap-2">
+<span class="text-display-lg text-white font-display-lg">150</span>
+<span class="text-on-surface-variant font-body-md">Credits</span>
+</div>
+</div>
+<button class="bg-gradient-to-r from-primary to-secondary text-on-primary px-10 py-4 rounded-xl font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(184,195,255,0.4)] active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+                        Nạp thêm
+                    </button>
+</div>
+</section>
+<!-- Top-up Section (Packages) -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-md font-display-lg">Mua Credit</h2>
+<span class="text-label-sm text-tertiary px-3 py-1 bg-tertiary/10 rounded-full">Ưu đãi hôm nay -10%</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Package 1 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-6 hover:scale-[1.02] transition-transform cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-surface-variant/30 rounded-xl">
+<span class="material-symbols-outlined text-primary">bolt</span>
+</div>
+<span class="text-label-sm text-on-surface-variant">Gói Cơ Bản</span>
+</div>
+<div>
+<p class="text-headline-md font-bold">50 Credits</p>
+<p class="text-display-lg-mobile text-primary font-display-lg">50,000 VND</p>
+</div>
+<ul class="space-y-2 flex-1">
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Truy cập tất cả skill
+                            </li>
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Không hết hạn
+                            </li>
+</ul>
+<button class="w-full py-3 border border-primary/40 text-primary rounded-xl font-label-sm hover:bg-primary/10 transition-colors">Chọn gói</button>
+</div>
+<!-- Package 2 (Featured) -->
+<div class="featured-card rounded-2xl p-6 flex flex-col gap-6 scale-105 z-10 shadow-2xl">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-secondary-container/30 rounded-xl">
+<span class="material-symbols-outlined text-secondary">rocket_launch</span>
+</div>
+<span class="text-label-sm text-secondary bg-secondary/10 px-2 py-0.5 rounded">Phổ biến nhất</span>
+</div>
+<div>
+<p class="text-headline-md font-bold">100 Credits</p>
+<p class="text-display-lg-mobile text-secondary font-display-lg">100,000 VND</p>
+</div>
+<ul class="space-y-2 flex-1">
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Mọi tính năng Gói Cơ Bản
+                            </li>
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Hỗ trợ ưu tiên 24/7
+                            </li>
+</ul>
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-xl font-bold font-label-sm hover:opacity-90 transition-opacity">Chọn gói</button>
+</div>
+<!-- Package 3 -->
+<div class="glass-card rounded-2xl p-6 flex flex-col gap-6 hover:scale-[1.02] transition-transform cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-surface-variant/30 rounded-xl">
+<span class="material-symbols-outlined text-tertiary">diamond</span>
+</div>
+<span class="text-label-sm text-on-surface-variant">Gói Pro</span>
+</div>
+<div>
+<p class="text-headline-md font-bold">500 Credits</p>
+<p class="text-display-lg-mobile text-tertiary font-display-lg">450,000 VND</p>
+<p class="text-label-sm text-error line-through decoration-1">500,000 VND</p>
+</div>
+<ul class="space-y-2 flex-1">
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Tiết kiệm 10% chi phí
+                            </li>
+<li class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-green-400 text-sm">check</span>
+                                Quà tặng MCP Key giới hạn
+                            </li>
+</ul>
+<button class="w-full py-3 border border-tertiary/40 text-tertiary rounded-xl font-label-sm hover:bg-tertiary/10 transition-colors">Chọn gói</button>
+</div>
+</div>
+</section>
+<!-- Transaction History Table -->
+<section class="space-y-6">
+<h2 class="text-headline-md font-display-lg">Lịch sử giao dịch</h2>
+<div class="glass-card rounded-2xl overflow-hidden" style="transform: translateY(0px); transition: transform 0.3s;">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-variant/20">
+<tr>
+<th class="px-6 py-4 text-label-sm font-bold text-on-surface-variant">Ngày nạp/mua</th>
+<th class="px-6 py-4 text-label-sm font-bold text-on-surface-variant">Loại giao dịch</th>
+<th class="px-6 py-4 text-label-sm font-bold text-on-surface-variant">Số lượng</th>
+<th class="px-6 py-4 text-label-sm font-bold text-on-surface-variant">Số tiền</th>
+<th class="px-6 py-4 text-label-sm font-bold text-on-surface-variant">Trạng thái</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-variant/10 transition-colors">
+<td class="px-6 py-4 text-label-sm text-on-surface">24/10/2023, 14:30</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">Nạp tiền</td>
+<td class="px-6 py-4 text-label-sm text-primary">+100 Credits</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">100,000 VND</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                            Thành công
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-variant/10 transition-colors">
+<td class="px-6 py-4 text-label-sm text-on-surface">20/10/2023, 09:15</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">Mua skill</td>
+<td class="px-6 py-4 text-label-sm text-error">-25 Credits</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">--</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                            Thành công
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-variant/10 transition-colors">
+<td class="px-6 py-4 text-label-sm text-on-surface">15/10/2023, 18:45</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">Nạp tiền</td>
+<td class="px-6 py-4 text-label-sm text-primary">+50 Credits</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">50,000 VND</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                            Thành công
+                                        </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-variant/10 transition-colors">
+<td class="px-6 py-4 text-label-sm text-on-surface">10/10/2023, 11:20</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">Mua skill</td>
+<td class="px-6 py-4 text-label-sm text-error">-10 Credits</td>
+<td class="px-6 py-4 text-label-sm text-on-surface">--</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] font-bold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                            Thành công
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="mt-20 border-t border-outline-variant/30 py-12 px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-max-width mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-4 items-center md:items-start">
+<span class="text-headline-md font-display-lg font-bold text-on-surface">nskill</span>
+<p class="text-label-sm text-on-surface-variant">© 2024 nskill Ecosystem. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Giới thiệu</a>
+<a class="text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Chính sách bảo mật</a>
+<a class="text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Điều khoản dịch vụ</a>
+<a class="text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Liên hệ</a>
+</div>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-surface-variant/20 flex items-center justify-center text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-variant/20 flex items-center justify-center text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple hover lift animation for cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.transition = 'transform 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+
+
+</body></html>

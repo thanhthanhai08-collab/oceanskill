@@ -14,28 +14,33 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
   const navLabels: DashboardNavLabels = {
     overview: labels.overview,
     skills: labels.skills,
-    apiKeys: labels.apiKeys,
+    mcpKeys: labels.mcpKeys,
     usage: labels.usage,
     billing: labels.billing,
     settings: labels.settings,
   };
 
   return (
-    <aside className="h-fit rounded-2xl border border-outline-variant/45 bg-surface-container-low/70 p-5 lg:sticky lg:top-28">
+    <aside className="h-fit rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl lg:sticky lg:top-24 lg:min-h-[calc(100vh-7rem)]">
       {/* User info */}
-      <div className="border-b border-outline-variant/35 px-2 pb-5">
-        <p className="font-geist text-xl font-semibold">{displayName}</p>
-        <p className="mt-1 font-mono text-xs text-on-surface-variant">{roleLabel}</p>
+      <div className="flex items-center gap-3 px-2 py-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/20">
+          <span className="material-symbols-outlined text-[21px] text-primary">person</span>
+        </div>
+        <div className="min-w-0">
+          <p className="truncate font-mono text-[11px] font-bold">{displayName}</p>
+          <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.08em] text-on-surface-variant">{roleLabel}</p>
+        </div>
       </div>
 
       {/* Credit balance mini-card */}
-      <div className="mt-4 rounded-xl bg-gradient-to-r from-primary/10 via-secondary/5 to-tertiary/10 px-4 py-3">
+      <div className="mt-3 rounded-lg border border-white/5 bg-surface-container-low px-4 py-3">
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.creditBalance}</p>
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="font-geist text-2xl font-bold">{balance.toLocaleString(locale)}</p>
           <Link
             href="/dashboard/billing"
-            className="rounded-lg bg-primary/15 px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:bg-primary/25"
+            className="rounded border border-white/10 bg-surface-container-high px-3 py-1.5 text-[11px] font-semibold text-on-surface transition hover:bg-surface-container-highest"
           >
             {labels.topUp}
           </Link>

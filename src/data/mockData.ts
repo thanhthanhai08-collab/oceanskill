@@ -30,9 +30,9 @@ export const navItems = [
 
 export const dashboardNavItems = [
   {icon: "dashboard", label: "overview", href: "/dashboard"},
-  {icon: "deployed_code", label: "skills", href: "/dashboard/skills"},
-  {icon: "key", label: "apiKeys", href: "/dashboard/api-keys"},
-  {icon: "monitoring", label: "usage", href: "/dashboard/usage"},
+  {icon: "smart_toy", label: "skills", href: "/dashboard/skills"},
+  {icon: "vpn_key", label: "mcpKeys", href: "/dashboard/mcp-keys"},
+  {icon: "insights", label: "usage", href: "/dashboard/usage"},
   {icon: "payments", label: "billing", href: "/dashboard/billing"},
   {icon: "settings", label: "settings", href: "/dashboard/settings"},
 ] as const;

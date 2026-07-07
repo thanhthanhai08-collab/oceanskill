@@ -11,10 +11,10 @@ export interface DashboardShellProps {
 export default function DashboardShell({children, sidebar}: DashboardShellProps) {
   return (
     <SiteShell showSearch={false}>
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <section className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
           <DashboardSidebar {...sidebar} />
-          <main className="min-w-0">{children}</main>
+          <main className="min-w-0 py-8 lg:py-12">{children}</main>
         </div>
       </section>
     </SiteShell>
