@@ -29,7 +29,7 @@ export default async function SiteHeader({showSearch = true}: SiteHeaderProps) {
           <HeaderNav />
           <div className="mx-2 hidden h-5 w-px bg-outline-variant/40 sm:block" />
           <ThemeToggle />
-          <div className="hidden sm:block"><LanguageToggle /></div>
+          <LanguageToggle />
           {signedIn ? (
             <Link href="/dashboard" className="ml-1 rounded-lg bg-primary-container px-4 py-2 font-mono text-xs font-semibold text-white transition hover:bg-inverse-primary">{common("dashboard")}</Link>
           ) : (
