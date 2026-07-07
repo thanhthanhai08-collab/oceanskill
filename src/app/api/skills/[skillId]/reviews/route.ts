@@ -34,17 +34,32 @@ export async function POST(request: Request, {params}: {params: Promise<{skillId
   const email = typeof profile?.email === "string" ? profile.email : "";
   const reviewerName = (typeof profile?.display_name === "string" && profile.display_name.trim()) || email.split("@")[0] || "OceanSkill user";
 
-  const {error: upsertError} = await supabase
+  const {data: existingReview, error: existingError} = await supabase
     .from("skill_reviews")
-    .upsert({
-      skill_id: skillId,
-      user_id: userId,
-      rating: input.rating,
-      body: input.body,
-      reviewer_name: reviewerName,
-    }, {onConflict: "skill_id,user_id"});
+    .select("id")
+    .eq("skill_id", skillId)
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  if (upsertError) return NextResponse.json({error: "review_save_failed"}, {status: 500});
+  if (existingError) return NextResponse.json({error: "review_lookup_failed", detail: existingError.code}, {status: 500});
+
+  const saveResult = existingReview
+    ? await supabase
+      .from("skill_reviews")
+      .update({rating: input.rating, body: input.body, reviewer_name: reviewerName})
+      .eq("id", existingReview.id)
+      .eq("user_id", userId)
+    : await supabase
+      .from("skill_reviews")
+      .insert({
+        skill_id: skillId,
+        user_id: userId,
+        rating: input.rating,
+        body: input.body,
+        reviewer_name: reviewerName,
+      });
+
+  if (saveResult.error) return NextResponse.json({error: "review_save_failed", detail: saveResult.error.code}, {status: 500});
 
   const {data, error} = await supabase
     .from("skill_reviews")

@@ -58,13 +58,13 @@ export default function SkillReviews({skillId, initialReviews, initialStats, ini
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({rating, body}),
         });
-        const json = await response.json() as {reviews?: SkillReview[]; stats?: SkillReviewStats; ownReview?: SkillReview; error?: string};
+        const json = await response.json() as {reviews?: SkillReview[]; stats?: SkillReviewStats; ownReview?: SkillReview; error?: string; detail?: string};
         if (response.status === 401) {
           setMessage(labels.loginRequired);
           return;
         }
         if (!response.ok || !json.reviews || !json.stats || !json.ownReview) {
-          setMessage(labels.saveFailed);
+          setMessage(json.error ? `${labels.saveFailed} (${json.error}${typeof json.detail === "string" ? `:${json.detail}` : ""})` : labels.saveFailed);
           return;
         }
         setReviews(json.reviews);
