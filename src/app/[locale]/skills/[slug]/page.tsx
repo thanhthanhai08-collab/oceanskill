@@ -2,10 +2,12 @@ import {getTranslations} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {Link} from "@/i18n/navigation";
 import SiteShell from "@/components/layout/SiteShell";
+import AddSkillToLibraryButton from "@/components/skills/AddSkillToLibraryButton";
 import SkillCard from "@/components/skills/SkillCard";
+import SkillReviews from "@/components/skills/SkillReviews";
 import {getDomainVisual} from "@/data/mockData";
 import {getPublicSkill, listRelatedSkills} from "@/lib/catalog/skills";
-import {addPlatformSkill} from "@/app/[locale]/dashboard/actions";
+import {getSkillReviewState} from "@/lib/skills/reviews";
 
 export const dynamic = "force-dynamic";
 
@@ -14,20 +16,16 @@ export interface SkillDetailPageProps {
 }
 
 export default async function SkillDetailPage({params}: SkillDetailPageProps) {
-  const {slug, locale} = await params;
+  const {slug} = await params;
   const skill = await getPublicSkill(slug);
   if (!skill) notFound();
   const t = await getTranslations("SkillDetail");
-  const relatedSkills = await listRelatedSkills(skill.domain, skill.slug);
+  const [relatedSkills, reviewState] = await Promise.all([
+    listRelatedSkills(skill.domain, skill.slug),
+    getSkillReviewState(skill.id),
+  ]);
   const visual = getDomainVisual(skill.domain);
   const version = skill.current_version ?? "1.0.0";
-  const ratingRows = [
-    {stars: 5, value: 85},
-    {stars: 4, value: 12},
-    {stars: 3, value: 2},
-    {stars: 2, value: 1},
-    {stars: 1, value: 0},
-  ];
 
   return (
     <SiteShell>
@@ -47,9 +45,9 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
                 <h1 className="mt-4 font-geist text-4xl font-bold tracking-tight sm:text-5xl">{skill.title}</h1>
                 <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{skill.description}</p>
                 <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
-                  <span className="inline-flex items-center gap-2 font-semibold"><span className="grid h-6 w-6 place-items-center rounded-full bg-primary/10 text-primary"><span className="material-symbols-outlined text-[14px]">verified</span></span>{t("by")} NeuralSystems</span>
+                  <span className="inline-flex items-center gap-2 font-semibold">{t("by")} NeuralSystems</span>
                   <span className="font-bold text-tertiary">Top 1</span>
-                  <span className="text-on-surface-variant">1.2K {t("sales")}</span>
+                  <span className="text-on-surface-variant">{reviewState.stats.count.toLocaleString()} {t("reviewsTitle").toLowerCase()}</span>
                 </div>
               </div>
             </div>
@@ -110,45 +108,36 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             </div>
           </section>
 
-          <section>
-            <h2 className="mb-4 font-geist text-xl font-bold">{t("reviewsTitle")}</h2>
-            <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-              <div className="grid gap-8 sm:grid-cols-[150px_minmax(0,1fr)]">
-                <div className="text-center">
-                  <p className="font-geist text-5xl font-bold text-primary">4.9</p>
-                  <p className="mt-2 text-primary">★★★★★</p>
-                  <p className="mt-2 text-xs text-on-surface-variant">{t("basedOnReviews")}</p>
-                </div>
-                <div className="space-y-3">
-                  {ratingRows.map((row) => (
-                    <div key={row.stars} className="grid grid-cols-[18px_1fr_36px] items-center gap-3 text-xs">
-                      <span>{row.stars}</span>
-                      <span className="h-2 overflow-hidden rounded-full bg-surface-container-highest"><span className="block h-full rounded-full bg-primary" style={{width: `${row.value}%`}} /></span>
-                      <span className="text-right text-on-surface-variant">{row.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 space-y-4">
-              {[
-                ["Alex Lindholm", t("reviewOne")],
-                ["Sarah Chen", t("reviewTwo")],
-              ].map(([name, body]) => (
-                <article key={name} className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-5">
-                  <div className="flex items-center justify-between gap-4"><p className="font-geist font-bold">{name}</p><span className="text-primary">★★★★★</span></div>
-                  <p className="mt-3 text-sm leading-6 text-on-surface-variant">{body}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+          <SkillReviews
+            skillId={skill.id}
+            initialReviews={reviewState.reviews}
+            initialStats={reviewState.stats}
+            initialOwnReview={reviewState.ownReview}
+            labels={{
+              title: t("reviewsTitle"),
+              writeTitle: t("writeReviewTitle"),
+              writeDescription: t("writeReviewDescription"),
+              placeholder: t("writeReviewPlaceholder"),
+              submit: t("submitReview"),
+              update: t("updateReview"),
+              basedOn: t("basedOnReviewCount", {count: "{count}"}),
+              empty: t("emptyReviews"),
+              loginRequired: t("reviewLoginRequired"),
+              saveFailed: t("reviewSaveFailed"),
+            }}
+          />
         </div>
 
         <aside className="space-y-8 lg:sticky lg:top-24 lg:h-fit">
           <section className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/20 via-surface-container-low to-secondary/15 p-6 shadow-[0_0_32px_rgba(184,195,255,0.16)]">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-geist text-lg font-bold">{t("favoriteTitle")}</h2>
-              <span className="text-xs font-bold text-tertiary">{t("trustedSource")}</span>
+              <span className="inline-flex items-center gap-2 text-xs font-bold text-tertiary">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary shadow-[0_0_20px_rgba(184,195,255,0.2)]">
+                  <span className="material-symbols-outlined text-[21px]">verified</span>
+                </span>
+                {t("trustedSource")}
+              </span>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
               {skill.compatible_clients.map((client) => <span key={client} className="rounded-md bg-surface-container-lowest px-3 py-2 font-mono text-xs">{client}</span>)}
@@ -156,15 +145,11 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             <dl className="mt-7 space-y-4 border-t border-white/10 pt-6 text-sm">
               <div className="flex justify-between gap-4"><dt className="text-on-surface-variant">{t("version")}</dt><dd className="font-mono">{version}</dd></div>
               <div className="flex justify-between gap-4"><dt className="text-on-surface-variant">{t("license")}</dt><dd>{skill.license_spdx ?? "Apache-2.0"}</dd></div>
-              <div className="flex justify-between gap-4"><dt className="text-on-surface-variant">{t("source")}</dt><dd>{skill.source_url ? "GitHub" : "OceanSkill"}</dd></div>
+              <div className="flex items-center justify-between gap-4"><dt className="inline-flex items-center gap-2 text-on-surface-variant"><span className="material-symbols-outlined text-[16px] text-primary">verified</span>{t("source")}</dt><dd>{skill.source_url ? "GitHub" : "OceanSkill"}</dd></div>
             </dl>
-            <form action={addPlatformSkill} className="mt-7">
-              <input type="hidden" name="skillId" value={skill.id}/>
-              <button className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-on-primary transition hover:brightness-110">
-                {t("addToLibrary")}
-                <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              </button>
-            </form>
+            <div className="mt-7">
+              <AddSkillToLibraryButton skillId={skill.id} labels={{add: t("addToLibrary"), added: t("addSuccess"), already: t("addAlready"), failed: t("addFailed")}} />
+            </div>
             <Link href="/dashboard/mcp-keys" className="mt-3 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-bold text-on-surface transition hover:bg-white/10">
               {t("createMcpKey")}
               <span className="material-symbols-outlined text-[18px]">vpn_key</span>
@@ -180,7 +165,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
               {relatedSkills.slice(0, 2).map((related) => (
                 <Link key={related.id} href={`/skills/${related.slug}` as "/skills"} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-surface-container-low/55 p-4 transition hover:bg-white/[0.04]">
                   <span className="min-w-0"><span className="block truncate font-semibold">{related.title}</span><span className="text-xs text-on-surface-variant">{related.domain}</span></span>
-                  <span className="font-mono text-xs">$89</span>
+                  <span className="font-mono text-xs">{related.current_version ?? "1.0.0"}</span>
                 </Link>
               ))}
             </div>
