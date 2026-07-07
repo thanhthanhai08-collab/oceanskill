@@ -14,6 +14,7 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
   const navLabels: DashboardNavLabels = {
     overview: labels.overview,
     skills: labels.skills,
+    collections: labels.collections,
     mcpKeys: labels.mcpKeys,
     usage: labels.usage,
     billing: labels.billing,

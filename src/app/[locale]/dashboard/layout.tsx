@@ -34,6 +34,7 @@ export default async function DashboardLayout({children, params}: DashboardLayou
   const sidebarLabels = {
     overview: t("overview"),
     skills: t("skills"),
+    collections: t("collections"),
     mcpKeys: t("mcpKeys"),
     usage: t("usage"),
     billing: t("billing"),

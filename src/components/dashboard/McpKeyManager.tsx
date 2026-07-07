@@ -33,6 +33,7 @@ export default function McpKeyManager({initialKeys, locale, labels}: McpKeyManag
   const [newKeyValue, setNewKeyValue] = useState<string | null>(null);
   const [keyName, setKeyName] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
 
@@ -41,6 +42,7 @@ export default function McpKeyManager({initialKeys, locale, labels}: McpKeyManag
 
   const handleCreate = () => {
     if (!keyName.trim()) return;
+    setCreateError(null);
     setIsCreating(true);
     startTransition(async () => {
       try {
@@ -50,18 +52,28 @@ export default function McpKeyManager({initialKeys, locale, labels}: McpKeyManag
           body: JSON.stringify({name: keyName.trim()}),
         });
         const json = await res.json() as {key?: string; id?: string; name?: string; key_prefix?: string; created_at?: string};
-        if (json.key && json.id) {
-          setNewKeyValue(json.key);
+        if (!res.ok) {
+          setCreateError(`Không thể tạo MCP key (${res.status}).`);
+          return;
+        }
+        const rawKey = json.key;
+        const id = json.id;
+        if (rawKey && id) {
+          setNewKeyValue(rawKey);
           setKeys((prev) => [{
-            id: json.id,
+            id,
             name: json.name ?? keyName.trim(),
-            key_prefix: json.key_prefix ?? json.key.slice(0, 12),
+            key_prefix: json.key_prefix ?? rawKey.slice(0, 12),
             last_used_at: null,
             revoked_at: null,
             created_at: json.created_at ?? new Date().toISOString(),
           }, ...prev]);
           setKeyName("");
+        } else {
+          setCreateError("Không thể tạo MCP key: phản hồi không có key.");
         }
+      } catch {
+        setCreateError("Không thể tạo MCP key. Hãy thử lại.");
       } finally {
         setIsCreating(false);
       }
@@ -129,6 +141,7 @@ export default function McpKeyManager({initialKeys, locale, labels}: McpKeyManag
           {isCreating ? labels.creating : labels.createKey}
         </button>
       </div>
+      {createError && <p className="-mt-4 rounded-lg border border-error/20 bg-error/10 p-3 text-sm text-error">{createError}</p>}
 
       <div className="overflow-hidden rounded-xl border border-white/5 bg-surface-container-low/30">
         {keys.length === 0 ? (

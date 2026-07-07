@@ -31,6 +31,7 @@ export const navItems = [
 export const dashboardNavItems = [
   {icon: "dashboard", label: "overview", href: "/dashboard"},
   {icon: "smart_toy", label: "skills", href: "/dashboard/skills"},
+  {icon: "folder_special", label: "collections", href: "/dashboard/collections"},
   {icon: "vpn_key", label: "mcpKeys", href: "/dashboard/mcp-keys"},
   {icon: "insights", label: "usage", href: "/dashboard/usage"},
   {icon: "payments", label: "billing", href: "/dashboard/billing"},

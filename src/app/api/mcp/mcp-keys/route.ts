@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   try { body = await request.json(); } catch { return NextResponse.json({error: "invalid_json"}, {status: 400}); }
   const name = typeof body === "object" && body !== null && "name" in body ? String(body.name) : "";
   try {
-    const created = await createMcpKey(userId, name);
+    const created = await createMcpKey(supabase, String(userId), name);
     return NextResponse.json({
       key: created.rawKey,
       id: created.apiKey.id,

@@ -21,7 +21,6 @@ export default async function DashboardSkillsPage({params}: {readonly params: Pr
     addSkill: t("addSkill"), addSkillHint: t("addSkillHint"), limitTitle: t("limitTitle"), limitDescription: t("limitDescription", {limit}), upgradePlan: t("upgradePlan"), close: t("close"),
     securityDescription: t("securityDescription"),
     removeSkill: t("removeSkill"), removeFailed: t("removeFailed"),
-    totalSkills: t("totalSkills"), monthlyRevenue: t("monthlyRevenue"), sellerRank: t("sellerRank"),
   };
 
   return <>

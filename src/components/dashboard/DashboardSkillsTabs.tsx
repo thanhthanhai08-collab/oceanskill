@@ -18,12 +18,11 @@ type TabsLabels = Readonly<{
   emptyAll: string; emptyPlatform: string;
   addSkill: string; addSkillHint: string; limitTitle: string; limitDescription: string; upgradePlan: string; close: string;
   securityDescription: string; removeSkill: string; removeFailed: string;
-  totalSkills: string; monthlyRevenue: string; sellerRank: string;
 }>;
 
 interface PlatformCardProps {
   readonly skill: FoundationSkill;
-  readonly typeLabel: string;
+  readonly typeLabel?: string;
   readonly removable?: boolean;
   readonly removeLabel?: string;
   readonly onRemove?: (id: string) => void;
@@ -48,7 +47,7 @@ function PlatformCard({skill, typeLabel, removable = false, removeLabel, onRemov
         <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-highest ${visual.accentClass}`}>
           <span className="material-symbols-outlined text-3xl">{visual.icon}</span>
         </div>
-        <span className="rounded-full bg-surface-container-highest/50 px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{typeLabel}</span>
+        {typeLabel && <span className="rounded-full bg-surface-container-highest/50 px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{typeLabel}</span>}
       </div>
       <div>
         <h3 className="font-geist text-xl font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
@@ -127,9 +126,12 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
               role="tab"
               aria-selected={selected}
               onClick={() => setTab(item.key)}
-              className={`-mb-px whitespace-nowrap border-b-2 px-2 pb-4 text-sm font-bold transition ${selected ? "border-primary text-primary" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}
+              className={`-mb-px flex whitespace-nowrap border-b-2 px-2 pb-4 text-sm font-bold transition ${selected ? "border-primary text-primary" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}
             >
-              {item.label}
+              <span>{item.label}</span>
+              <span className={`ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-2 font-mono text-[10px] font-bold ${selected ? "bg-primary/15 text-primary" : "bg-white/10 text-on-surface-variant"}`}>
+                {item.count}
+              </span>
             </button>
           );
         })}
@@ -142,11 +144,10 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
           {allSkills.length ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {allSkills.map((skill) => skill.source === "library" ? (
-                <PlatformCard key={`library-${skill.id}`} skill={skill} typeLabel={labels.platformBadge} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
+                <PlatformCard key={`library-${skill.id}`} skill={skill} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
               ) : (
                 <PlatformCard key={`uploaded-${skill.id}`} skill={skill} typeLabel={labels.uploadedBadge} />
               ))}
-              <CreatorSkillAddCard atLimit={atLimit} count={uploaded.length} limit={limit} formLabels={formLabels} labels={{add: labels.addSkill, addHint: labels.addSkillHint, limitTitle: labels.limitTitle, limitDescription: labels.limitDescription, upgrade: labels.upgradePlan, close: labels.close}}/>
             </div>
           ) : (
             <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-on-surface-variant">{labels.emptyAll}</p>
@@ -158,7 +159,7 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
         <div className="mt-8">
           {librarySkills.length ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {librarySkills.map((skill) => <PlatformCard key={skill.id} skill={skill} typeLabel={labels.platformBadge} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />)}
+              {librarySkills.map((skill) => <PlatformCard key={skill.id} skill={skill} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />)}
             </div>
           ) : (
             <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-on-surface-variant">{labels.emptyPlatform}</p>
@@ -175,21 +176,6 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
           <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-on-surface-variant"><span className="material-symbols-outlined text-[17px] text-secondary">verified_user</span>{labels.securityDescription}</p>
         </div>
       )}
-
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 border-l-primary bg-surface-container-low/55 p-6">
-          <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{labels.totalSkills}</p>
-          <h4 className="font-geist text-4xl font-bold">{allSkills.length}</h4>
-        </div>
-        <div className="rounded-2xl border border-white/10 border-l-secondary bg-surface-container-low/55 p-6">
-          <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{labels.monthlyRevenue}</p>
-          <h4 className="font-geist text-4xl font-bold">$2.4k</h4>
-        </div>
-        <div className="rounded-2xl border border-white/10 border-l-tertiary bg-surface-container-low/55 p-6">
-          <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{labels.sellerRank}</p>
-          <h4 className="font-geist text-4xl font-bold uppercase">Pro</h4>
-        </div>
-      </div>
     </section>
   );
 }
