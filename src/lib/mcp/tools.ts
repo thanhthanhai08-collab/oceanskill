@@ -5,6 +5,24 @@ import {finalizeMcpUsage, releaseMcpUsage, reserveMcpUsage} from "@/lib/mcp/usag
 import type {AuthenticatedMcpKey} from "@/lib/mcp/authentication";
 
 const metadataFields = "id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
+export type McpToolName =
+  | "list_purchased_skills"
+  | "search_skills"
+  | "get_skill_content"
+  | "list_collections"
+  | "add_collection_to_library"
+  | "toggle_skill"
+  | "get_usage_summary";
+
+export async function recordMcpCall(auth: AuthenticatedMcpKey, toolName: McpToolName, requestId?: string) {
+  const {error} = await createAdminClient().from("mcp_call_events").insert({
+    user_id: auth.userId,
+    api_key_id: auth.apiKeyId,
+    tool_name: toolName,
+    request_id: requestId ?? null,
+  });
+  if (error) throw new Error(`Could not record MCP call: ${error.message}`);
+}
 
 export async function listAvailableSkills(auth: AuthenticatedMcpKey) {
   const admin = createAdminClient();
@@ -114,22 +132,25 @@ export async function getUsageSummary(auth: AuthenticatedMcpKey) {
   const monthStart = new Date();
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
-  const [balanceResult, usageResult, enabledResult] = await Promise.all([
+  const [balanceResult, usageResult, callResult, enabledResult] = await Promise.all([
     admin.from("user_credit_balances").select("available_units").eq("user_id", auth.userId).maybeSingle(),
     admin.from("usage_events").select("id,units,status,tool_name,created_at").eq("user_id", auth.userId).gte("created_at", monthStart.toISOString()).order("created_at", {ascending: false}).limit(1000),
+    admin.from("mcp_call_events").select("id,tool_name,created_at").eq("user_id", auth.userId).gte("created_at", monthStart.toISOString()).order("created_at", {ascending: false}).limit(1000),
     admin.from("user_skill_library").select("id", {count: "exact", head: true}).eq("user_id", auth.userId).eq("enabled", true),
   ]);
-  if (balanceResult.error || usageResult.error || enabledResult.error) throw new Error(`Could not load usage summary: ${(balanceResult.error ?? usageResult.error ?? enabledResult.error)?.message}`);
-  const events = usageResult.data ?? [];
-  const succeeded = events.filter((event) => event.status === "succeeded");
+  if (balanceResult.error || usageResult.error || callResult.error || enabledResult.error) throw new Error(`Could not load usage summary: ${(balanceResult.error ?? usageResult.error ?? callResult.error ?? enabledResult.error)?.message}`);
+  const paidEvents = usageResult.data ?? [];
+  const calls = callResult.data ?? [];
+  const succeeded = paidEvents.filter((event) => event.status === "succeeded");
   const spentUnits = succeeded.reduce((sum, event) => sum + Number(event.units ?? 0), 0);
   return {
     availableCredits: Number(balanceResult.data?.available_units ?? 0),
     monthStart: monthStart.toISOString(),
-    monthlyCalls: events.length,
-    monthlySucceededCalls: succeeded.length,
+    monthlyMcpCalls: calls.length,
+    monthlyPaidCalls: succeeded.length,
     monthlySpentCredits: spentUnits,
     enabledSkills: enabledResult.count ?? 0,
-    recentUsage: events.slice(0, 10),
+    recentMcpCalls: calls.slice(0, 10),
+    recentPaidUsage: paidEvents.slice(0, 10),
   };
 }

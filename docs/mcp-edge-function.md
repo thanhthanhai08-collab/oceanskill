@@ -75,7 +75,9 @@ If a client only supports command-based MCP servers, wrap the HTTP endpoint with
 
 ## Credit Pattern
 
-Only `get_skill_content` is charged. The other tools are free setup/visibility tools.
+Every successful MCP `tools/call` writes one row to `mcp_call_events`, which is used for transparent MCP call counts. This counter is separate from credit charging.
+
+Only `get_skill_content` is charged. The other tools are free setup/visibility tools and never call `reserve_mcp_usage`.
 
 `get_skill_content` uses reserve-then-complete:
 
@@ -95,3 +97,4 @@ Only `get_skill_content` is charged. The other tools are free setup/visibility t
 - Revoke a key by setting `api_keys.revoked_at`; revoked keys stop resolving.
 - `list_purchased_skills` only returns enabled skills from `user_skill_library.enabled = true`, plus private skills owned by the caller.
 - `toggle_skill` is free and only changes the library enabled flag; it does not fetch protected content or reserve credits.
+- Credit is deducted only through `usage_events` plus `credit_ledger`, currently via `get_skill_content`.

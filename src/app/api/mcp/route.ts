@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {authenticateMcpRequest} from "@/lib/mcp/authentication";
-import {addCollectionToLibrary, getSkillContent, getUsageSummary, listAvailableSkills, listCollections, searchAvailableSkills, toggleSkill} from "@/lib/mcp/tools";
+import {addCollectionToLibrary, getSkillContent, getUsageSummary, listAvailableSkills, listCollections, recordMcpCall, searchAvailableSkills, toggleSkill, type McpToolName} from "@/lib/mcp/tools";
 
 type RpcRequest = Readonly<{jsonrpc?: string; id?: string | number | null; method?: string; params?: Record<string, unknown>}>;
 const windows = new Map<string, {count: number; resetAt: number}>();
@@ -37,14 +37,16 @@ export async function POST(request: Request) {
   const args = body.params?.arguments && typeof body.params.arguments === "object" ? body.params.arguments as Record<string, unknown> : {};
   try {
     let value: unknown;
-    if (name === "list_purchased_skills") value = await listAvailableSkills(auth);
-    else if (name === "search_skills" && typeof args.query === "string") value = await searchAvailableSkills(auth, args.query);
-    else if (name === "get_skill_content" && typeof args.skillId === "string") value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined);
-    else if (name === "list_collections") value = await listCollections(auth);
-    else if (name === "add_collection_to_library" && typeof args.collectionId === "string") value = await addCollectionToLibrary(auth, args.collectionId);
-    else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") value = await toggleSkill(auth, args.skillId, args.enabled);
-    else if (name === "get_usage_summary") value = await getUsageSummary(auth);
+    let toolName: McpToolName;
+    if (name === "list_purchased_skills") { toolName = "list_purchased_skills"; value = await listAvailableSkills(auth); }
+    else if (name === "search_skills" && typeof args.query === "string") { toolName = "search_skills"; value = await searchAvailableSkills(auth, args.query); }
+    else if (name === "get_skill_content" && typeof args.skillId === "string") { toolName = "get_skill_content"; value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined); }
+    else if (name === "list_collections") { toolName = "list_collections"; value = await listCollections(auth); }
+    else if (name === "add_collection_to_library" && typeof args.collectionId === "string") { toolName = "add_collection_to_library"; value = await addCollectionToLibrary(auth, args.collectionId); }
+    else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") { toolName = "toggle_skill"; value = await toggleSkill(auth, args.skillId, args.enabled); }
+    else if (name === "get_usage_summary") { toolName = "get_usage_summary"; value = await getUsageSummary(auth); }
     else return rpcError(body.id, -32602, "Invalid tool name or arguments");
+    await recordMcpCall(auth, toolName, typeof args.requestId === "string" ? args.requestId : undefined).catch(() => undefined);
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
     const message = error instanceof Error ? error.message : "tool_failed";

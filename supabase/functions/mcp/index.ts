@@ -17,6 +17,14 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 
 const metadataFields = "id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
 const windows = new Map<string, {count: number; resetAt: number}>();
+type McpToolName =
+  | "list_purchased_skills"
+  | "search_skills"
+  | "get_skill_content"
+  | "list_collections"
+  | "add_collection_to_library"
+  | "toggle_skill"
+  | "get_usage_summary";
 
 function rpc(id: RpcRequest["id"], result: unknown, status = 200) {
   return Response.json({jsonrpc: "2.0", id: id ?? null, result}, {status, headers: {"Cache-Control": "no-store"}});
@@ -54,6 +62,16 @@ async function authenticateMcpRequest(request: Request): Promise<AuthenticatedMc
   if (!match?.api_key_id || !match?.user_id) return null;
   await admin.from("api_keys").update({last_used_at: new Date().toISOString()}).eq("id", match.api_key_id);
   return {apiKeyId: String(match.api_key_id), userId: String(match.user_id)};
+}
+
+async function recordMcpCall(auth: AuthenticatedMcpKey, toolName: McpToolName, requestId?: string) {
+  const {error} = await admin.from("mcp_call_events").insert({
+    user_id: auth.userId,
+    api_key_id: auth.apiKeyId,
+    tool_name: toolName,
+    request_id: requestId ?? null,
+  });
+  if (error) throw new Error(error.message);
 }
 
 async function listAvailableSkills(auth: AuthenticatedMcpKey) {
@@ -193,23 +211,26 @@ async function getUsageSummary(auth: AuthenticatedMcpKey) {
   const monthStart = new Date();
   monthStart.setUTCDate(1);
   monthStart.setUTCHours(0, 0, 0, 0);
-  const [balanceResult, usageResult, enabledResult] = await Promise.all([
+  const [balanceResult, usageResult, callResult, enabledResult] = await Promise.all([
     admin.from("user_credit_balances").select("available_units").eq("user_id", auth.userId).maybeSingle(),
     admin.from("usage_events").select("id,units,status,tool_name,created_at").eq("user_id", auth.userId).gte("created_at", monthStart.toISOString()).order("created_at", {ascending: false}).limit(1000),
+    admin.from("mcp_call_events").select("id,tool_name,created_at").eq("user_id", auth.userId).gte("created_at", monthStart.toISOString()).order("created_at", {ascending: false}).limit(1000),
     admin.from("user_skill_library").select("id", {count: "exact", head: true}).eq("user_id", auth.userId).eq("enabled", true),
   ]);
-  if (balanceResult.error || usageResult.error || enabledResult.error) throw new Error((balanceResult.error ?? usageResult.error ?? enabledResult.error)?.message ?? "summary_failed");
-  const events = usageResult.data ?? [];
-  const succeeded = events.filter((event) => event.status === "succeeded");
+  if (balanceResult.error || usageResult.error || callResult.error || enabledResult.error) throw new Error((balanceResult.error ?? usageResult.error ?? callResult.error ?? enabledResult.error)?.message ?? "summary_failed");
+  const paidEvents = usageResult.data ?? [];
+  const calls = callResult.data ?? [];
+  const succeeded = paidEvents.filter((event) => event.status === "succeeded");
   const spentUnits = succeeded.reduce((sum, event) => sum + Number(event.units ?? 0), 0);
   return {
     availableCredits: Number(balanceResult.data?.available_units ?? 0),
     monthStart: monthStart.toISOString(),
-    monthlyCalls: events.length,
-    monthlySucceededCalls: succeeded.length,
+    monthlyMcpCalls: calls.length,
+    monthlyPaidCalls: succeeded.length,
     monthlySpentCredits: spentUnits,
     enabledSkills: enabledResult.count ?? 0,
-    recentUsage: events.slice(0, 10),
+    recentMcpCalls: calls.slice(0, 10),
+    recentPaidUsage: paidEvents.slice(0, 10),
   };
 }
 
@@ -256,14 +277,16 @@ Deno.serve(async (request) => {
 
   try {
     let value: unknown;
-    if (name === "list_purchased_skills") value = await listAvailableSkills(auth);
-    else if (name === "search_skills" && typeof args.query === "string") value = await searchAvailableSkills(auth, args.query);
-    else if (name === "get_skill_content" && typeof args.skillId === "string") value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined);
-    else if (name === "list_collections") value = await listCollections(auth);
-    else if (name === "add_collection_to_library" && typeof args.collectionId === "string") value = await addCollectionToLibrary(auth, args.collectionId);
-    else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") value = await toggleSkill(auth, args.skillId, args.enabled);
-    else if (name === "get_usage_summary") value = await getUsageSummary(auth);
+    let toolName: McpToolName;
+    if (name === "list_purchased_skills") { toolName = "list_purchased_skills"; value = await listAvailableSkills(auth); }
+    else if (name === "search_skills" && typeof args.query === "string") { toolName = "search_skills"; value = await searchAvailableSkills(auth, args.query); }
+    else if (name === "get_skill_content" && typeof args.skillId === "string") { toolName = "get_skill_content"; value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined); }
+    else if (name === "list_collections") { toolName = "list_collections"; value = await listCollections(auth); }
+    else if (name === "add_collection_to_library" && typeof args.collectionId === "string") { toolName = "add_collection_to_library"; value = await addCollectionToLibrary(auth, args.collectionId); }
+    else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") { toolName = "toggle_skill"; value = await toggleSkill(auth, args.skillId, args.enabled); }
+    else if (name === "get_usage_summary") { toolName = "get_usage_summary"; value = await getUsageSummary(auth); }
     else return rpcError(body.id, -32602, "Invalid tool name or arguments");
+    await recordMcpCall(auth, toolName, typeof args.requestId === "string" ? args.requestId : undefined).catch(() => undefined);
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
     const message = error instanceof Error ? error.message : "tool_failed";
