@@ -12,12 +12,13 @@ export async function getDashboardOverview() {
   if (!claims?.sub) return null;
   const userId = String(claims.sub);
 
-  const [keysResult, usageResult, usageCountResult, ordersResult, skillCountResult] = await Promise.all([
+  const [keysResult, usageResult, usageCountResult, ordersResult, skillCountResult, balanceResult] = await Promise.all([
     supabase.from("api_keys").select("id,revoked_at").eq("user_id", userId),
     supabase.from("usage_events").select("id,tool_name,units,status,created_at").eq("user_id", userId).order("created_at", {ascending: false}).limit(8),
     supabase.from("usage_events").select("id", {count: "exact", head: true}).eq("user_id", userId),
     supabase.from("payment_orders").select("id,status,amount_vnd,credit_units,created_at").eq("user_id", userId).order("created_at", {ascending: false}).limit(3),
     supabase.from("skills").select("id", {count: "exact", head: true}).eq("owner_id", userId),
+    supabase.from("user_credit_balances").select("available_units").eq("user_id", userId).maybeSingle(),
   ]);
 
   return {
@@ -27,5 +28,6 @@ export async function getDashboardOverview() {
     usageCount: usageCountResult.count ?? 0,
     orders: (ordersResult.data ?? []) as DashboardOrder[],
     userSkillCount: skillCountResult.count ?? 0,
+    balance: Number(balanceResult.data?.available_units ?? 0),
   };
 }

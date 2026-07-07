@@ -2,18 +2,20 @@ import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
 import DashboardCollections from "@/components/dashboard/DashboardCollections";
 import {getCreatorSkills, getUserSkillLibrary} from "@/lib/skills/creator";
+import {getUserSkillCollections} from "@/lib/skills/collections";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardCollectionsPage({params}: {readonly params: Promise<{locale: string}>}) {
   const {locale} = await params;
-  const [t, creatorData, library] = await Promise.all([
+  const [t, creatorData, library, collections] = await Promise.all([
     getTranslations("Dashboard"),
     getCreatorSkills(),
     getUserSkillLibrary(),
+    getUserSkillCollections(),
   ]);
 
-  if (!creatorData || !library) redirect(`/${locale}/login`);
+  if (!creatorData || !library || !collections) redirect(`/${locale}/login`);
 
   return (
     <>
@@ -25,7 +27,7 @@ export default async function DashboardCollectionsPage({params}: {readonly param
         </div>
       </header>
 
-      <DashboardCollections library={library} uploaded={creatorData.skills} locale={locale} />
+      <DashboardCollections library={library} uploaded={creatorData.skills} locale={locale} initialCollections={collections} />
     </>
   );
 }

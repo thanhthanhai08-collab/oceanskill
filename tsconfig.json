@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".agents", "stitch-skills"]
+  "exclude": ["node_modules", ".agents", "stitch-skills", "supabase/functions"]
 }

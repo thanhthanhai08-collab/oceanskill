@@ -7,6 +7,7 @@ import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
 import {getDomainVisual} from "@/data/mockData";
 import {getPublicSkill, listRelatedSkills} from "@/lib/catalog/skills";
+import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   ]);
   const visual = getDomainVisual(skill.domain);
   const version = skill.current_version ?? "1.0.0";
+  const author = getSkillAuthor(skill);
 
   return (
     <SiteShell>
@@ -45,7 +47,9 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
                 <h1 className="mt-4 font-geist text-4xl font-bold tracking-tight sm:text-5xl">{skill.title}</h1>
                 <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{skill.description}</p>
                 <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
-                  <span className="inline-flex items-center gap-2 font-semibold">{t("by")} NeuralSystems</span>
+                  <span className="inline-flex items-center gap-2 font-semibold">
+                    {t("by")} <Link href={`/authors/${author.id}` as "/authors"} className="text-primary transition hover:text-primary/70">{author.name}</Link>
+                  </span>
                   <span className="font-bold text-tertiary">Top 1</span>
                   <span className="text-on-surface-variant">{reviewState.stats.count.toLocaleString()} {t("reviewsTitle").toLowerCase()}</span>
                 </div>
@@ -159,7 +163,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
           <section>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-geist font-bold">{t("moreFromCreator")}</h2>
-              <Link href="/skills" className="text-xs font-bold text-primary">{t("viewAll")}</Link>
+              <Link href={`/authors/${author.id}` as "/authors"} className="text-xs font-bold text-primary">{t("viewAll")}</Link>
             </div>
             <div className="space-y-3">
               {relatedSkills.slice(0, 2).map((related) => (

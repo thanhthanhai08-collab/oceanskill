@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {authenticateMcpRequest} from "@/lib/mcp/authentication";
-import {getSkillContent, listAvailableSkills, searchAvailableSkills} from "@/lib/mcp/tools";
+import {addCollectionToLibrary, getSkillContent, getUsageSummary, listAvailableSkills, listCollections, searchAvailableSkills, toggleSkill} from "@/lib/mcp/tools";
 
 type RpcRequest = Readonly<{jsonrpc?: string; id?: string | number | null; method?: string; params?: Record<string, unknown>}>;
 const windows = new Map<string, {count: number; resetAt: number}>();
@@ -24,9 +24,13 @@ export async function POST(request: Request) {
   if (body.method === "initialize") return rpc(body.id, {protocolVersion: "2025-06-18", capabilities: {tools: {}}, serverInfo: {name: "OceanSkill", version: "1.0.0"}});
   if (body.method === "notifications/initialized") return new NextResponse(null, {status: 202});
   if (body.method === "tools/list") return rpc(body.id, {tools: [
-    {name: "list_purchased_skills", description: "List public and caller-owned private OceanSkill skills available through MCP.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
+    {name: "list_purchased_skills", description: "List enabled public and caller-owned private OceanSkill skills available through MCP.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
     {name: "search_skills", description: "Search available skill metadata without exposing protected content.", inputSchema: {type: "object", properties: {query: {type: "string", minLength: 1, maxLength: 80}}, required: ["query"], additionalProperties: false}},
     {name: "get_skill_content", description: "Return a permitted skill's scanned current SKILL.md content.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, requestId: {type: "string", maxLength: 120}}, required: ["skillId"], additionalProperties: false}},
+    {name: "list_collections", description: "List public collections and the caller's own collections.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
+    {name: "add_collection_to_library", description: "Add a public or owned collection to the caller's library and enable its skills.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}}, required: ["collectionId"], additionalProperties: false}},
+    {name: "toggle_skill", description: "Enable or disable a skill in the caller's library without fetching paid content.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, enabled: {type: "boolean"}}, required: ["skillId", "enabled"], additionalProperties: false}},
+    {name: "get_usage_summary", description: "Return current credits and month-to-date MCP usage summary.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
   ]});
   if (body.method !== "tools/call") return rpcError(body.id, -32601, "Method not found", 404);
   const name = typeof body.params?.name === "string" ? body.params.name : "";
@@ -36,11 +40,15 @@ export async function POST(request: Request) {
     if (name === "list_purchased_skills") value = await listAvailableSkills(auth);
     else if (name === "search_skills" && typeof args.query === "string") value = await searchAvailableSkills(auth, args.query);
     else if (name === "get_skill_content" && typeof args.skillId === "string") value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined);
+    else if (name === "list_collections") value = await listCollections(auth);
+    else if (name === "add_collection_to_library" && typeof args.collectionId === "string") value = await addCollectionToLibrary(auth, args.collectionId);
+    else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") value = await toggleSkill(auth, args.skillId, args.enabled);
+    else if (name === "get_usage_summary") value = await getUsageSummary(auth);
     else return rpcError(body.id, -32602, "Invalid tool name or arguments");
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
     const message = error instanceof Error ? error.message : "tool_failed";
-    const status = message === "skill_not_available" ? 403 : message === "insufficient_credits" ? 402 : 500;
+    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" ? 403 : message === "insufficient_credits" ? 402 : 500;
     return rpcError(body.id, -32000, message, status);
   }
 }

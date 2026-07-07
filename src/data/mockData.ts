@@ -42,10 +42,17 @@ export const homeCategoryFilters = ["all", "marketing", "sales", "agent-first"] 
 export type HomeCategoryFilter = (typeof homeCategoryFilters)[number];
 
 export const featuredCreators = [
-  {id: "ocean-labs", initials: "OL", name: "Ocean Labs", handle: "@oceanlabs", icon: "water", glowClass: "from-primary-container via-tertiary-container to-surface-container-high"},
-  {id: "agent-ops", initials: "AO", name: "AgentOps Guild", handle: "@agentops", icon: "neurology", glowClass: "from-secondary-container via-primary-container to-surface-container-high"},
-  {id: "growth-systems", initials: "GS", name: "Growth Systems", handle: "@growthsystems", icon: "monitoring", glowClass: "from-tertiary-container via-primary-container to-surface-container-high"},
+  {id: "ocean-labs", initials: "OL", name: "Ocean Labs", handle: "@oceanlabs", icon: "water", domain: "design", glowClass: "from-primary-container via-tertiary-container to-surface-container-high"},
+  {id: "agent-ops", initials: "AO", name: "AgentOps Guild", handle: "@agentops", icon: "neurology", domain: "agent-first", glowClass: "from-secondary-container via-primary-container to-surface-container-high"},
+  {id: "growth-systems", initials: "GS", name: "Growth Systems", handle: "@growthsystems", icon: "monitoring", domain: "marketing", glowClass: "from-tertiary-container via-primary-container to-surface-container-high"},
+  {id: "neural-systems", initials: "NS", name: "NeuralSystems", handle: "@neuralsystems", icon: "hub", domain: "development", glowClass: "from-primary-container via-secondary-container to-surface-container-high"},
 ] as const;
+
+export type FeaturedCreator = (typeof featuredCreators)[number];
+
+export function getFeaturedCreator(id: string): FeaturedCreator | undefined {
+  return featuredCreators.find((creator) => creator.id === id);
+}
 
 export const hotCollections = [
   {id: "agent-starter", icon: "rocket_launch", glowClass: "from-primary-container/70 via-secondary-container/35 to-background"},
