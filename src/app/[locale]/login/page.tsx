@@ -8,14 +8,12 @@ export interface LoginPageProps { readonly searchParams: Promise<{message?: stri
 export default async function LoginPage({searchParams}: LoginPageProps) {
   const {message} = await searchParams;
   const t = await getTranslations("Login");
-  const common = await getTranslations("Common");
   return (
     <SiteShell showSearch={false}>
       <section className="relative grid min-h-[720px] place-items-center overflow-hidden px-6 py-16">
         <div className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_25%_20%,rgba(46,91,255,.2),transparent_32%),radial-gradient(circle_at_80%_70%,rgba(125,1,177,.18),transparent_35%)]" />
         <div className="glass-panel relative w-full max-w-md rounded-3xl p-8 shadow-2xl shadow-primary-container/10">
-          <Link href="/" className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><span className="material-symbols-outlined text-[18px]">arrow_back</span>{common("brand")}</Link>
-          <h1 className="mt-7 font-geist text-3xl font-bold tracking-tight">{t("title")}</h1>
+          <h1 className="font-geist text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="mt-2 leading-6 text-on-surface-variant">{t("description")}</p>
           {message && <p className="mt-5 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-primary">{message}</p>}
           <form className="mt-7 space-y-4">
@@ -35,15 +33,15 @@ export default async function LoginPage({searchParams}: LoginPageProps) {
           <div className="mt-6 grid gap-3">
             <form>
               <input type="hidden" name="provider" value="google" />
-              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-outline-variant/50 bg-white px-4 py-3 font-semibold text-[#111827] transition hover:border-primary/50 hover:bg-surface-container">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[12px] font-bold text-[#4285F4]">G</span>
+              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-primary/20 bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface shadow-sm shadow-primary-container/5 transition hover:border-primary/50 hover:bg-primary/10">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-surface-container text-[12px] font-bold text-primary">G</span>
                 {t("continueGoogle")}
               </button>
             </form>
             <form>
               <input type="hidden" name="provider" value="github" />
-              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-outline-variant/50 bg-white px-4 py-3 font-semibold text-[#111827] transition hover:border-primary/50 hover:bg-surface-container">
-                <span className="material-symbols-outlined text-[20px]">code</span>
+              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-primary/20 bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface shadow-sm shadow-primary-container/5 transition hover:border-primary/50 hover:bg-primary/10">
+                <span className="material-symbols-outlined text-[20px] text-primary">code</span>
                 {t("continueGithub")}
               </button>
             </form>
