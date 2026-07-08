@@ -14,20 +14,21 @@ interface FaqExplorerProps {
   readonly searchPlaceholder: string;
   readonly noResults: string;
   readonly relatedResource: string;
-  readonly resultCount: (count: number) => string;
+  readonly resultCountLabels: Readonly<{zero: string; one: string; many: string}>;
 }
 
 function normalize(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().trim();
 }
 
-export default function FaqExplorer({items, categories, allLabel, searchLabel, searchPlaceholder, noResults, relatedResource, resultCount}: FaqExplorerProps) {
+export default function FaqExplorer({items, categories, allLabel, searchLabel, searchPlaceholder, noResults, relatedResource, resultCountLabels}: FaqExplorerProps) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const visibleItems = useMemo(() => {
     const term = normalize(query);
     return items.filter((item) => (category === "all" || item.category === category) && (!term || normalize(`${item.question} ${item.answer}`).includes(term)));
   }, [category, items, query]);
+  const resultCount = visibleItems.length === 0 ? resultCountLabels.zero : visibleItems.length === 1 ? resultCountLabels.one : resultCountLabels.many.replace("{count}", String(visibleItems.length));
 
   return <div>
     <div className="relative mx-auto max-w-3xl">
@@ -39,7 +40,7 @@ export default function FaqExplorer({items, categories, allLabel, searchLabel, s
       <button type="button" aria-pressed={category === "all"} onClick={() => setCategory("all")} className={`rounded-full border px-4 py-2 text-sm transition ${category === "all" ? "border-primary bg-primary-container text-white" : "border-outline-variant/45 text-on-surface-variant hover:border-primary/50 hover:text-primary"}`}>{allLabel}</button>
       {categories.map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => setCategory(item.id)} className={`rounded-full border px-4 py-2 text-sm transition ${category === item.id ? "border-primary bg-primary-container text-white" : "border-outline-variant/45 text-on-surface-variant hover:border-primary/50 hover:text-primary"}`}>{item.label}</button>)}
     </div>
-    <p className="mt-8 text-center font-mono text-[11px] uppercase tracking-wider text-on-surface-variant" aria-live="polite">{resultCount(visibleItems.length)}</p>
+    <p className="mt-8 text-center font-mono text-[11px] uppercase tracking-wider text-on-surface-variant" aria-live="polite">{resultCount}</p>
     <div className="mx-auto mt-4 max-w-4xl space-y-3">
       {visibleItems.map((item) => <details key={item.id} id={item.id} className="group scroll-mt-28 rounded-2xl border border-outline-variant/40 bg-surface-container-low/55 open:border-primary/40 open:bg-surface-container">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 font-geist text-base font-semibold marker:content-none sm:p-6 sm:text-lg">

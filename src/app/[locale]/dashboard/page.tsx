@@ -23,8 +23,6 @@ export default async function DashboardPage({params}: DashboardPageProps) {
 
   const formatDate = (value: string) =>
     new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(value));
-  const creditGoal = Math.max(100, data.balance || 100);
-  const creditProgress = Math.min(100, Math.round((data.balance / creditGoal) * 100));
 
   return (
     <>
@@ -41,34 +39,20 @@ export default async function DashboardPage({params}: DashboardPageProps) {
         </form>
       </div>
 
-      <section className="relative mt-9 overflow-hidden rounded-2xl border border-primary/30 bg-surface-container-low/65 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.24)] sm:p-8">
-        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-secondary/10 blur-[100px]" />
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl space-y-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-primary/30 bg-primary/15 px-3 py-1 font-mono text-xs uppercase tracking-wider text-primary">{t("roleLabel")}</span>
-              <h2 className="font-geist text-2xl font-bold">{t("availableCredits")}</h2>
-            </div>
-            <p className="text-sm leading-6 text-on-surface-variant">{t("mcpCallsDescription")}</p>
-            <div>
-              <div className="mb-2 flex items-center justify-between text-xs">
-                <span className="font-mono text-on-surface-variant">Credits usage</span>
-                <span className="font-mono text-primary">{data.balance.toLocaleString(locale)} / {creditGoal.toLocaleString(locale)}</span>
-              </div>
-              <div className="h-3 overflow-hidden rounded-full bg-white/5">
-                <div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_12px_rgba(184,195,255,0.45)]" style={{width: `${creditProgress}%`}} />
-              </div>
-            </div>
+      <section className="mt-9 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/80 via-secondary/80 to-tertiary/90 p-8 text-on-primary shadow-[0_0_48px_rgba(147,51,234,0.22)] sm:p-10">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-white/55">{t("availableCredits")}</p>
+            <p className="mt-2 flex items-end gap-3 font-geist text-6xl font-bold leading-none">
+              {data.balance.toLocaleString(locale)}
+              <span className="mb-2 text-xl font-semibold text-white/55">Credits</span>
+            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70">{t("mcpCallsDescription")}</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center shadow-xl lg:min-w-[240px]">
-            <p className="font-mono text-xs uppercase tracking-wider text-on-surface-variant">{t("availableCredits")}</p>
-            <p className="mt-2 font-geist text-5xl font-extrabold text-primary">{data.balance.toLocaleString(locale)}</p>
-            <Link href="/dashboard/billing" className="mt-5 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-on-primary shadow-[0_0_12px_rgba(184,195,255,0.28)] transition hover:brightness-110">
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              {t("topUp")}
-            </Link>
-          </div>
+          <a href={`/${locale}/dashboard/billing#credit-packs`} className="inline-flex min-h-16 items-center justify-center gap-3 rounded-xl bg-white/70 px-10 py-4 font-bold text-primary-container transition hover:bg-white">
+            <span className="material-symbols-outlined">add_circle</span>
+            {t("topUp")}
+          </a>
         </div>
       </section>
 

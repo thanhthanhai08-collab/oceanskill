@@ -1,6 +1,5 @@
 import type {DashboardNavLabels} from "@/components/dashboard/DashboardNav";
 import DashboardNav from "@/components/dashboard/DashboardNav";
-import {Link} from "@/i18n/navigation";
 
 export interface DashboardSidebarProps {
   readonly displayName: string;
@@ -39,12 +38,12 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.creditBalance}</p>
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="font-geist text-2xl font-bold">{balance.toLocaleString(locale)}</p>
-          <Link
-            href="/dashboard/billing"
+          <a
+            href={`/${locale}/dashboard/billing#credit-packs`}
             className="rounded border border-white/10 bg-surface-container-high px-3 py-1.5 text-[11px] font-semibold text-on-surface transition hover:bg-surface-container-highest"
           >
             {labels.topUp}
-          </Link>
+          </a>
         </div>
       </div>
 

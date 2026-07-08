@@ -1,11 +1,11 @@
 import {getLocale, getTranslations} from "next-intl/server";
 import {Link} from "@/i18n/navigation";
 import BlogCard from "@/components/blog/BlogCard";
-import {getBlogPosts} from "@/content/blog";
 import type {Locale} from "@/i18n/locales";
+import {getBlogPosts} from "@/lib/blog/posts";
 
 export default async function KnowledgeHub() {
   const [locale, home, blog] = await Promise.all([getLocale(), getTranslations("Home"), getTranslations("Blog")]);
-  const posts = getBlogPosts(locale as Locale).slice(0, 2);
+  const posts = (await getBlogPosts(locale as Locale)).slice(0, 2);
   return <section className="border-b border-outline-variant/25 py-16 sm:py-20"><div className="mx-auto max-w-7xl px-6 lg:px-8"><div className="flex items-end justify-between gap-6"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-secondary">{home("knowledgeEyebrow")}</p><h2 className="mt-3 font-geist text-3xl font-bold tracking-tight">{home("knowledgeTitle")}</h2><p className="mt-2 text-on-surface-variant">{home("knowledgeSubtitle")}</p></div><Link href="/blog" className="hidden text-sm font-semibold text-primary hover:underline sm:block">{home("openBlog")}</Link></div><div className="mt-9 grid gap-6 lg:grid-cols-3">{posts.map((post) => <BlogCard key={post.slug} post={post} locale={locale} readLabel={blog("readArticle")} minuteLabel={blog("minuteRead")}/>) }<Link href="/faq" className="group flex min-h-96 flex-col rounded-2xl border border-primary/35 bg-gradient-to-br from-primary-container/30 via-surface-container-low to-tertiary-container/20 p-7 shadow-[0_0_30px_rgba(46,91,255,.12)]"><div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-container text-white"><span className="material-symbols-outlined text-3xl">smart_toy</span></div><div className="mt-auto"><p className="font-mono text-[10px] uppercase tracking-wider text-tertiary">OceanGuide</p><h3 className="mt-3 font-geist text-2xl font-semibold">{home("chatbotCardTitle")}</h3><p className="mt-3 text-sm leading-6 text-on-surface-variant">{home("chatbotCardDescription")}</p><span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary">{home("askOceanGuide")}<span className="material-symbols-outlined text-[18px] transition group-hover:translate-x-1">arrow_forward</span></span></div></Link></div></div></section>;
 }

@@ -142,6 +142,26 @@ create table public.credit_ledger (
   )
 );
 
+create table public.blog_posts (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
+  locale text not null check (locale in ('vi', 'en')),
+  title text not null check (char_length(title) between 1 and 220),
+  excerpt text not null default '',
+  category text not null default 'Guide',
+  author_name text not null default 'OceanSkill',
+  icon text not null default 'article',
+  glow_class text not null default 'from-primary-container/70 via-tertiary-container/30 to-background',
+  reading_minutes integer not null default 5 check (reading_minutes > 0),
+  sections jsonb not null default '[]'::jsonb,
+  status text not null default 'draft' check (status in ('draft', 'published', 'archived')),
+  published_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (slug, locale),
+  check (jsonb_typeof(sections) = 'array')
+);
+
 create index skill_versions_skill_id_idx on public.skill_versions(skill_id);
 create index api_keys_user_id_idx on public.api_keys(user_id);
 create index payment_orders_user_created_idx on public.payment_orders(user_id, created_at desc);
@@ -155,6 +175,7 @@ create index usage_events_reserved_user_idx on public.usage_events(user_id) wher
 create index credit_ledger_user_id_id_idx on public.credit_ledger(user_id, id desc);
 create index credit_ledger_order_id_idx on public.credit_ledger(payment_order_id) where payment_order_id is not null;
 create index credit_ledger_usage_id_idx on public.credit_ledger(usage_event_id) where usage_event_id is not null;
+create index blog_posts_locale_status_published_idx on public.blog_posts(locale, status, published_at desc);
 
 create or replace function private.set_updated_at()
 returns trigger
@@ -174,6 +195,8 @@ for each row execute function private.set_updated_at();
 create trigger credit_packs_set_updated_at before update on public.credit_packs
 for each row execute function private.set_updated_at();
 create trigger payment_orders_set_updated_at before update on public.payment_orders
+for each row execute function private.set_updated_at();
+create trigger blog_posts_set_updated_at before update on public.blog_posts
 for each row execute function private.set_updated_at();
 
 create or replace function private.handle_new_user()
@@ -459,6 +482,7 @@ alter table public.payment_orders enable row level security;
 alter table public.payment_transactions enable row level security;
 alter table public.usage_events enable row level security;
 alter table public.credit_ledger enable row level security;
+alter table public.blog_posts enable row level security;
 
 create policy profiles_select_own on public.profiles for select to authenticated
 using ((select auth.uid()) = id);
@@ -482,9 +506,12 @@ create policy usage_select_own on public.usage_events for select to authenticate
 using ((select auth.uid()) = user_id);
 create policy ledger_select_own on public.credit_ledger for select to authenticated
 using ((select auth.uid()) = user_id);
+create policy blog_posts_select_published on public.blog_posts for select to anon, authenticated
+using (status = 'published' and published_at is not null and published_at <= now());
 
 revoke all on all tables in schema public from anon, authenticated;
 grant select on public.skills to anon, authenticated;
+grant select on public.blog_posts to anon, authenticated;
 grant select on public.profiles, public.api_keys, public.credit_packs,
   public.payment_orders, public.payment_transactions, public.usage_events,
   public.credit_ledger, public.user_credit_balances to authenticated;
@@ -512,6 +539,49 @@ values
   ('builder_50k', 'Builder 50K', 50000, 600),
   ('power_100k', 'Power 100K', 100000, 1400)
 on conflict (code) do nothing;
+
+insert into public.blog_posts
+  (slug, locale, title, excerpt, category, author_name, icon, glow_class, reading_minutes, status, published_at, sections)
+values
+  (
+    'mcp-la-gi-cho-ai-agent',
+    'vi',
+    'MCP là gì và vì sao AI agent cần một cổng kết nối chuẩn?',
+    'Hiểu cách MCP giúp agent khám phá công cụ, nhận ngữ cảnh và gọi kỹ năng mà không phải tích hợp riêng từng nền tảng.',
+    'MCP',
+    'Ocean Labs',
+    'hub',
+    'from-primary-container/70 via-tertiary-container/30 to-background',
+    7,
+    'published',
+    '2026-06-18 00:00:00+00',
+    '[{"heading":"MCP giải quyết vấn đề gì?","paragraphs":["Một AI agent chỉ hữu ích khi nó có thể làm việc với dữ liệu và công cụ thật. Trước MCP, mỗi ứng dụng thường tự thiết kế cách truyền ngữ cảnh, mô tả công cụ và xác thực.","Model Context Protocol tạo một giao diện chung để client và server thống nhất cách công bố công cụ, tài nguyên và lời nhắc."]},{"heading":"OceanSkill dùng MCP như thế nào?","paragraphs":["Marketplace chỉ công khai metadata để người dùng đánh giá. Nội dung SKILL.md đầy đủ được giao qua MCP sau khi khóa API và quyền sử dụng được xác minh."],"bullets":["Tìm kỹ năng đang hoạt động.","Kiểm tra phiên bản và client tương thích.","Ghi nhận usage và trừ credit theo giao dịch thành công."]}]'::jsonb
+  ),
+  (
+    'mcp-la-gi-cho-ai-agent',
+    'en',
+    'What is MCP, and why do AI agents need a standard connection layer?',
+    'Learn how MCP lets agents discover tools, receive context, and invoke skills without a custom integration for every platform.',
+    'MCP',
+    'Ocean Labs',
+    'hub',
+    'from-primary-container/70 via-tertiary-container/30 to-background',
+    7,
+    'published',
+    '2026-06-18 00:00:00+00',
+    '[{"heading":"What problem does MCP solve?","paragraphs":["An AI agent becomes useful when it can work with real tools and data. Before MCP, every application tended to invent its own format for context, tool descriptions, and authentication.","Model Context Protocol gives clients and servers a shared way to expose tools, resources, and prompts."]},{"heading":"How OceanSkill uses MCP","paragraphs":["The marketplace exposes only enough metadata for evaluation. Full SKILL.md content is delivered through MCP after the API key and usage entitlement are verified."],"bullets":["Discover active skills.","Check versions and compatible clients.","Record usage and debit credits after successful execution."]}]'::jsonb
+  )
+on conflict (slug, locale) do update set
+  title = excluded.title,
+  excerpt = excluded.excerpt,
+  category = excluded.category,
+  author_name = excluded.author_name,
+  icon = excluded.icon,
+  glow_class = excluded.glow_class,
+  reading_minutes = excluded.reading_minutes,
+  status = excluded.status,
+  published_at = excluded.published_at,
+  sections = excluded.sections;
 
 -- Skill artifacts are never public. The service role issues protected content
 -- through the MCP boundary; browser clients receive no storage.objects policy.

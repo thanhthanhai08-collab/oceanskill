@@ -7,6 +7,42 @@ import {listAuthorSkills} from "@/lib/catalog/authors";
 
 export const dynamic = "force-dynamic";
 
+const localizedAuthorCopy: Record<string, Record<"vi" | "en", {bio: string; focus: string[]}>> = {
+  "ocean-labs": {
+    vi: {bio: "Xây dựng các skill agent sẵn sàng cho production dành cho đội ngũ thiết kế, nghiên cứu và tự động hóa cần quy trình ổn định.", focus: ["Design system", "Luồng MCP", "Bàn giao agent"]},
+    en: {bio: "Builds production-ready agent skills for design, research, and automation teams that need predictable workflows.", focus: ["Design systems", "MCP workflows", "Agent handoffs"]},
+  },
+  "agent-ops": {
+    vi: {bio: "Nhóm vận hành agent tập trung vào tự động hóa an toàn, quan sát hệ thống và các mẫu thực thi AI có thể lặp lại.", focus: ["Vận hành agent", "Độ ổn định", "Bảo mật"]},
+    en: {bio: "A guild of agent operators focused on safe automation, observability, and repeatable AI execution patterns.", focus: ["Agent operations", "Reliability", "Security"]},
+  },
+  "growth-systems": {
+    vi: {bio: "Tạo skill tăng trưởng và doanh thu cho đội ngũ cần nghiên cứu thị trường, nội dung và lifecycle workflow sắc hơn.", focus: ["Vòng lặp tăng trưởng", "Thông điệp", "Revenue ops"]},
+    en: {bio: "Creates growth and revenue skills for teams that want sharper market research, content, and lifecycle workflows.", focus: ["Growth loops", "Messaging", "Revenue operations"]},
+  },
+  "neural-systems": {
+    vi: {bio: "Thiết kế các skill AI hiệu năng cao cho tự động hóa thế hệ mới và workflow xử lý ngôn ngữ tự nhiên.", focus: ["NLP", "Công cụ developer", "Tự động hóa workflow"]},
+    en: {bio: "Architects high-performance AI skills for next-generation automation and natural language processing workflows.", focus: ["NLP", "Developer tooling", "Workflow automation"]},
+  },
+};
+
+const labels = {
+  vi: {
+    verifiedCreator: "Nhà sáng tạo đã xác minh",
+    publishedSkills: "Skill đã xuất bản",
+    averageRating: "Đánh giá trung bình",
+    newRating: "Mới",
+    available: (count: string, name: string) => `${count} skill khả dụng từ ${name}`,
+  },
+  en: {
+    verifiedCreator: "Verified creator",
+    publishedSkills: "Published skills",
+    averageRating: "Average rating",
+    newRating: "New",
+    available: (count: string, name: string) => `${count} skills available from ${name}`,
+  },
+} as const;
+
 export default async function AuthorPage({params}: {readonly params: Promise<{id: string; locale: string}>}) {
   const {id, locale} = await params;
   const result = await listAuthorSkills(id);
@@ -14,7 +50,12 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
 
   const {author, skills} = result;
   const t = await getTranslations("Marketplace");
-  const rating = skills.length ? "4.9" : "New";
+  const code = locale === "vi" ? "vi" : "en";
+  const copy = localizedAuthorCopy[id]?.[code] ?? {
+    bio: code === "vi" ? "Nhà sáng tạo OceanSkill đã xác minh, chuyên xuất bản các AI skill ổn định cho agent workflow." : author.bio,
+    focus: code === "vi" ? [author.domain, "OceanSkill", "MCP"] : [...author.focus],
+  };
+  const rating = skills.length ? "4.9" : labels[code].newRating;
 
   return (
     <SiteShell>
@@ -33,22 +74,22 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
                 </span>
               </div>
               <div>
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">Verified creator</p>
+                <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{labels[code].verifiedCreator}</p>
                 <h1 className="mt-2 font-geist text-4xl font-bold tracking-tight sm:text-5xl">{author.name}</h1>
                 <p className="mt-2 font-mono text-sm text-primary">{author.handle}</p>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">{author.bio}</p>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">{copy.bio}</p>
                 <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
-                  {author.focus.map((item) => <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{item}</span>)}
+                  {copy.focus.map((item) => <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{item}</span>)}
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:min-w-[360px]">
               <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 p-5 text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">Published skills</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{labels[code].publishedSkills}</p>
                 <p className="mt-2 font-geist text-3xl font-bold">{skills.length}</p>
               </div>
               <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-secondary/10 to-tertiary/10 p-5 text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-tertiary">Average rating</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-tertiary">{labels[code].averageRating}</p>
                 <p className="mt-2 inline-flex items-center justify-center gap-1 font-geist text-3xl font-bold">{rating}<span className="material-symbols-outlined text-[22px] text-primary">star</span></p>
               </div>
             </div>
@@ -56,7 +97,7 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
         </section>
 
         <div className="mb-8 mt-12 flex items-center gap-4">
-          <h2 className="shrink-0 font-geist text-2xl font-bold">Published skills</h2>
+          <h2 className="shrink-0 font-geist text-2xl font-bold">{labels[code].publishedSkills}</h2>
           <div className="h-px w-full bg-gradient-to-r from-outline-variant/70 to-transparent" />
         </div>
 
@@ -87,7 +128,7 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
         </section>
 
         <p className="mt-8 font-mono text-xs uppercase tracking-[0.16em] text-on-surface-variant">
-          {new Intl.NumberFormat(locale).format(skills.length)} skills available from {author.name}
+          {labels[code].available(new Intl.NumberFormat(locale).format(skills.length), author.name)}
         </p>
       </main>
     </SiteShell>

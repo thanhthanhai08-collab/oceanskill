@@ -1,9 +1,14 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
-import {getUsageEvents, type UsageEvent} from "@/lib/usage/events";
+import {getUsageEvents, type McpCallEvent, type UsageEvent, type UsageRange} from "@/lib/usage/events";
 import {getDomainVisual} from "@/data/mockData";
 
 export const dynamic = "force-dynamic";
+
+type UsagePageProps = {
+  readonly params: Promise<{locale: string}>;
+  readonly searchParams: Promise<{range?: string; from?: string; to?: string}>;
+};
 
 type SkillUsageRow = Readonly<{
   key: string;
@@ -14,6 +19,49 @@ type SkillUsageRow = Readonly<{
   successRate: number;
   lastUsed: string;
 }>;
+
+const labels = {
+  vi: {
+    range24h: "24 giờ",
+    range7d: "7 ngày",
+    custom: "Tùy chỉnh",
+    from: "Từ ngày",
+    to: "Đến ngày",
+    apply: "Áp dụng",
+    mcpCalls: "Lượt gọi MCP",
+    paidCalls: "Lượt trả phí",
+    creditsSpent: "Credit đã trừ",
+    successfulCalls: "Tool call thành công",
+    paidDescription: "Chỉ get_skill_content mới trừ credit và ghi vào usage_events.",
+    chartDescription: "Biểu đồ đang đọc từ mcp_call_events do Edge Function ghi sau mỗi tool call thành công.",
+    recentMcpCalls: "Lượt MCP gần đây",
+    tool: "Tool",
+    requestId: "Request ID",
+    time: "Thời gian",
+    noMcpCalls: "Chưa có lượt MCP nào trong khoảng thời gian này.",
+    selectedRange: "Khoảng đang xem",
+  },
+  en: {
+    range24h: "24h",
+    range7d: "7 days",
+    custom: "Custom",
+    from: "From",
+    to: "To",
+    apply: "Apply",
+    mcpCalls: "MCP calls",
+    paidCalls: "Paid calls",
+    creditsSpent: "Credits spent",
+    successfulCalls: "Successful tool calls",
+    paidDescription: "Only get_skill_content debits credits and writes to usage_events.",
+    chartDescription: "The chart reads mcp_call_events recorded by the Edge Function after each successful tool call.",
+    recentMcpCalls: "Recent MCP calls",
+    tool: "Tool",
+    requestId: "Request ID",
+    time: "Time",
+    noMcpCalls: "No MCP calls in this range yet.",
+    selectedRange: "Selected range",
+  },
+} as const;
 
 function getSkillMeta(event: UsageEvent) {
   const raw = Array.isArray(event.skills) ? event.skills[0] : event.skills;
@@ -45,33 +93,86 @@ function buildSkillRows(events: UsageEvent[]): SkillUsageRow[] {
     .slice(0, 8);
 }
 
-function buildSevenDayTrend(events: UsageEvent[], locale: string) {
-  const now = new Date();
-  const days = Array.from({length: 7}, (_, index) => {
-    const date = new Date(now);
-    date.setDate(now.getDate() - (6 - index));
-    date.setHours(0, 0, 0, 0);
-    return date;
-  });
-  return days.map((day) => {
-    const next = new Date(day);
-    next.setDate(day.getDate() + 1);
-    const calls = events.filter((event) => {
-      const created = new Date(event.created_at);
-      return created >= day && created < next;
-    }).length;
-    return {
-      label: day.toLocaleDateString(locale, {day: "2-digit", month: "short"}),
-      calls,
-    };
-  });
+function startOfHour(value: Date) {
+  const date = new Date(value);
+  date.setMinutes(0, 0, 0);
+  return date;
 }
 
-export default async function UsagePage({params}: {readonly params: Promise<{locale: string}>}) {
+function startOfDay(value: Date) {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function parseDateInput(value: string | undefined, fallback: Date) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return fallback;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) ? fallback : date;
+}
+
+function resolveRange(input: {range?: string; from?: string; to?: string}) {
+  const now = new Date();
+  const selected = input.range === "custom" || input.range === "24h" ? input.range : "7d";
+  if (selected === "24h") {
+    const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    return {selected, from, to: now, bucket: "hour" as const};
+  }
+  if (selected === "custom") {
+    const defaultFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const from = parseDateInput(input.from, defaultFrom);
+    const to = parseDateInput(input.to, now);
+    to.setUTCHours(23, 59, 59, 999);
+    const safeTo = to > from ? to : now;
+    const diffHours = (safeTo.getTime() - from.getTime()) / 36e5;
+    return {selected, from, to: safeTo, bucket: diffHours <= 48 ? "hour" as const : "day" as const};
+  }
+  const from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return {selected: "7d" as const, from, to: now, bucket: "day" as const};
+}
+
+function formatDateInput(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function buildTrend(events: McpCallEvent[], range: ReturnType<typeof resolveRange>, locale: string) {
+  const buckets: Array<{start: Date; end: Date; label: string; calls: number}> = [];
+  if (range.bucket === "hour") {
+    const first = startOfHour(range.from);
+    for (let cursor = first; cursor < range.to && buckets.length < 72;) {
+      const start = new Date(cursor);
+      const end = new Date(start.getTime() + 60 * 60 * 1000);
+      buckets.push({start, end, label: start.toLocaleTimeString(locale, {hour: "2-digit"}), calls: 0});
+      cursor = end;
+    }
+  } else {
+    const first = startOfDay(range.from);
+    for (let cursor = first; cursor < range.to && buckets.length < 62;) {
+      const start = new Date(cursor);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 1);
+      buckets.push({start, end, label: start.toLocaleDateString(locale, {day: "2-digit", month: "short"}), calls: 0});
+      cursor = end;
+    }
+  }
+
+  for (const event of events) {
+    const created = new Date(event.created_at);
+    const bucket = buckets.find((item) => created >= item.start && created < item.end);
+    if (bucket) bucket.calls += 1;
+  }
+  return buckets;
+}
+
+export default async function UsagePage({params, searchParams}: UsagePageProps) {
   const {locale} = await params;
+  const query = await searchParams;
+  const code = locale === "vi" ? "vi" : "en";
+  const range = resolveRange(query);
+  const dbRange: UsageRange = {from: range.from.toISOString(), to: range.to.toISOString()};
   const [t, data] = await Promise.all([
     getTranslations("Dashboard"),
-    getUsageEvents({limit: 50}),
+    getUsageEvents({limit: 50, range: dbRange}),
   ]);
 
   if (!data) redirect(`/${locale}/login`);
@@ -79,20 +180,21 @@ export default async function UsagePage({params}: {readonly params: Promise<{loc
   const formatDate = (v: string) =>
     new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(v));
   const compact = new Intl.NumberFormat(locale, {notation: "compact", maximumFractionDigits: 1});
-  const analyticsEvents = data.analyticsEvents;
-  const totalUnits = analyticsEvents.reduce((sum, event) => sum + event.units, 0);
-  const successCount = analyticsEvents.filter((event) => isSuccessful(event.status)).length;
-  const successRate = analyticsEvents.length ? successCount / analyticsEvents.length : 0;
-  const estimatedCost = totalUnits * 0.00125;
-  const rows = buildSkillRows(analyticsEvents);
-  const trend = buildSevenDayTrend(analyticsEvents, locale);
+  const paidEvents = data.analyticsEvents;
+  const totalUnits = paidEvents.reduce((sum, event) => sum + event.units, 0);
+  const successCount = paidEvents.filter((event) => isSuccessful(event.status)).length;
+  const successRate = paidEvents.length ? successCount / paidEvents.length : 0;
+  const rows = buildSkillRows(paidEvents);
+  const trend = buildTrend(data.mcpCallEvents, range, locale);
   const maxTrend = Math.max(...trend.map((item) => item.calls), 1);
   const points = trend.map((item, index) => {
     const x = (index / Math.max(trend.length - 1, 1)) * 100;
     const y = 88 - (item.calls / maxTrend) * 68;
     return `${x},${y}`;
   }).join(" ");
-  const areaPoints = `0,100 ${points} 100,100`;
+  const areaPoints = points ? `0,100 ${points} 100,100` : "";
+  const selectedRangeLabel = `${formatDate(range.from.toISOString())} - ${formatDate(range.to.toISOString())}`;
+  const rangeHref = (value: "24h" | "7d") => `/${locale}/dashboard/usage?range=${value}`;
 
   return (
     <section className="pb-16">
@@ -104,15 +206,15 @@ export default async function UsagePage({params}: {readonly params: Promise<{loc
       <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
           <span className="material-symbols-outlined text-primary">api</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{t("totalCalls")}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{data.total.toLocaleString(locale)}</p>
-          <p className="mt-2 text-xs font-semibold text-tertiary">{t("usageExactHint")}</p>
+          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].mcpCalls}</p>
+          <p className="mt-3 font-geist text-3xl font-bold">{data.totalMcpCalls.toLocaleString(locale)}</p>
+          <p className="mt-2 text-xs font-semibold text-tertiary">{labels[code].successfulCalls}</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-          <span className="material-symbols-outlined text-primary">timer</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{t("totalUnits")}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{totalUnits.toLocaleString(locale)}</p>
-          <p className="mt-2 text-xs font-semibold text-tertiary">{t("lastThousandEvents")}</p>
+          <span className="material-symbols-outlined text-primary">paid</span>
+          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].paidCalls}</p>
+          <p className="mt-3 font-geist text-3xl font-bold">{data.paidTotal.toLocaleString(locale)}</p>
+          <p className="mt-2 text-xs font-semibold text-on-surface-variant">{labels[code].paidDescription}</p>
         </div>
         <div className="rounded-2xl border border-primary/30 bg-surface-container-low/55 p-6 shadow-[0_0_24px_rgba(184,195,255,0.08)]">
           <span className="material-symbols-outlined text-secondary">check_circle</span>
@@ -122,20 +224,37 @@ export default async function UsagePage({params}: {readonly params: Promise<{loc
         </div>
         <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
           <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{t("estimatedCost")}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">${estimatedCost.toFixed(2)}</p>
-          <p className="mt-2 text-xs font-semibold text-on-surface-variant">{t("currentMonthEstimate")}</p>
+          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].creditsSpent}</p>
+          <p className="mt-3 font-geist text-3xl font-bold">{totalUnits.toLocaleString(locale)}</p>
+          <p className="mt-2 text-xs font-semibold text-on-surface-variant">{labels[code].selectedRange}</p>
         </div>
       </div>
 
       <section className="mt-10 rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 md:p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <h2 className="font-geist text-2xl font-bold">{t("usageTrend")}</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">{t("usageTrendDescription")}</p>
+            <p className="mt-1 max-w-2xl text-sm text-on-surface-variant">{labels[code].chartDescription}</p>
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-tertiary">{selectedRangeLabel}</p>
           </div>
-          <div className="flex gap-2 text-xs font-bold text-on-surface-variant">
-            <span>24 giờ</span><span className="rounded-md bg-primary px-3 py-1 text-on-primary">7 ngày</span><span>30 ngày</span>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2 text-xs font-bold">
+              <a href={rangeHref("24h")} className={`rounded-md px-3 py-2 ${range.selected === "24h" ? "bg-primary text-on-primary" : "bg-surface-container-high text-on-surface-variant hover:text-primary"}`}>{labels[code].range24h}</a>
+              <a href={rangeHref("7d")} className={`rounded-md px-3 py-2 ${range.selected === "7d" ? "bg-primary text-on-primary" : "bg-surface-container-high text-on-surface-variant hover:text-primary"}`}>{labels[code].range7d}</a>
+              <span className={`rounded-md px-3 py-2 ${range.selected === "custom" ? "bg-primary text-on-primary" : "bg-surface-container-high text-on-surface-variant"}`}>{labels[code].custom}</span>
+            </div>
+            <form action={`/${locale}/dashboard/usage`} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+              <input type="hidden" name="range" value="custom" />
+              <label className="space-y-1">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{labels[code].from}</span>
+                <input type="date" name="from" defaultValue={formatDateInput(range.from)} className="h-10 rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-3 text-sm outline-none focus:border-primary" />
+              </label>
+              <label className="space-y-1">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{labels[code].to}</span>
+                <input type="date" name="to" defaultValue={formatDateInput(range.to)} className="h-10 rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-3 text-sm outline-none focus:border-primary" />
+              </label>
+              <button className="self-end rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-on-primary">{labels[code].apply}</button>
+            </form>
           </div>
         </div>
         <div className="mt-7 h-72 rounded-xl bg-surface-container-lowest p-5">
@@ -150,17 +269,17 @@ export default async function UsagePage({params}: {readonly params: Promise<{loc
               {[20, 40, 60, 80].map((x) => <line key={`x-${x}`} x1={x} x2={x} y1="10" y2="95" stroke="currentColor" strokeWidth="0.15" />)}
               {[28, 55, 82].map((y) => <line key={`y-${y}`} x1="0" x2="100" y1={y} y2={y} stroke="currentColor" strokeWidth="0.15" />)}
             </g>
-            <polygon points={areaPoints} className="text-primary" fill="url(#usageArea)" />
-            <polyline points={points} fill="none" className="text-primary" stroke="currentColor" strokeWidth="1.8" vectorEffect="non-scaling-stroke" />
+            {areaPoints && <polygon points={areaPoints} className="text-primary" fill="url(#usageArea)" />}
+            {points && <polyline points={points} fill="none" className="text-primary" stroke="currentColor" strokeWidth="1.8" vectorEffect="non-scaling-stroke" />}
             {trend.map((item, index) => {
               const x = (index / Math.max(trend.length - 1, 1)) * 100;
               const y = 88 - (item.calls / maxTrend) * 68;
-              return <circle key={item.label} cx={x} cy={y} r="1.15" className="fill-primary" vectorEffect="non-scaling-stroke" />;
+              return <circle key={`${item.label}-${index}`} cx={x} cy={y} r="1.15" className="fill-primary" vectorEffect="non-scaling-stroke" />;
             })}
           </svg>
         </div>
-        <div className="mt-3 grid grid-cols-7 gap-2 text-center font-mono text-[10px] text-on-surface-variant">
-          {trend.map((item) => <span key={item.label}>{item.label}</span>)}
+        <div className="mt-3 grid gap-2 text-center font-mono text-[10px] text-on-surface-variant" style={{gridTemplateColumns: `repeat(${Math.min(trend.length, 12)}, minmax(0, 1fr))`}}>
+          {trend.filter((_, index) => trend.length <= 12 || index % Math.ceil(trend.length / 12) === 0).map((item, index) => <span key={`${item.label}-${index}`}>{item.label}</span>)}
         </div>
       </section>
 
@@ -204,6 +323,38 @@ export default async function UsagePage({params}: {readonly params: Promise<{loc
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/55">
+        <div className="border-b border-white/5 p-6">
+          <h2 className="font-geist text-2xl font-bold">{labels[code].recentMcpCalls}</h2>
+        </div>
+        {data.mcpCallEvents.length === 0 ? (
+          <p className="p-8 text-sm text-on-surface-variant">{labels[code].noMcpCalls}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-left">
+              <thead>
+                <tr className="border-b border-white/5">
+                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].tool}</th>
+                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">API key</th>
+                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].requestId}</th>
+                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].time}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {data.mcpCallEvents.slice(0, 50).map((event) => (
+                  <tr key={event.id} className="transition hover:bg-white/[0.03]">
+                    <td className="p-5 font-semibold">{event.tool_name}</td>
+                    <td className="p-5 font-mono text-xs text-on-surface-variant">{event.api_key_id.slice(0, 8)}...</td>
+                    <td className="p-5 font-mono text-xs text-on-surface-variant">{event.request_id ?? "-"}</td>
+                    <td className="p-5 text-sm text-on-surface-variant">{formatDate(event.created_at)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
