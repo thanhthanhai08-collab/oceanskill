@@ -7,6 +7,7 @@ import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 
 const loginUrl = (locale: string, message: string) => `/${locale}/login?message=${encodeURIComponent(message)}`;
+const signupUrl = (locale: string, message: string) => `/${locale}/signup?message=${encodeURIComponent(message)}`;
 type OAuthProvider = "google" | "github";
 
 export async function login(formData: FormData) {
@@ -27,7 +28,7 @@ export async function signup(formData: FormData) {
   const t = await getTranslations("Login");
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  if (!email || password.length < 6) redirect(loginUrl(locale, t("shortPassword")));
+  if (!email || password.length < 6) redirect(signupUrl(locale, t("shortPassword")));
   const origin = (await headers()).get("origin") ?? "http://localhost:3000";
   const supabase = await createClient();
   const {data, error} = await supabase.auth.signUp({
@@ -35,9 +36,23 @@ export async function signup(formData: FormData) {
     password,
     options: {emailRedirectTo: `${origin}/${locale}/auth/confirm`}
   });
-  if (error) redirect(loginUrl(locale, error.message));
+  if (error) redirect(signupUrl(locale, error.message));
   if (data.session) redirect(`/${locale}/dashboard`);
   redirect(loginUrl(locale, t("checkEmail")));
+}
+
+export async function resetPassword(formData: FormData) {
+  const locale = await getLocale();
+  const t = await getTranslations("Login");
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) redirect(loginUrl(locale, t("missingEmail")));
+  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+  const supabase = await createClient();
+  const {error} = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/${locale}/auth/reset`,
+  });
+  if (error) redirect(loginUrl(locale, error.message));
+  redirect(loginUrl(locale, t("resetSent")));
 }
 
 export async function signInWithProvider(formData: FormData) {
