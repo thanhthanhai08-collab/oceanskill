@@ -7,11 +7,12 @@ const handleI18nRouting = createMiddleware(routing);
 
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/")) return;
+  const i18nResponse = handleI18nRouting(request);
   const hasLocale = routing.locales.some(
     (locale) => request.nextUrl.pathname === `/${locale}` || request.nextUrl.pathname.startsWith(`/${locale}/`)
   );
-  if (!hasLocale) return handleI18nRouting(request);
-  return updateSession(request);
+  if (!hasLocale) return i18nResponse;
+  return updateSession(request, i18nResponse);
 }
 
 export const config = {

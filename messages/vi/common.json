@@ -1,6 +1,6 @@
 {
   "Metadata": {"title": "OceanSkill", "description": "Kho kỹ năng sẵn sàng cho AI agent."},
-  "Common": {"brand": "OceanSkill", "dashboard": "Dashboard", "marketplace": "Kho kỹ năng", "login": "Đăng nhập", "logout": "Đăng xuất", "back": "← OceanSkill", "signup": "Đăng ký"},
-  "Navigation": {"mainLabel": "Điều hướng chính", "homeLabel": "Trang chủ OceanSkill", "searchPlaceholder": "Tìm kỹ năng...", "marketplace": "Kho kỹ năng", "leaderboard": "Bảng xếp hạng", "blog": "Blog", "docs": "Tài liệu", "chatbot": "OceanGuide", "faq": "Hỏi đáp", "about": "Giới thiệu"},
+  "Common": {"brand": "OceanSkill", "dashboard": "Dashboard", "marketplace": "Kho skill", "login": "Đăng nhập", "logout": "Đăng xuất", "back": "← OceanSkill", "signup": "Đăng ký"},
+  "Navigation": {"mainLabel": "Điều hướng chính", "homeLabel": "Trang chủ OceanSkill", "searchPlaceholder": "Tìm kỹ năng...", "marketplace": "Kho skill", "leaderboard": "Bảng xếp hạng", "blog": "Blog", "docs": "Tài liệu", "chatbot": "OceanGuide", "faq": "Hỏi đáp", "about": "Giới thiệu"},
   "Footer": {"description": "Kho kỹ năng được tuyển chọn, bảo mật và sẵn sàng đưa thẳng vào quy trình làm việc của AI agent.", "platform": "Nền tảng", "company": "Công ty", "privacy": "Chính sách bảo mật", "terms": "Điều khoản dịch vụ", "copyright": "© {year} OceanSkill. Bảo lưu mọi quyền."}
 }

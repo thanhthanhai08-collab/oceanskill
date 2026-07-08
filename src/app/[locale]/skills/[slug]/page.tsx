@@ -48,7 +48,13 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
                 <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{skill.description}</p>
                 <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
                   <span className="inline-flex items-center gap-2 font-semibold">
-                    {t("by")} <Link href={`/authors/${author.id}` as "/authors"} className="text-primary transition hover:text-primary/70">{author.name}</Link>
+                    {t("by")}
+                    <Link href={`/authors/${author.id}` as "/authors"} className="inline-flex items-center gap-2 text-primary transition hover:text-primary/70">
+                      <span className={`grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-gradient-to-br ${author.glow_class}`}>
+                        {author.avatar_url ? <img src={author.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="material-symbols-outlined text-[15px] text-white">{author.icon}</span>}
+                      </span>
+                      {author.name}
+                    </Link>
                   </span>
                   <span className="font-bold text-tertiary">Top 1</span>
                   <span className="text-on-surface-variant">{reviewState.stats.count.toLocaleString()} {t("reviewsTitle").toLowerCase()}</span>

@@ -1,65 +1,38 @@
 import "server-only";
-import {featuredCreators, getFeaturedCreator} from "@/data/mockData";
-import {listPublicSkills, type SkillSummary} from "@/lib/catalog/skills";
+import {createPublicClient} from "@/lib/supabase/public";
+import {listPublicSkills, type SkillAuthor, type SkillSummary} from "@/lib/catalog/skills";
 
-export type AuthorProfile = Readonly<{
-  id: string;
-  initials: string;
-  name: string;
-  handle: string;
-  icon: string;
-  domain: string;
-  glowClass: string;
-  bio: string;
-  focus: readonly string[];
-}>;
+export type AuthorProfile = SkillAuthor & Readonly<{verified: boolean}>;
 
-const authorDetails: Readonly<Record<string, Pick<AuthorProfile, "bio" | "focus">>> = {
-  "ocean-labs": {
-    bio: "Builds production-ready agent skills for design, research, and automation teams that need predictable workflows.",
-    focus: ["Design systems", "MCP workflows", "Agent handoffs"],
-  },
-  "agent-ops": {
-    bio: "A guild of agent operators focused on safe automation, observability, and repeatable AI execution patterns.",
-    focus: ["Agent operations", "Reliability", "Security"],
-  },
-  "growth-systems": {
-    bio: "Creates growth and revenue skills for teams that want sharper market research, content, and lifecycle workflows.",
-    focus: ["Growth loops", "Messaging", "Revenue operations"],
-  },
-  "neural-systems": {
-    bio: "Architects high-performance AI skills for next-generation automation and natural language processing workflows.",
-    focus: ["NLP", "Developer tooling", "Workflow automation"],
-  },
-};
+const fields = "id,name,handle,icon,domain,glow_class,bio,focus,website_url,verified,avatar_path,avatar_url";
 
-export function getAuthorProfile(id: string): AuthorProfile | null {
-  const creator = getFeaturedCreator(id);
-  if (!creator) return null;
-  const details = authorDetails[id];
+export function getSkillAuthor(skill: SkillSummary): AuthorProfile {
+  if (skill.authors) return {...skill.authors, verified: true};
   return {
-    ...creator,
-    bio: details?.bio ?? "Verified OceanSkill creator publishing reliable AI skills for agent workflows.",
-    focus: details?.focus ?? [creator.domain, "OceanSkill", "MCP"],
+    id: "unknown",
+    name: "OceanSkill Creator",
+    handle: "",
+    icon: "person",
+    domain: skill.domain,
+    glow_class: "from-primary-container via-secondary-container to-surface-container-high",
+    bio: "Verified OceanSkill creator publishing reliable AI skills for agent workflows.",
+    focus: [skill.domain, "OceanSkill", "MCP"],
+    website_url: null,
+    avatar_path: null,
+    avatar_url: null,
+    verified: true,
   };
 }
 
-export function getSkillAuthor(skill: SkillSummary): AuthorProfile {
-  const creator =
-    featuredCreators.find((item) => item.domain === skill.domain) ??
-    getFeaturedCreator("neural-systems") ??
-    featuredCreators[0];
-  return getAuthorProfile(creator.id) ?? {
-    ...creator,
-    bio: "Verified OceanSkill creator publishing reliable AI skills for agent workflows.",
-    focus: [creator.domain, "OceanSkill", "MCP"],
-  };
+export async function getAuthorProfile(id: string): Promise<AuthorProfile | null> {
+  const supabase = createPublicClient();
+  const {data, error} = await supabase.from("authors").select(fields).eq("id", id).eq("verified", true).maybeSingle();
+  if (error) throw new Error(`Could not load author: ${error.message}`);
+  return (data as AuthorProfile | null) ?? null;
 }
 
 export async function listAuthorSkills(authorId: string) {
-  const author = getAuthorProfile(authorId);
+  const [author, skills] = await Promise.all([getAuthorProfile(authorId), listPublicSkills()]);
   if (!author) return null;
-  const skills = await listPublicSkills();
-  const byDomain = skills.filter((skill) => skill.domain === author.domain);
-  return {author, skills: byDomain.length ? byDomain : skills};
+  return {author, skills: skills.filter((skill) => skill.author_id === author.id)};
 }

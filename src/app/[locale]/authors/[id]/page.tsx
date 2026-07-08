@@ -66,8 +66,8 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
           <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
               <div className="relative">
-                <div className={`grid h-32 w-32 place-items-center rounded-full border border-primary/40 bg-gradient-to-br ${author.glowClass} shadow-[0_0_30px_rgba(184,195,255,0.22)]`}>
-                  <span className="material-symbols-outlined text-5xl text-white">{author.icon}</span>
+                <div className={`grid h-32 w-32 place-items-center overflow-hidden rounded-full border border-primary/40 bg-gradient-to-br ${author.glow_class} shadow-[0_0_30px_rgba(184,195,255,0.22)]`}>
+                  {author.avatar_url ? <img src={author.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="material-symbols-outlined text-5xl text-white">{author.icon}</span>}
                 </div>
                 <span className="absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full border-4 border-background bg-primary text-on-primary">
                   <span className="material-symbols-outlined text-[16px]">verified</span>

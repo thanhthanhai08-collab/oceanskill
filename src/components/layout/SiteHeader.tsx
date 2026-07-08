@@ -34,8 +34,8 @@ export default async function SiteHeader({showSearch = true}: SiteHeaderProps) {
             <Link href="/dashboard" className="ml-1 rounded-lg bg-primary-container px-4 py-2 font-mono text-xs font-semibold text-white transition hover:bg-inverse-primary">{common("dashboard")}</Link>
           ) : (
             <>
-              <Link href="/login" className="ml-1 hidden rounded-lg px-3 py-2 font-mono text-xs font-semibold text-on-surface hover:bg-surface-container sm:block">{common("login")}</Link>
-              <Link href="/login" className="rounded-lg bg-primary-container px-4 py-2 font-mono text-xs font-semibold text-white transition hover:bg-inverse-primary">{common("signup")}</Link>
+              <Link href="/login" className="ml-1 hidden rounded-lg px-3 py-2 text-sm font-medium text-on-surface hover:bg-surface-container sm:block">{common("login")}</Link>
+              <Link href="/signup" className="rounded-lg bg-primary-container px-4 py-2 text-sm font-medium text-white transition hover:bg-inverse-primary">{common("signup")}</Link>
             </>
           )}
         </div>
