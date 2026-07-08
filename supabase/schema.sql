@@ -13,6 +13,21 @@ create table public.profiles (
   updated_at timestamptz not null default now()
 );
 
+create table public.authors (
+  id text primary key check (id ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
+  name text not null check (char_length(name) between 1 and 160),
+  handle text not null default '',
+  icon text not null default 'person',
+  domain text not null default 'agent-first',
+  glow_class text not null default 'from-primary-container via-secondary-container to-surface-container-high',
+  bio text not null default '',
+  focus text[] not null default '{}',
+  website_url text,
+  verified boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table public.skills (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
@@ -163,6 +178,7 @@ create table public.blog_posts (
 );
 
 create index skill_versions_skill_id_idx on public.skill_versions(skill_id);
+create index authors_domain_idx on public.authors(domain);
 create index api_keys_user_id_idx on public.api_keys(user_id);
 create index payment_orders_user_created_idx on public.payment_orders(user_id, created_at desc);
 create index payment_orders_pending_idx on public.payment_orders(expires_at) where status = 'pending';
@@ -189,6 +205,8 @@ end;
 $$;
 
 create trigger profiles_set_updated_at before update on public.profiles
+for each row execute function private.set_updated_at();
+create trigger authors_set_updated_at before update on public.authors
 for each row execute function private.set_updated_at();
 create trigger skills_set_updated_at before update on public.skills
 for each row execute function private.set_updated_at();
@@ -473,6 +491,7 @@ from public.credit_ledger
 group by user_id;
 
 alter table public.profiles enable row level security;
+alter table public.authors enable row level security;
 alter table public.skills enable row level security;
 alter table public.skill_versions enable row level security;
 alter table public.api_keys enable row level security;
@@ -489,6 +508,8 @@ using ((select auth.uid()) = id);
 create policy profiles_update_own on public.profiles for update to authenticated
 using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
+create policy authors_select_verified on public.authors for select to anon, authenticated
+using (verified = true);
 create policy skills_select_active on public.skills for select to anon, authenticated
 using (status = 'active');
 create policy packs_select_active on public.credit_packs for select to authenticated
@@ -510,6 +531,7 @@ create policy blog_posts_select_published on public.blog_posts for select to ano
 using (status = 'published' and published_at is not null and published_at <= now());
 
 revoke all on all tables in schema public from anon, authenticated;
+grant select on public.authors to anon, authenticated;
 grant select on public.skills to anon, authenticated;
 grant select on public.blog_posts to anon, authenticated;
 grant select on public.profiles, public.api_keys, public.credit_packs,
@@ -539,6 +561,44 @@ values
   ('builder_50k', 'Builder 50K', 50000, 600),
   ('power_100k', 'Power 100K', 100000, 1400)
 on conflict (code) do nothing;
+
+insert into public.authors (id, name, handle, icon, domain, glow_class, bio, focus, website_url, verified)
+values
+  (
+    'garry-tan',
+    'Garry Tan',
+    '@garrytan',
+    'rocket_launch',
+    'agent-first',
+    'from-primary-container via-secondary-container to-surface-container-high',
+    'Founder, investor, and builder behind gstack, an opinionated workflow for AI-assisted engineering teams.',
+    array['gstack', 'Engineering workflow', 'AI agents'],
+    'https://github.com/garrytan/gstack',
+    true
+  ),
+  (
+    'google-labs',
+    'Google Labs',
+    '@googlelabs',
+    'palette',
+    'design',
+    'from-secondary-container via-tertiary-container to-surface-container-high',
+    'Google Labs publishes Stitch skills for generating designs, extracting design systems, and building UI workflows for agent clients.',
+    array['Stitch', 'Design systems', 'UI generation'],
+    'https://github.com/google-labs-code/stitch-skills',
+    true
+  )
+on conflict (id) do update set
+  name = excluded.name,
+  handle = excluded.handle,
+  icon = excluded.icon,
+  domain = excluded.domain,
+  glow_class = excluded.glow_class,
+  bio = excluded.bio,
+  focus = excluded.focus,
+  website_url = excluded.website_url,
+  verified = excluded.verified,
+  updated_at = now();
 
 insert into public.blog_posts
   (slug, locale, title, excerpt, category, author_name, icon, glow_class, reading_minutes, status, published_at, sections)

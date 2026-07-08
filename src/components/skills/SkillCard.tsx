@@ -1,11 +1,13 @@
 import {Link} from "@/i18n/navigation";
 import type {SkillSummary} from "@/lib/catalog/skills";
 import {getDomainVisual} from "@/data/mockData";
+import {getSkillAuthorName} from "@/lib/catalog/skill-authors";
 
 export interface SkillCardProps { readonly skill: SkillSummary; readonly featured?: boolean; readonly actionLabel: string; }
 
 export default function SkillCard({skill, featured = false, actionLabel}: SkillCardProps) {
   const visual = getDomainVisual(skill.domain);
+  const authorName = getSkillAuthorName(skill);
   return (
     <Link href={`/skills/${skill.slug}`} className={`group flex h-full flex-col overflow-hidden rounded-2xl border bg-surface-container-low/70 transition duration-300 hover:-translate-y-1 hover:border-primary/60 ${featured ? "border-primary/60 shadow-[0_0_30px_rgba(46,91,255,0.16)]" : "border-outline-variant/45"}`}>
       <div className={`relative h-44 overflow-hidden bg-gradient-to-br ${visual.glowClass}`}>
@@ -23,7 +25,7 @@ export default function SkillCard({skill, featured = false, actionLabel}: SkillC
           {skill.compatible_clients.slice(0, 3).map((client) => <span key={client} className="rounded-md bg-surface-container-high px-2 py-1 font-mono text-[10px] text-on-surface-variant">{client}</span>)}
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-outline-variant/30 pt-5">
-          <span className="font-mono text-xs text-tertiary">{skill.license_spdx ?? "Verified"}</span>
+          <span className="font-mono text-xs text-tertiary">{authorName}</span>
           <span className="flex items-center gap-1 text-sm font-semibold text-primary">{actionLabel}<span className="material-symbols-outlined text-[18px] transition group-hover:translate-x-1">arrow_forward</span></span>
         </div>
       </div>

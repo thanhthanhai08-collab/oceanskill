@@ -7,6 +7,7 @@ import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 
 const loginUrl = (locale: string, message: string) => `/${locale}/login?message=${encodeURIComponent(message)}`;
+type OAuthProvider = "google" | "github";
 
 export async function login(formData: FormData) {
   const locale = await getLocale();
@@ -37,4 +38,24 @@ export async function signup(formData: FormData) {
   if (error) redirect(loginUrl(locale, error.message));
   if (data.session) redirect(`/${locale}/dashboard`);
   redirect(loginUrl(locale, t("checkEmail")));
+}
+
+export async function signInWithProvider(formData: FormData) {
+  const locale = await getLocale();
+  const provider = String(formData.get("provider") ?? "");
+  if (provider !== "google" && provider !== "github") redirect(loginUrl(locale, "Unsupported OAuth provider"));
+
+  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+  const supabase = await createClient();
+  const {data, error} = await supabase.auth.signInWithOAuth({
+    provider: provider as OAuthProvider,
+    options: {
+      redirectTo: `${origin}/${locale}/auth/confirm`,
+      queryParams: provider === "google" ? {access_type: "offline", prompt: "consent"} : undefined,
+    },
+  });
+
+  if (error) redirect(loginUrl(locale, error.message));
+  if (data.url) redirect(data.url);
+  redirect(loginUrl(locale, "Could not start OAuth sign in"));
 }

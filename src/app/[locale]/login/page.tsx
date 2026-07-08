@@ -1,7 +1,7 @@
 import {getTranslations} from "next-intl/server";
 import {Link} from "@/i18n/navigation";
 import SiteShell from "@/components/layout/SiteShell";
-import {login, signup} from "./actions";
+import {login, signInWithProvider, signup} from "./actions";
 
 export interface LoginPageProps { readonly searchParams: Promise<{message?: string}>; }
 
@@ -18,6 +18,27 @@ export default async function LoginPage({searchParams}: LoginPageProps) {
           <h1 className="mt-7 font-geist text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="mt-2 leading-6 text-on-surface-variant">{t("description")}</p>
           {message && <p className="mt-5 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-primary">{message}</p>}
+          <div className="mt-7 grid gap-3">
+            <form>
+              <input type="hidden" name="provider" value="google" />
+              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface transition hover:border-primary/50 hover:bg-surface-container">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[12px] font-bold text-[#4285F4]">G</span>
+                {t("continueGoogle")}
+              </button>
+            </form>
+            <form>
+              <input type="hidden" name="provider" value="github" />
+              <button formAction={signInWithProvider} className="flex w-full items-center justify-center gap-3 rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface transition hover:border-primary/50 hover:bg-surface-container">
+                <span className="material-symbols-outlined text-[20px]">code</span>
+                {t("continueGithub")}
+              </button>
+            </form>
+          </div>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-outline-variant/40" />
+            <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{t("orEmail")}</span>
+            <span className="h-px flex-1 bg-outline-variant/40" />
+          </div>
           <form className="mt-7 space-y-4">
             <label className="block text-sm font-medium">Email<input name="email" type="email" autoComplete="email" required className="mt-2 w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 outline-none transition focus:border-primary" placeholder="you@example.com" /></label>
             <label className="block text-sm font-medium">{t("password")}<input name="password" type="password" autoComplete="current-password" minLength={6} required className="mt-2 w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 outline-none transition focus:border-primary" placeholder={t("passwordPlaceholder")} /></label>

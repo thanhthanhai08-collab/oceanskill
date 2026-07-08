@@ -111,7 +111,7 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
               <span className="mb-2 text-xl font-semibold text-white/55">{labels.creditLabel}</span>
             </p>
           </div>
-          <a href="#credit-packs" className="inline-flex min-h-16 items-center justify-center gap-3 rounded-xl bg-white/70 px-10 py-4 font-bold text-primary-container transition hover:bg-white">
+          <a href={`/${locale}/dashboard/billing/topup`} className="inline-flex min-h-16 items-center justify-center gap-3 rounded-xl bg-white/70 px-10 py-4 font-bold text-primary-container transition hover:bg-white">
             <span className="material-symbols-outlined">add_circle</span>
             {labels.scrollTopUp}
           </a>

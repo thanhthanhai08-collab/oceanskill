@@ -8,6 +8,7 @@ export default async function BillingLayout({children, params}: {readonly childr
 
   const tabs = [
     {href: `/${locale}/dashboard/billing`, label: t("billingOverview"), icon: "account_balance_wallet"},
+    {href: `/${locale}/dashboard/billing/topup`, label: t("billingTopup"), icon: "add_card"},
     {href: `/${locale}/dashboard/billing/orders`, label: t("billingOrders"), icon: "receipt_long"},
     {href: `/${locale}/dashboard/billing/invoices`, label: t("billingInvoices"), icon: "description"},
     {href: `/${locale}/dashboard/billing/ledger`, label: t("billingLedger"), icon: "menu_book"},

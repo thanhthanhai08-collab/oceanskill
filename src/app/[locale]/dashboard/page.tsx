@@ -49,7 +49,7 @@ export default async function DashboardPage({params}: DashboardPageProps) {
             </p>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70">{t("mcpCallsDescription")}</p>
           </div>
-          <a href={`/${locale}/dashboard/billing#credit-packs`} className="inline-flex min-h-16 items-center justify-center gap-3 rounded-xl bg-white/70 px-10 py-4 font-bold text-primary-container transition hover:bg-white">
+          <a href={`/${locale}/dashboard/billing/topup`} className="inline-flex min-h-16 items-center justify-center gap-3 rounded-xl bg-white/70 px-10 py-4 font-bold text-primary-container transition hover:bg-white">
             <span className="material-symbols-outlined">add_circle</span>
             {t("topUp")}
           </a>

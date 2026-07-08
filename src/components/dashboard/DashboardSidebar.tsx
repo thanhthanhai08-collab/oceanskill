@@ -34,14 +34,15 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
       </div>
 
       {/* Credit balance mini-card */}
-      <div className="mt-3 rounded-lg border border-white/5 bg-surface-container-low px-4 py-3">
+      <div className="mt-3 rounded-lg border border-white/10 bg-gradient-to-br from-surface-container-low via-surface-container-low to-primary/10 px-4 py-3 shadow-[0_0_24px_rgba(46,91,255,0.08)]">
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.creditBalance}</p>
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="font-geist text-2xl font-bold">{balance.toLocaleString(locale)}</p>
           <a
-            href={`/${locale}/dashboard/billing#credit-packs`}
-            className="rounded border border-white/10 bg-surface-container-high px-3 py-1.5 text-[11px] font-semibold text-on-surface transition hover:bg-surface-container-highest"
+            href={`/${locale}/dashboard/billing/topup`}
+            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/15 px-3 py-1.5 text-[11px] font-bold text-primary shadow-[0_0_18px_rgba(46,91,255,0.12)] transition hover:bg-primary hover:text-on-primary"
           >
+            <span className="material-symbols-outlined text-[14px]">add_circle</span>
             {labels.topUp}
           </a>
         </div>
