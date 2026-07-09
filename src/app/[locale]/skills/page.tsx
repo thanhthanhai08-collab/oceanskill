@@ -57,7 +57,7 @@ export default async function SkillsPage({params, searchParams}: SkillsPageProps
               {domain !== "all" && <span className="rounded-full bg-primary/10 px-3 py-1 text-xs capitalize text-primary">{domain}</span>}
             </div>
             {skills.length ? (
-              <div className="mt-5 grid gap-6 md:grid-cols-2"><>{skills.map((skill, index) => <SkillCard key={skill.id} skill={skill} featured={index === 0} actionLabel={t("viewSkill")} />)}</></div>
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3"><>{skills.map((skill, index) => <SkillCard key={skill.id} skill={skill} featured={index === 0} actionLabel={t("viewSkill")} />)}</></div>
             ) : (
               <p className="mt-8 rounded-2xl border border-dashed border-outline-variant/50 p-12 text-center text-on-surface-variant">{t("empty")}</p>
             )}
