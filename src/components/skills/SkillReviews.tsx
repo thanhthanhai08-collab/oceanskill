@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {useMemo, useState, useTransition} from "react";
 import type {SkillReview, SkillReviewStats} from "@/lib/skills/reviews";
 
@@ -143,7 +144,13 @@ export default function SkillReviews({skillId, locale, initialReviews, initialSt
           <article key={review.id} className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-container font-bold text-on-secondary-container">{initials(review.reviewer_name)}</div>
+                <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-secondary-container font-bold text-on-secondary-container">
+                  {review.reviewer_avatar_url ? (
+                    <Image src={review.reviewer_avatar_url} alt="" fill unoptimized sizes="40px" className="object-cover" />
+                  ) : (
+                    initials(review.reviewer_name)
+                  )}
+                </div>
                 <div>
                   <p className="font-bold">{review.reviewer_name}</p>
                   <p className="text-xs text-on-surface-variant">

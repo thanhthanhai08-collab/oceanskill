@@ -44,7 +44,9 @@ export async function updateAvatar(_previous: AvatarUploadState, formData: FormD
     .eq("id", userId);
   if (updateError) return {status: "error", message: updateError.message};
 
+  revalidatePath(`/${locale}`, "layout");
   revalidatePath(`/${locale}/dashboard`, "layout");
+  revalidatePath(`/${locale}/dashboard/settings`);
   revalidatePath(`/${locale}/skills`, "layout");
   revalidatePath(`/${locale}/blog`, "layout");
   return {status: "success", message: "avatar_updated", avatarUrl: publicUrlData.publicUrl};

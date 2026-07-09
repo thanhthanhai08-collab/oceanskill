@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {useActionState} from "react";
+import {useActionState, useEffect} from "react";
+import {useRouter} from "next/navigation";
 import type {AvatarUploadState} from "@/app/[locale]/dashboard/actions";
 
 export interface ProfileAvatarUploaderProps {
@@ -31,7 +32,12 @@ export default function ProfileAvatarUploader({
   action,
 }: ProfileAvatarUploaderProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const router = useRouter();
   const currentAvatarUrl = state.avatarUrl ?? avatarUrl;
+
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [router, state.status]);
 
   return (
     <div className="flex flex-col gap-5 md:flex-row md:items-center">
