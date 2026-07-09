@@ -7,6 +7,48 @@ import {createClient} from "@/lib/supabase/server";
 import {parsePrivateSkillForm, scanSkillContent} from "@/lib/skills/validation";
 
 export type CreateSkillState = Readonly<{status: "idle" | "success" | "error"; message?: string; checks?: Array<{id: string; passed: boolean; message: string}>}>;
+export type AvatarUploadState = Readonly<{status: "idle" | "success" | "error"; message?: string; avatarUrl?: string}>;
+
+const avatarTypes = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+  ["image/gif", "gif"],
+]);
+
+export async function updateAvatar(_previous: AvatarUploadState, formData: FormData): Promise<AvatarUploadState> {
+  const locale = await getLocale();
+  const supabase = await createClient();
+  const {data: claimsData} = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub ? String(claimsData.claims.sub) : null;
+  if (!userId) return {status: "error", message: "unauthorized"};
+
+  const file = formData.get("avatar");
+  if (!(file instanceof File) || file.size === 0) return {status: "error", message: "missing_file"};
+  if (file.size > 2 * 1024 * 1024) return {status: "error", message: "file_too_large"};
+
+  const extension = avatarTypes.get(file.type);
+  if (!extension) return {status: "error", message: "invalid_file_type"};
+
+  const path = `${userId}/${Date.now()}.${extension}`;
+  const {error: uploadError} = await supabase.storage.from("avatars").upload(path, file, {
+    contentType: file.type,
+    upsert: false,
+  });
+  if (uploadError) return {status: "error", message: uploadError.message};
+
+  const {data: publicUrlData} = supabase.storage.from("avatars").getPublicUrl(path);
+  const {error: updateError} = await supabase
+    .from("profiles")
+    .update({avatar_url: publicUrlData.publicUrl})
+    .eq("id", userId);
+  if (updateError) return {status: "error", message: updateError.message};
+
+  revalidatePath(`/${locale}/dashboard`, "layout");
+  revalidatePath(`/${locale}/skills`, "layout");
+  revalidatePath(`/${locale}/blog`, "layout");
+  return {status: "success", message: "avatar_updated", avatarUrl: publicUrlData.publicUrl};
+}
 
 export async function createPrivateSkill(_previous: CreateSkillState, formData: FormData): Promise<CreateSkillState> {
   const locale = await getLocale();

@@ -3,7 +3,6 @@ import {redirect} from "next/navigation";
 import {Link} from "@/i18n/navigation";
 import DashboardStat from "@/components/dashboard/DashboardStat";
 import {getDashboardOverview} from "@/lib/dashboard/data";
-import {logout} from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +12,8 @@ export interface DashboardPageProps {
 
 export default async function DashboardPage({params}: DashboardPageProps) {
   const {locale} = await params;
-  const [t, common, data] = await Promise.all([
+  const [t, data] = await Promise.all([
     getTranslations("Dashboard"),
-    getTranslations("Common"),
     getDashboardOverview(),
   ]);
 
@@ -26,17 +24,12 @@ export default async function DashboardPage({params}: DashboardPageProps) {
 
   return (
     <>
-      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
+      <div>
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{t("eyebrow")}</p>
           <h1 className="mt-3 font-geist text-4xl font-bold tracking-tight">{t("overviewTitle")}</h1>
           <p className="mt-3 max-w-2xl text-on-surface-variant">{t("description")}</p>
         </div>
-        <form action={logout}>
-          <button className="rounded-lg border border-outline-variant/50 px-4 py-2 text-sm font-semibold text-on-surface transition hover:bg-surface-container">
-            {common("logout")}
-          </button>
-        </form>
       </div>
 
       <section className="mt-9 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/80 via-secondary/80 to-tertiary/90 p-8 text-on-primary shadow-[0_0_48px_rgba(147,51,234,0.22)] sm:p-10">

@@ -57,7 +57,7 @@
     "reviewSaveFailed": "Could not save your review. Please try again.",
     "reviewOne": "The skill fits neatly into our data workflow. Detection quality is strong and setup through MCP was straightforward.",
     "reviewTwo": "Useful, fast, and reliable. It helped our agent classify repetitive analysis work with much less manual cleanup.",
-    "moreFromCreator": "More from NeuralSystems",
+    "moreFromCreator": "More from {author}",
     "viewAll": "View all",
     "advertisement": "Reserved for advertisement",
     "relatedTitle": "Related skills",

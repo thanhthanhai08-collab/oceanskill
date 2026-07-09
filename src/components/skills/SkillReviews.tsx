@@ -32,8 +32,9 @@ function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "OS";
 }
 
-export default function SkillReviews({skillId, initialReviews, initialStats, initialOwnReview, labels}: {
+export default function SkillReviews({skillId, locale, initialReviews, initialStats, initialOwnReview, labels}: {
   readonly skillId: string;
+  readonly locale: string;
   readonly initialReviews: SkillReview[];
   readonly initialStats: SkillReviewStats;
   readonly initialOwnReview: SkillReview | null;
@@ -48,6 +49,11 @@ export default function SkillReviews({skillId, initialReviews, initialStats, ini
   const [isPending, startTransition] = useTransition();
 
   const maxCount = useMemo(() => Math.max(1, ...Object.values(stats.distribution)), [stats.distribution]);
+  const dateFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }), [locale]);
 
   const submit = () => {
     setMessage(null);
@@ -140,7 +146,9 @@ export default function SkillReviews({skillId, initialReviews, initialStats, ini
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-container font-bold text-on-secondary-container">{initials(review.reviewer_name)}</div>
                 <div>
                   <p className="font-bold">{review.reviewer_name}</p>
-                  <p className="text-xs text-on-surface-variant">{new Intl.DateTimeFormat(undefined, {dateStyle: "medium"}).format(new Date(review.updated_at))}</p>
+                  <p className="text-xs text-on-surface-variant">
+                    <time dateTime={review.updated_at}>{dateFormatter.format(new Date(review.updated_at))}</time>
+                  </p>
                 </div>
               </div>
               <Stars rating={review.rating} />

@@ -182,8 +182,8 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
   const compact = new Intl.NumberFormat(locale, {notation: "compact", maximumFractionDigits: 1});
   const paidEvents = data.analyticsEvents;
   const totalUnits = paidEvents.reduce((sum, event) => sum + event.units, 0);
-  const successCount = paidEvents.filter((event) => isSuccessful(event.status)).length;
-  const successRate = paidEvents.length ? successCount / paidEvents.length : 0;
+  const successCount = data.mcpCallEvents.filter((event) => isSuccessful(event.status)).length;
+  const successRate = data.totalMcpCalls ? successCount / data.totalMcpCalls : 0;
   const rows = buildSkillRows(paidEvents);
   const trend = buildTrend(data.mcpCallEvents, range, locale);
   const maxTrend = Math.max(...trend.map((item) => item.calls), 1);
@@ -220,7 +220,7 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
           <span className="material-symbols-outlined text-secondary">check_circle</span>
           <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{t("successRate")}</p>
           <p className="mt-3 font-geist text-3xl font-bold">{(successRate * 100).toFixed(2)}%</p>
-          <p className="mt-2 text-xs font-semibold text-secondary">{t("reliabilityHigh")}</p>
+          <p className="mt-2 text-xs font-semibold text-secondary">{successCount.toLocaleString(locale)} / {data.totalMcpCalls.toLocaleString(locale)}</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
           <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
@@ -331,7 +331,7 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
 
       <section className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/55">
         <div className="border-b border-white/5 p-6">
-          <h2 className="font-geist text-2xl font-bold">{labels[code].recentMcpCalls}</h2>
+          <h2 className="font-geist text-2xl font-bold">{code === "vi" ? "Lượt gọi MCP gần đây" : "Recent MCP calls"}</h2>
         </div>
         {data.mcpCallEvents.length === 0 ? (
           <p className="p-8 text-sm text-on-surface-variant">{labels[code].noMcpCalls}</p>
@@ -342,7 +342,7 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
                 <tr className="border-b border-white/5">
                   <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].tool}</th>
                   <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">API key</th>
-                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].requestId}</th>
+                  <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{code === "vi" ? "Trạng thái" : "Status"}</th>
                   <th className="p-5 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">{labels[code].time}</th>
                 </tr>
               </thead>
@@ -351,7 +351,11 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
                   <tr key={event.id} className="transition hover:bg-white/[0.03]">
                     <td className="p-5 font-semibold">{event.tool_name}</td>
                     <td className="p-5 font-mono text-xs text-on-surface-variant">{event.api_key_id.slice(0, 8)}...</td>
-                    <td className="p-5 font-mono text-xs text-on-surface-variant">{event.request_id ?? "-"}</td>
+                    <td className="p-5">
+                      <span className={`rounded-full px-3 py-1 font-mono text-[10px] font-bold uppercase ${isSuccessful(event.status) ? "bg-tertiary/10 text-tertiary" : "bg-error/10 text-error"}`}>
+                        {isSuccessful(event.status) ? (code === "vi" ? "Thành công" : "Succeeded") : (code === "vi" ? "Thất bại" : "Failed")}
+                      </span>
+                    </td>
                     <td className="p-5 text-sm text-on-surface-variant">{formatDate(event.created_at)}</td>
                   </tr>
                 ))}

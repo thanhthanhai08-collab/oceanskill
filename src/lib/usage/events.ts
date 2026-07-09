@@ -16,6 +16,7 @@ export type McpCallEvent = Readonly<{
   tool_name: string;
   api_key_id: string;
   request_id: string | null;
+  status: string;
   created_at: string;
 }>;
 
@@ -88,11 +89,23 @@ export async function getUsageEvents({page = 1, limit = 20, range}: {page?: numb
   if (error ?? countError ?? analyticsError ?? mcpCallError ?? mcpCallCountError) {
     throw new Error(`Could not load usage events: ${(error ?? countError ?? analyticsError ?? mcpCallError ?? mcpCallCountError)?.message}`);
   }
+  const mcpCalls = (mcpCallData ?? []) as Array<Omit<McpCallEvent, "status">>;
+  const requestIds = [...new Set(mcpCalls.map((event) => event.request_id).filter((value): value is string => Boolean(value)))];
+  const statusByRequestId = new Map<string, string>();
+  if (requestIds.length) {
+    const {data: statusRows, error: statusError} = await supabase
+      .from("usage_events")
+      .select("request_id,status")
+      .eq("user_id", String(userId))
+      .in("request_id", requestIds);
+    if (statusError) throw new Error(`Could not load usage status: ${statusError.message}`);
+    for (const row of statusRows ?? []) statusByRequestId.set(String(row.request_id), String(row.status));
+  }
 
   return {
     events: (data ?? []) as UsageEvent[],
     analyticsEvents: (analyticsData ?? []) as UsageEvent[],
-    mcpCallEvents: (mcpCallData ?? []) as McpCallEvent[],
+    mcpCallEvents: mcpCalls.map((event) => ({...event, status: event.request_id ? statusByRequestId.get(event.request_id) ?? "succeeded" : "succeeded"})),
     totalMcpCalls: mcpCallCount ?? 0,
     paidTotal: count ?? 0,
     total: count ?? 0,

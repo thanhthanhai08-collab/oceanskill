@@ -1,4 +1,5 @@
 import {Link} from "@/i18n/navigation";
+import Image from "next/image";
 import type {SkillSummary} from "@/lib/catalog/skills";
 import {getDomainVisual} from "@/data/mockData";
 
@@ -25,8 +26,8 @@ export default function SkillCard({skill, featured = false, actionLabel}: SkillC
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-outline-variant/30 pt-5">
           <span className="flex min-w-0 items-center gap-2">
-            <span className={`grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br ${author?.glow_class ?? visual.glowClass}`}>
-              {author?.avatar_url ? <img src={author.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="material-symbols-outlined text-[15px] text-white">{author?.icon ?? "person"}</span>}
+            <span className={`relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br ${author?.glow_class ?? visual.glowClass}`}>
+              {author?.avatar_url ? <Image src={author.avatar_url} alt="" fill unoptimized sizes="28px" className="object-cover" /> : <span className="material-symbols-outlined text-[15px] text-white">{author?.icon ?? "person"}</span>}
             </span>
             <span className="truncate font-mono text-xs text-tertiary">{author?.name ?? "OceanSkill Creator"}</span>
           </span>

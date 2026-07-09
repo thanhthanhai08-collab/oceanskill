@@ -43,3 +43,12 @@ export async function listRelatedSkills(domain: string, excludeSlug: string, lim
   const related = ((data ?? []) as unknown as SkillRow[]).map(normalizeSkill);
   return related.length ? related : platformSkillFallbacks.filter((skill) => skill.domain === domain && skill.slug !== excludeSlug).slice(0, limit);
 }
+
+export async function listSkillsByAuthor(authorId: string | null, excludeSlug: string, limit = 2) {
+  if (!authorId) return [];
+  const supabase = createPublicClient();
+  const {data, error} = await supabase.from("skills").select(fields).eq("status", "active").eq("visibility", "public").eq("authors.verified", true).eq("author_id", authorId).neq("slug", excludeSlug).order("title").limit(limit);
+  if (error) throw new Error(`Could not load author skills: ${error.message}`);
+  const authorSkills = ((data ?? []) as unknown as SkillRow[]).map(normalizeSkill);
+  return authorSkills.length ? authorSkills : platformSkillFallbacks.filter((skill) => skill.author_id === authorId && skill.slug !== excludeSlug).slice(0, limit);
+}

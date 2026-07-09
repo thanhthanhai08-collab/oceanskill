@@ -1,4 +1,5 @@
 import {getTranslations} from "next-intl/server";
+import Image from "next/image";
 import {notFound} from "next/navigation";
 import {Link} from "@/i18n/navigation";
 import SiteShell from "@/components/layout/SiteShell";
@@ -56,6 +57,7 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
     focus: code === "vi" ? [author.domain, "OceanSkill", "MCP"] : [...author.focus],
   };
   const rating = skills.length ? "4.9" : labels[code].newRating;
+  const publishedSkillsLabel = code === "vi" ? "Skills đã xuất bản" : labels[code].publishedSkills;
 
   return (
     <SiteShell>
@@ -67,25 +69,21 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
             <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
               <div className="relative">
                 <div className={`grid h-32 w-32 place-items-center overflow-hidden rounded-full border border-primary/40 bg-gradient-to-br ${author.glow_class} shadow-[0_0_30px_rgba(184,195,255,0.22)]`}>
-                  {author.avatar_url ? <img src={author.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="material-symbols-outlined text-5xl text-white">{author.icon}</span>}
+                  {author.avatar_url ? <Image src={author.avatar_url} alt="" fill unoptimized sizes="128px" className="object-cover" /> : <span className="material-symbols-outlined text-5xl text-white">{author.icon}</span>}
                 </div>
                 <span className="absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full border-4 border-background bg-primary text-on-primary">
                   <span className="material-symbols-outlined text-[16px]">verified</span>
                 </span>
               </div>
               <div>
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{labels[code].verifiedCreator}</p>
-                <h1 className="mt-2 font-geist text-4xl font-bold tracking-tight sm:text-5xl">{author.name}</h1>
+                <h1 className="font-geist text-4xl font-bold tracking-tight sm:text-5xl">{author.name}</h1>
                 <p className="mt-2 font-mono text-sm text-primary">{author.handle}</p>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">{copy.bio}</p>
-                <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
-                  {copy.focus.map((item) => <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{item}</span>)}
-                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:min-w-[360px]">
               <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 p-5 text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{labels[code].publishedSkills}</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{publishedSkillsLabel}</p>
                 <p className="mt-2 font-geist text-3xl font-bold">{skills.length}</p>
               </div>
               <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-secondary/10 to-tertiary/10 p-5 text-center">
@@ -97,7 +95,7 @@ export default async function AuthorPage({params}: {readonly params: Promise<{id
         </section>
 
         <div className="mb-8 mt-12 flex items-center gap-4">
-          <h2 className="shrink-0 font-geist text-2xl font-bold">{labels[code].publishedSkills}</h2>
+          <h2 className="shrink-0 font-geist text-2xl font-bold">{publishedSkillsLabel}</h2>
           <div className="h-px w-full bg-gradient-to-r from-outline-variant/70 to-transparent" />
         </div>
 

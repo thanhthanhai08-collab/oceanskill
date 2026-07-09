@@ -6,7 +6,7 @@ import AddSkillToLibraryButton from "@/components/skills/AddSkillToLibraryButton
 import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
 import {getDomainVisual} from "@/data/mockData";
-import {getPublicSkill, listRelatedSkills} from "@/lib/catalog/skills";
+import {getPublicSkill, listRelatedSkills, listSkillsByAuthor} from "@/lib/catalog/skills";
 import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
 
@@ -17,17 +17,18 @@ export interface SkillDetailPageProps {
 }
 
 export default async function SkillDetailPage({params}: SkillDetailPageProps) {
-  const {slug} = await params;
+  const {slug, locale} = await params;
   const skill = await getPublicSkill(slug);
   if (!skill) notFound();
   const t = await getTranslations("SkillDetail");
-  const [relatedSkills, reviewState] = await Promise.all([
-    listRelatedSkills(skill.domain, skill.slug),
-    getSkillReviewState(skill.id),
-  ]);
   const visual = getDomainVisual(skill.domain);
   const version = skill.current_version ?? "1.0.0";
   const author = getSkillAuthor(skill);
+  const [moreFromAuthor, relatedSkills, reviewState] = await Promise.all([
+    listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2),
+    listRelatedSkills(skill.domain, skill.slug),
+    getSkillReviewState(skill.id),
+  ]);
 
   return (
     <SiteShell>
@@ -120,6 +121,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
 
           <SkillReviews
             skillId={skill.id}
+            locale={locale}
             initialReviews={reviewState.reviews}
             initialStats={reviewState.stats}
             initialOwnReview={reviewState.ownReview}
@@ -155,7 +157,17 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             <dl className="mt-7 space-y-4 border-t border-white/10 pt-6 text-sm">
               <div className="flex justify-between gap-4"><dt className="text-on-surface-variant">{t("version")}</dt><dd className="font-mono">{version}</dd></div>
               <div className="flex justify-between gap-4"><dt className="text-on-surface-variant">{t("license")}</dt><dd>{skill.license_spdx ?? "Apache-2.0"}</dd></div>
-              <div className="flex items-center justify-between gap-4"><dt className="inline-flex items-center gap-2 text-on-surface-variant"><span className="material-symbols-outlined text-[16px] text-primary">verified</span>{t("source")}</dt><dd>{skill.source_url ? "GitHub" : "OceanSkill"}</dd></div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-on-surface-variant">{t("source")}</dt>
+                <dd>
+                  {skill.source_url ? (
+                    <a href={skill.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 transition hover:text-primary">
+                      GitHub
+                      <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                    </a>
+                  ) : "OceanSkill"}
+                </dd>
+              </div>
             </dl>
             <div className="mt-7">
               <AddSkillToLibraryButton skillId={skill.id} labels={{add: t("addToLibrary"), added: t("addSuccess"), already: t("addAlready"), failed: t("addFailed")}} />
@@ -166,20 +178,22 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             </Link>
           </section>
 
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-geist font-bold">{t("moreFromCreator")}</h2>
-              <Link href={`/authors/${author.id}` as "/authors"} className="text-xs font-bold text-primary">{t("viewAll")}</Link>
-            </div>
-            <div className="space-y-3">
-              {relatedSkills.slice(0, 2).map((related) => (
-                <Link key={related.id} href={`/skills/${related.slug}` as "/skills"} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-surface-container-low/55 p-4 transition hover:bg-white/[0.04]">
-                  <span className="min-w-0"><span className="block truncate font-semibold">{related.title}</span><span className="text-xs text-on-surface-variant">{related.domain}</span></span>
-                  <span className="font-mono text-xs">{related.current_version ?? "1.0.0"}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
+          {moreFromAuthor.length > 0 && (
+            <section>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="font-geist font-bold">{t("moreFromCreator", {author: author.name})}</h2>
+                <Link href={`/authors/${author.id}` as "/authors"} className="text-xs font-bold text-primary">{t("viewAll")}</Link>
+              </div>
+              <div className="space-y-3">
+                {moreFromAuthor.map((related) => (
+                  <Link key={related.id} href={`/skills/${related.slug}` as "/skills"} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-surface-container-low/55 p-4 transition hover:bg-white/[0.04]">
+                    <span className="min-w-0"><span className="block truncate font-semibold">{related.title}</span><span className="text-xs text-on-surface-variant">{related.domain}</span></span>
+                    <span className="font-mono text-xs">{related.current_version ?? "1.0.0"}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           {relatedSkills.length > 0 && (
             <section>

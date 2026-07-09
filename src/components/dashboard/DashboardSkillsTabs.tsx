@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import {useMemo, useState, useTransition} from "react";
+import {Link} from "@/i18n/navigation";
 import type {CreatorSkill, FoundationSkill, LibrarySkill} from "@/lib/skills/creator";
 import {getDomainVisual} from "@/data/mockData";
 import CreatorSkillList from "@/components/dashboard/CreatorSkillList";
 import CreatorSkillAddCard from "@/components/dashboard/CreatorSkillAddCard";
 import type {CreatorSkillFormLabels} from "@/components/dashboard/CreatorSkillForm";
+import type {SkillReviewStats} from "@/lib/skills/reviews";
 
 type TabKey = "all" | "platform" | "uploaded";
 
@@ -22,14 +25,17 @@ type TabsLabels = Readonly<{
 
 interface PlatformCardProps {
   readonly skill: FoundationSkill;
+  readonly reviewStats?: SkillReviewStats;
   readonly typeLabel?: string;
   readonly removable?: boolean;
   readonly removeLabel?: string;
   readonly onRemove?: (id: string) => void;
 }
 
-function PlatformCard({skill, typeLabel, removable = false, removeLabel, onRemove}: PlatformCardProps) {
+function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeLabel, onRemove}: PlatformCardProps) {
   const visual = getDomainVisual(skill.domain);
+  const author = skill.authors;
+  const rating = reviewStats?.count ? reviewStats.average.toFixed(1) : "0.0";
   return (
     <article className="group relative flex min-h-[260px] flex-col rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 transition hover:-translate-y-1 hover:bg-white/[0.04]">
       {removable && (
@@ -43,39 +49,42 @@ function PlatformCard({skill, typeLabel, removable = false, removeLabel, onRemov
           <span className="material-symbols-outlined text-[17px]">close</span>
         </button>
       )}
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-highest ${visual.accentClass}`}>
-          <span className="material-symbols-outlined text-3xl">{visual.icon}</span>
+      <Link href={`/skills/${skill.slug}` as "/skills"} className="flex flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-highest ${visual.accentClass}`}>
+            <span className="material-symbols-outlined text-3xl">{visual.icon}</span>
+          </div>
+          {typeLabel && <span className="rounded-full bg-surface-container-highest/50 px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{typeLabel}</span>}
         </div>
-        {typeLabel && <span className="rounded-full bg-surface-container-highest/50 px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{typeLabel}</span>}
-      </div>
-      <div>
-        <h3 className="font-geist text-xl font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">{skill.domain}</span>
-          {skill.current_version && <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">v{skill.current_version}</span>}
+        <div>
+          <h3 className="font-geist text-xl font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">{skill.domain}</span>
+            {skill.current_version && <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">v{skill.current_version}</span>}
+          </div>
         </div>
-      </div>
-      <p className="mt-4 line-clamp-3 text-sm leading-6 text-on-surface-variant">{skill.description}</p>
-      <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-5">
-        <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-surface-container-high">
-            <span className="material-symbols-outlined text-[14px]">person</span>
-          </span>
-          OceanSkill
+        <p className="mt-4 line-clamp-3 text-sm leading-6 text-on-surface-variant">{skill.description}</p>
+        <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-5">
+          <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+            <span className={`relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br ${author?.glow_class ?? visual.glowClass}`}>
+              {author?.avatar_url ? <Image src={author.avatar_url} alt="" fill unoptimized sizes="24px" className="object-cover" /> : <span className="material-symbols-outlined text-[14px] text-white">{author?.icon ?? "person"}</span>}
+            </span>
+            <span className="truncate">{author?.name ?? "OceanSkill Creator"}</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-on-surface-variant">
+            <span className="material-symbols-outlined text-[15px] text-primary" style={{fontVariationSettings: reviewStats?.count ? "'FILL' 1" : "'FILL' 0"}}>star</span>
+            {rating}/5
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-xs text-on-surface-variant">
-          <span className="material-symbols-outlined text-[15px]">star</span>
-          4.8/5
-        </div>
-      </div>
+      </Link>
     </article>
   );
 }
 
-export default function DashboardSkillsTabs({library, uploaded, locale, limit, atLimit, labels, cardLabels, formLabels}: {
+export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySkillId, locale, limit, atLimit, labels, cardLabels, formLabels}: {
   readonly library: LibrarySkill[];
   readonly uploaded: CreatorSkill[];
+  readonly reviewStatsBySkillId: Record<string, SkillReviewStats>;
   readonly locale: string;
   readonly limit: number;
   readonly atLimit: boolean;
@@ -144,9 +153,9 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
           {allSkills.length ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {allSkills.map((skill) => skill.source === "library" ? (
-                <PlatformCard key={`library-${skill.id}`} skill={skill} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
+                <PlatformCard key={`library-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
               ) : (
-                <PlatformCard key={`uploaded-${skill.id}`} skill={skill} typeLabel={labels.uploadedBadge} />
+                <PlatformCard key={`uploaded-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} typeLabel={labels.uploadedBadge} />
               ))}
             </div>
           ) : (
@@ -159,7 +168,7 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
         <div className="mt-8">
           {librarySkills.length ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {librarySkills.map((skill) => <PlatformCard key={skill.id} skill={skill} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />)}
+              {librarySkills.map((skill) => <PlatformCard key={skill.id} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />)}
             </div>
           ) : (
             <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-on-surface-variant">{labels.emptyPlatform}</p>
@@ -169,7 +178,7 @@ export default function DashboardSkillsTabs({library, uploaded, locale, limit, a
 
       {tab === "uploaded" && (
         <div className="mt-8">
-          <CreatorSkillList skills={uploaded} locale={locale} labels={cardLabels}/>
+          <CreatorSkillList skills={uploaded} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} labels={cardLabels}/>
           <div className="mt-6">
             <CreatorSkillAddCard atLimit={atLimit} count={uploaded.length} limit={limit} formLabels={formLabels} labels={{add: labels.addSkill, addHint: labels.addSkillHint, limitTitle: labels.limitTitle, limitDescription: labels.limitDescription, upgrade: labels.upgradePlan, close: labels.close}}/>
           </div>

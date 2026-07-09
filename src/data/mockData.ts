@@ -25,7 +25,6 @@ export const navItems = [
   {href: "/leaderboard", label: "leaderboard"},
   {href: "/blog", label: "blog"},
   {href: "/docs", label: "docs"},
-  {href: "/faq", label: "faq"},
 ] as const;
 
 export const dashboardNavItems = [

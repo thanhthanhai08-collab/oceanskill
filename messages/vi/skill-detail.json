@@ -57,10 +57,10 @@
     "reviewSaveFailed": "Không thể lưu đánh giá. Hãy thử lại.",
     "reviewOne": "Skill này khớp rất tốt với quy trình dữ liệu của chúng tôi. Chất lượng phát hiện ổn và setup qua MCP khá nhanh.",
     "reviewTwo": "Hữu ích, nhanh và đáng tin cậy. Nó giúp agent phân loại các tác vụ phân tích lặp lại với ít công dọn dẹp hơn.",
-    "moreFromCreator": "Thêm từ NeuralSystems",
+    "moreFromCreator": "Thêm từ {author}",
     "viewAll": "Xem tất cả",
     "advertisement": "Vị trí dành cho quảng cáo",
-    "relatedTitle": "Kỹ năng liên quan",
+    "relatedTitle": "Skills liên quan",
     "relatedDescription": "Tiếp tục khám phá skill active thuộc {domain}.",
     "noRelated": "Chưa có skill active khác trong danh mục này.",
     "viewSkill": "Xem skill"

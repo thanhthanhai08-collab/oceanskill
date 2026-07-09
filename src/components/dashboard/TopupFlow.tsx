@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
+import Image from "next/image";
 import {useMemo, useState} from "react";
 
 export type TopupPack = Readonly<{
@@ -197,7 +197,7 @@ export default function TopupFlow({packs, locale, labels}: TopupFlowProps) {
               <p className="mt-2 text-sm text-on-surface-variant">{labels.qrDescription}</p>
             </div>
             <div className="mb-8 flex aspect-square flex-col items-center justify-center rounded-2xl bg-white p-6">
-              <img src={order.qr_url} alt="VietQR payment code" className="h-full w-full object-contain" />
+              <Image src={order.qr_url} alt="VietQR payment code" width={512} height={512} unoptimized className="h-full w-full object-contain" />
               <div className="mt-4 flex items-center gap-2 text-[#0A0C12]">
                 <span className="material-symbols-outlined text-[16px]">qr_code_scanner</span>
                 <span className="font-mono text-xs font-bold uppercase tracking-widest">VietQR System</span>

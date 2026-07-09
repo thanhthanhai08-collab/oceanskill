@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {revalidatePath} from "next/cache";
 import {createClient} from "@/lib/supabase/server";
-import {summarizeReviews, type SkillReview} from "@/lib/skills/reviews";
+import {normalizeSkillReviews, summarizeReviews} from "@/lib/skills/reviews";
 
 type ReviewBody = Readonly<{rating?: unknown; body?: unknown}>;
 
@@ -18,7 +18,8 @@ export async function POST(request: Request, {params}: {params: Promise<{skillId
   const {skillId} = await params;
   const supabase = await createClient();
   const {data: claimsData} = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub ? String(claimsData.claims.sub) : null;
+  const claims = claimsData?.claims;
+  const userId = claims?.sub ? String(claims.sub) : null;
   if (!userId) return NextResponse.json({error: "unauthorized"}, {status: 401});
 
   let body: unknown;
@@ -28,10 +29,10 @@ export async function POST(request: Request, {params}: {params: Promise<{skillId
 
   const {data: profile} = await supabase
     .from("profiles")
-    .select("display_name,email")
+    .select("display_name")
     .eq("id", userId)
     .maybeSingle();
-  const email = typeof profile?.email === "string" ? profile.email : "";
+  const email = typeof claims?.email === "string" ? claims.email : "";
   const reviewerName = (typeof profile?.display_name === "string" && profile.display_name.trim()) || email.split("@")[0] || "OceanSkill user";
 
   const {data: existingReview, error: existingError} = await supabase
@@ -63,13 +64,13 @@ export async function POST(request: Request, {params}: {params: Promise<{skillId
 
   const {data, error} = await supabase
     .from("skill_reviews")
-    .select("id,skill_id,user_id,rating,body,reviewer_name,created_at,updated_at")
+    .select("id,skill_id,user_id,rating,body,reviewer_name,created_at,updated_at,profiles!skill_reviews_user_id_fkey(display_name,avatar_url)")
     .eq("skill_id", skillId)
     .order("updated_at", {ascending: false});
 
   if (error) return NextResponse.json({error: "review_reload_failed"}, {status: 500});
 
-  const reviews = (data ?? []) as SkillReview[];
+  const reviews = normalizeSkillReviews(data ?? []);
   const ownReview = reviews.find((review) => review.user_id === userId) ?? null;
   revalidatePath("/vi/skills");
   revalidatePath("/en/skills");

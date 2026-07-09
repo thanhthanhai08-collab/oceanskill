@@ -5,6 +5,7 @@ import type {Locale} from "@/i18n/locales";
 import {createPageMetadata} from "@/lib/seo/site";
 import {getDashboardProfile} from "@/lib/dashboard/profile";
 import DashboardShell from "@/components/dashboard/DashboardShell";
+import {logout} from "./actions";
 
 export interface DashboardLayoutProps {
   readonly children: React.ReactNode;
@@ -19,9 +20,10 @@ export async function generateMetadata({params}: DashboardLayoutProps): Promise<
 
 export default async function DashboardLayout({children, params}: DashboardLayoutProps) {
   const {locale} = await params;
-  const [data, t] = await Promise.all([
+  const [data, t, common] = await Promise.all([
     getDashboardProfile(),
     getTranslations("Dashboard"),
+    getTranslations("Common"),
   ]);
 
   if (!data) redirect(`/${locale}/login`);
@@ -41,16 +43,19 @@ export default async function DashboardLayout({children, params}: DashboardLayou
     settings: t("settings"),
     creditBalance: t("availableCredits"),
     topUp: t("topUp"),
+    logout: common("logout"),
   };
 
   return (
     <DashboardShell
       sidebar={{
         displayName,
+        avatarUrl: data.profile?.avatar_url ?? null,
         roleLabel: t("roleLabel"),
         balance: data.balance,
         locale,
         labels: sidebarLabels,
+        logoutAction: logout,
       }}
     >
       {children}

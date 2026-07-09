@@ -24,9 +24,9 @@ export default async function SiteFooter() {
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-on-surface">{footer("company")}</p>
           <div className="mt-4 flex flex-col gap-3 text-sm text-on-surface-variant">
-            <Link href="/#about" className="hover:text-primary">{navigation("about")}</Link>
-            <span>{footer("privacy")}</span>
-            <span>{footer("terms")}</span>
+            <Link href="/about" className="hover:text-primary">{navigation("about")}</Link>
+            <Link href="/privacy" className="hover:text-primary">{footer("privacy")}</Link>
+            <Link href="/terms" className="hover:text-primary">{footer("terms")}</Link>
           </div>
         </div>
       </div>

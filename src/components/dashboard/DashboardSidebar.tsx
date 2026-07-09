@@ -1,15 +1,18 @@
+import Image from "next/image";
 import type {DashboardNavLabels} from "@/components/dashboard/DashboardNav";
 import DashboardNav from "@/components/dashboard/DashboardNav";
 
 export interface DashboardSidebarProps {
   readonly displayName: string;
+  readonly avatarUrl: string | null;
   readonly roleLabel: string;
   readonly balance: number;
   readonly locale: string;
-  readonly labels: DashboardNavLabels & {creditBalance: string; topUp: string};
+  readonly labels: DashboardNavLabels & {creditBalance: string; topUp: string; logout: string};
+  readonly logoutAction: () => Promise<void>;
 }
 
-export default function DashboardSidebar({displayName, roleLabel, balance, locale, labels}: DashboardSidebarProps) {
+export default function DashboardSidebar({displayName, avatarUrl, roleLabel, balance, locale, labels, logoutAction}: DashboardSidebarProps) {
   const navLabels: DashboardNavLabels = {
     overview: labels.overview,
     skills: labels.skills,
@@ -24,9 +27,15 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
     <aside className="h-fit rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl lg:sticky lg:top-24 lg:min-h-[calc(100vh-7rem)]">
       {/* User info */}
       <div className="flex items-center gap-3 px-2 py-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/20">
-          <span className="material-symbols-outlined text-[21px] text-primary">person</span>
-        </div>
+        {avatarUrl ? (
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-primary/30">
+            <Image src={avatarUrl} alt={displayName} fill unoptimized sizes="40px" className="object-cover" />
+          </div>
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/20">
+            <span className="material-symbols-outlined text-[21px] text-primary">person</span>
+          </div>
+        )}
         <div className="min-w-0">
           <p className="truncate font-mono text-[11px] font-bold">{displayName}</p>
           <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.08em] text-on-surface-variant">{roleLabel}</p>
@@ -50,6 +59,13 @@ export default function DashboardSidebar({displayName, roleLabel, balance, local
 
       {/* Navigation */}
       <DashboardNav labels={navLabels} locale={locale} />
+
+      <form action={logoutAction} className="mt-2 border-t border-outline-variant/20 pt-2">
+        <button className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-on-surface-variant transition hover:bg-error/10 hover:text-error">
+          <span className="material-symbols-outlined text-[20px]">logout</span>
+          <span className="truncate">{labels.logout}</span>
+        </button>
+      </form>
     </aside>
   );
 }

@@ -16,7 +16,7 @@ export async function getDashboardProfile() {
   const userId = String(claims.sub);
 
   const [profileResult, balanceResult] = await Promise.all([
-    supabase.from("profiles").select("id,display_name,email,avatar_url").eq("id", userId).maybeSingle(),
+    supabase.rpc("get_own_profile").maybeSingle(),
     supabase.from("user_credit_balances").select("available_units").eq("user_id", userId).maybeSingle(),
   ]);
 

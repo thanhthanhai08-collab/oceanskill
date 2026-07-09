@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type {Metadata} from "next";
+import Script from "next/script";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
@@ -35,7 +36,9 @@ export default async function LocaleLayout({children, params}: {children: React.
     <html lang={locale} suppressHydrationWarning className="h-full antialiased">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-        <script
+        <Script
+          id="theme-preload"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               try {

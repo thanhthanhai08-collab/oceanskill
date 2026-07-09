@@ -1,7 +1,8 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
+import ProfileAvatarUploader from "@/components/dashboard/ProfileAvatarUploader";
 import {createClient} from "@/lib/supabase/server";
-import {logout} from "../actions";
+import {logout, updateAvatar} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,10 @@ export default async function SettingsAccountPage({params}: {readonly params: Pr
     notifications: "Thông báo",
     logout: "Đăng xuất",
     imageHint: "Ảnh hồ sơ nên có kích thước tối thiểu 400x400px. JPG hoặc PNG là phù hợp nhất.",
+    avatarChoose: "Chọn ảnh",
+    avatarUpload: "Tải lên",
+    avatarUploading: "Đang tải...",
+    avatarUpdated: "Ảnh đại diện đã được cập nhật.",
     bio: "Tiểu sử",
     bioPlaceholder: "Chia sẻ ngắn về công việc AI của bạn...",
     appearance: "Giao diện",
@@ -69,6 +74,10 @@ export default async function SettingsAccountPage({params}: {readonly params: Pr
     notifications: "Notifications",
     logout: "Logout",
     imageHint: "Profile image should be at least 400x400px. JPG or PNG works best.",
+    avatarChoose: "Choose image",
+    avatarUpload: "Upload",
+    avatarUploading: "Uploading...",
+    avatarUpdated: "Avatar updated.",
     bio: "Bio",
     bioPlaceholder: "Share a short note about your AI work...",
     appearance: "Appearance",
@@ -112,29 +121,20 @@ export default async function SettingsAccountPage({params}: {readonly params: Pr
             <span className="material-symbols-outlined text-3xl text-primary">account_circle</span>
             <h2 className="font-geist text-2xl font-bold">{labels.account}</h2>
           </div>
-          <div className="flex flex-col gap-5 md:flex-row md:items-center">
-            <div className="relative">
-              {profile?.avatar_url ? (
-                <div
-                  aria-label=""
-                  className="h-24 w-24 rounded-full border-2 border-primary/50 bg-cover bg-center"
-                  style={{backgroundImage: `url(${profile.avatar_url})`}}
-                />
-              ) : (
-                <div className="grid h-24 w-24 place-items-center rounded-full border-2 border-primary/50 bg-gradient-to-br from-primary-container to-secondary-container font-geist text-3xl font-bold">
-                  {avatarInitial}
-                </div>
-              )}
-              <span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full bg-primary text-on-primary shadow-lg">
-                <span className="material-symbols-outlined text-sm">edit</span>
-              </span>
-            </div>
-            <div>
-              <p className="font-semibold">{displayName}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">{email}</p>
-              <p className="mt-3 max-w-md text-xs leading-5 text-on-surface-variant">{labels.imageHint}</p>
-            </div>
-          </div>
+          <ProfileAvatarUploader
+            displayName={displayName}
+            email={email}
+            avatarUrl={profile?.avatar_url ?? null}
+            avatarInitial={avatarInitial}
+            hint={labels.imageHint}
+            action={updateAvatar}
+            labels={{
+              choose: labels.avatarChoose,
+              upload: labels.avatarUpload,
+              uploading: labels.avatarUploading,
+              updated: labels.avatarUpdated,
+            }}
+          />
 
           <form className="mt-8 space-y-6">
             <div className="grid gap-5 md:grid-cols-2">
