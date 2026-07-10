@@ -5,10 +5,12 @@ import SiteShell from "@/components/layout/SiteShell";
 import AddSkillToLibraryButton from "@/components/skills/AddSkillToLibraryButton";
 import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
+import CopyButton from "@/components/skills/CopyButton";
 import {getDomainVisual} from "@/data/mockData";
 import {getPublicSkill, listRelatedSkills, listSkillsByAuthor} from "@/lib/catalog/skills";
 import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
+import {listSkillFaqs} from "@/lib/catalog/skill-faqs";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +26,11 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   const visual = getDomainVisual(skill.domain);
   const version = skill.current_version ?? "1.0.0";
   const author = getSkillAuthor(skill);
-  const [moreFromAuthor, relatedSkills, reviewState] = await Promise.all([
+  const [moreFromAuthor, relatedSkills, reviewState, faqs] = await Promise.all([
     listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2),
     listRelatedSkills(skill.domain, skill.slug),
     getSkillReviewState(skill.id),
+    listSkillFaqs(skill.id),
   ]);
 
   return (
@@ -91,29 +94,34 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
               <p className="mt-3 text-sm leading-6 text-on-surface-variant">{t("setupDescription")}</p>
               <ol className="mt-6 space-y-5">
                 {[
-                  ["1", t("installStepOne"), "npm install -g @nskill/cli-tool"],
-                  ["2", t("installStepTwo"), "nskill auth --key YOUR_V4_ACCESS_KEY"],
-                  ["3", t("installStepThree"), `nskill enable ${skill.slug}`],
-                ].map(([index, label, command]) => (
+                  ["1", t("mcpStepOne"), ""],
+                  ["2", t("mcpStepTwo"), ""],
+                  ["3", t("mcpStepThree"), ""],
+                ].map(([index, label]) => (
                   <li key={index} className="flex gap-4">
                     <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 font-mono text-xs font-bold text-primary">{index}</span>
                     <div>
                       <p className="font-semibold">{label}</p>
-                      <code className="mt-2 block w-fit rounded-md bg-black px-4 py-2 font-mono text-xs text-tertiary">{command}</code>
+                      <p className="mt-2 text-sm leading-6 text-on-surface-variant">{label}</p>
                     </div>
                   </li>
                 ))}
               </ol>
+              <div className="mt-7 overflow-hidden rounded-xl border border-white/10 bg-black/40">
+                <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3"><span className="font-mono text-xs text-on-surface-variant">mcp.json</span><CopyButton text={`{\n  "mcpServers": {\n    "nskill": {\n      "serverUrl": "https://[your-project].supabase.co/functions/v1/mcp",\n      "headers": {\n        "Authorization": "Bearer YOUR_MCP_KEY"\n      }\n    }\n  }\n}`} label={t("copyConfig")} copiedLabel={t("copied")} /></div>
+                <pre className="overflow-x-auto p-4 font-mono text-xs leading-6 text-tertiary"><code>{`{\n  "mcpServers": {\n    "nskill": {\n      "serverUrl": "https://[your-project].supabase.co/functions/v1/mcp",\n      "headers": {\n        "Authorization": "Bearer YOUR_MCP_KEY"\n      }\n    }\n  }\n}`}</code></pre>
+              </div>
+              <div className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-4"><div className="flex items-start justify-between gap-3"><p className="text-sm leading-6 text-on-surface-variant">{t("useSkillPrompt", {skill: "[tên-skill]"})}</p><CopyButton text={`Hãy dùng skill [tên-skill] từ nskill để làm việc này: [mô tả yêu cầu]`} label={t("copyPrompt")} copiedLabel={t("copied")} /></div></div>
             </div>
           </section>
 
           <section>
             <h2 className="mb-4 font-geist text-xl font-bold">{t("faqTitle")}</h2>
             <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/55">
-              {(["faqOne", "faqTwo", "faqThree"] as const).map((key) => (
-                <details key={key} className="group border-b border-white/5 p-5 last:border-b-0" open={key === "faqOne"}>
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold marker:hidden">{t(`${key}Question`)}<span className="material-symbols-outlined text-[20px] transition group-open:rotate-180">expand_more</span></summary>
-                  <p className="mt-4 max-w-3xl text-sm leading-6 text-on-surface-variant">{t(`${key}Answer`)}</p>
+              {faqs.map((faq, index) => (
+                <details key={faq.id} className="group border-b border-white/5 p-5 last:border-b-0" open={index === 0}>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold marker:hidden">{faq.question}<span className="material-symbols-outlined text-[20px] transition group-open:rotate-180">expand_more</span></summary>
+                  <p className="mt-4 max-w-3xl text-sm leading-6 text-on-surface-variant">{faq.answer}</p>
                 </details>
               ))}
             </div>

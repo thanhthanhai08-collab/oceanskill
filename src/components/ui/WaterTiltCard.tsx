@@ -5,9 +5,11 @@ import {useRef, type PointerEvent, type ReactNode} from "react";
 export interface WaterTiltCardProps {
   readonly children: ReactNode;
   readonly className?: string;
+  readonly interactive?: boolean;
+  readonly ripples?: boolean;
 }
 
-export default function WaterTiltCard({children, className = ""}: WaterTiltCardProps) {
+export default function WaterTiltCard({children, className = "", interactive = true, ripples = true}: WaterTiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const element = cardRef.current;
@@ -29,9 +31,9 @@ export default function WaterTiltCard({children, className = ""}: WaterTiltCardP
     element.style.setProperty("--tilt-y", "0deg");
   };
   return (
-    <div ref={cardRef} onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave} className={`water-tilt group/water relative h-full ${className}`}>
-      <div aria-hidden="true" className="water-sheen pointer-events-none absolute inset-0 z-20 rounded-[inherit]" />
-      <div aria-hidden="true" className="water-ripples pointer-events-none absolute inset-0 z-20 rounded-[inherit]" />
+    <div ref={cardRef} onPointerMove={interactive ? handlePointerMove : undefined} onPointerLeave={interactive ? handlePointerLeave : undefined} className={`${interactive ? "water-tilt" : ""} group/water relative h-full ${className}`}>
+      {interactive && <div aria-hidden="true" className="water-sheen pointer-events-none absolute inset-0 z-20 rounded-[inherit]" />}
+      {interactive && ripples && <div aria-hidden="true" className="water-ripples pointer-events-none absolute inset-0 z-20 rounded-[inherit]" />}
       <div className="relative z-10 h-full">{children}</div>
     </div>
   );
