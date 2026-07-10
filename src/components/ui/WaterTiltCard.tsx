@@ -9,7 +9,7 @@ export interface WaterTiltCardProps {
   readonly ripples?: boolean;
 }
 
-export default function WaterTiltCard({children, className = "", interactive = true, ripples = true}: WaterTiltCardProps) {
+export default function WaterTiltCard({children, className = "", interactive = false, ripples = true}: WaterTiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const element = cardRef.current;
