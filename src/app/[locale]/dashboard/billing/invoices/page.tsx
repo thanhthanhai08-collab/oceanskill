@@ -2,6 +2,7 @@ import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
 import {Link} from "@/i18n/navigation";
 import {createClient} from "@/lib/supabase/server";
+import {formatBillingDate} from "@/lib/billing/formatters";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +22,7 @@ export default async function BillingInvoicesPage({params}: {readonly params: Pr
       .order("created_at", {ascending: false}),
   ]);
 
-  const formatDate = (v: string) =>
-    new Intl.DateTimeFormat(locale, {dateStyle: "long"}).format(new Date(v));
+  const formatDate = (v: string) => formatBillingDate(locale, v, "long");
 
   return (
     <>

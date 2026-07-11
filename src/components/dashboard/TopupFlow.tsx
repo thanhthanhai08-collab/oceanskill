@@ -49,6 +49,7 @@ type TopupLabels = Readonly<{
 
 export interface TopupFlowProps {
   readonly packs: TopupPack[];
+  readonly initialPackId?: string;
   readonly locale: string;
   readonly labels: TopupLabels;
 }
@@ -57,8 +58,8 @@ function formatVnd(locale: string, value: number) {
   return `${value.toLocaleString(locale)} VND`;
 }
 
-export default function TopupFlow({packs, locale, labels}: TopupFlowProps) {
-  const [selectedId, setSelectedId] = useState(packs[0]?.id ?? "");
+export default function TopupFlow({packs, initialPackId, locale, labels}: TopupFlowProps) {
+  const [selectedId, setSelectedId] = useState(() => packs.some((pack) => pack.id === initialPackId) ? initialPackId! : packs[0]?.id ?? "");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [promoApplied, setPromoApplied] = useState(false);
   const [isPending, setIsPending] = useState(false);

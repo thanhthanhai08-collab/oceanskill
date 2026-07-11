@@ -1,10 +1,30 @@
-import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
 import TopupFlow, {type TopupPack} from "@/components/dashboard/TopupFlow";
 import {getDashboardProfile} from "@/lib/dashboard/profile";
 import {createClient} from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+
+const topupLabels = {
+  vi: {
+    title: "Nạp tiền vào tài khoản", description: "Giao dịch an toàn và nhanh chóng thông qua mạng lưới VietQR", amountTitle: "Số tiền nạp",
+    presetTitle: "Chọn gói credit", promoTitle: "Mã khuyến mãi (tùy chọn)", promoPlaceholder: "Ví dụ: NSKILL2024", promoApply: "Áp dụng",
+    promoStatus: "Mã ưu đãi đã được ghi nhận. Hệ thống sẽ áp dụng khi chương trình hoạt động", terms: "Tôi đồng ý với quy định thanh toán của OceanSkill và",
+    termsLink: "Điều khoản sử dụng", submit: "Xác nhận nạp tiền", submitting: "Đang tạo mã QR", summaryTitle: "Tóm tắt giao dịch",
+    amount: "Số tiền nạp", discount: "Giảm giá", fee: "Phí giao dịch", free: "Miễn phí", total: "Tổng thanh toán", receive: "Bạn sẽ nhận được",
+    rate: "Credit sẽ được cộng sau khi thanh toán thành công", choosePack: "Chưa có gói credit nào đang hoạt động", error: "Không thể tạo lệnh thanh toán. Hãy thử lại",
+    qrTitle: "Quét mã để thanh toán", qrDescription: "Vui lòng dùng ứng dụng ngân hàng hoặc ví điện tử để quét mã VietQR bên dưới", transferContent: "Nội dung chuyển khoản",
+    waiting: "Đang chờ thanh toán", close: "Đóng",
+  },
+  en: {
+    title: "Top up your account", description: "Fast and secure payments through VietQR", amountTitle: "Top-up amount", presetTitle: "Choose a credit plan",
+    promoTitle: "Promo code (optional)", promoPlaceholder: "Example: NSKILL2024", promoApply: "Apply", promoStatus: "Your promo code has been saved and will apply when available",
+    terms: "I agree to OceanSkill's payment policy and", termsLink: "Terms of use", submit: "Confirm top-up", submitting: "Creating QR code", summaryTitle: "Payment summary",
+    amount: "Top-up amount", discount: "Discount", fee: "Transaction fee", free: "Free", total: "Total payment", receive: "You will receive",
+    rate: "Credits are added after successful payment", choosePack: "No active credit plans are available", error: "Unable to create payment order. Please try again",
+    qrTitle: "Scan to pay", qrDescription: "Use your banking app or e-wallet to scan the VietQR code below", transferContent: "Transfer content", waiting: "Waiting for payment", close: "Close",
+  },
+} as const;
 
 const copy = {
   vi: {
@@ -67,12 +87,12 @@ const copy = {
   },
 } as const;
 
-export default async function TopupPage({params}: {readonly params: Promise<{locale: string}>}) {
+void copy;
+
+export default async function TopupPage({params, searchParams}: {readonly params: Promise<{locale: string}>; readonly searchParams: Promise<{pack?: string | string[]}>}) {
   const {locale} = await params;
-  const [t, profileData] = await Promise.all([
-    getTranslations("Dashboard"),
-    getDashboardProfile(),
-  ]);
+  const query = await searchParams;
+  const profileData = await getDashboardProfile();
   if (!profileData) redirect(`/${locale}/login`);
 
   const supabase = await createClient();
@@ -82,16 +102,21 @@ export default async function TopupPage({params}: {readonly params: Promise<{loc
     .eq("active", true)
     .order("price_vnd", {ascending: true});
 
-  const labels = locale === "vi" ? copy.vi : copy.en;
+  const labels = locale === "vi" ? topupLabels.vi : topupLabels.en;
 
   return (
     <>
       <header className="mb-12">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{t("billing")}</p>
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{locale === "vi" ? "Thanh toán" : "Payments"}</p>
         <h1 className="font-geist text-4xl font-bold tracking-tight text-primary">{labels.title}</h1>
         <p className="mt-3 max-w-2xl text-on-surface-variant">{labels.description}</p>
       </header>
-      <TopupFlow packs={(data ?? []) as TopupPack[]} locale={locale} labels={labels} />
+      <TopupFlow
+        packs={(data ?? []) as TopupPack[]}
+        initialPackId={typeof query.pack === "string" ? query.pack : undefined}
+        locale={locale}
+        labels={labels}
+      />
     </>
   );
 }

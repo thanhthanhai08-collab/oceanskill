@@ -4,6 +4,7 @@ import {Link} from "@/i18n/navigation";
 import CreatePaymentOrderButton from "@/components/dashboard/CreatePaymentOrderButton";
 import {getDashboardProfile} from "@/lib/dashboard/profile";
 import {createClient} from "@/lib/supabase/server";
+import {formatBillingDate, paymentStatusLabel} from "@/lib/billing/formatters";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,23 @@ const PACK_STYLE: Record<string, {icon: string; accent: "primary" | "secondary" 
   builder_50k: {icon: "rocket_launch", accent: "secondary", popular: true},
   power_100k: {icon: "rocket", accent: "tertiary"},
 };
+
+const billingLabels = {
+  vi: {
+    title: "Thanh toán", description: "Quản lý credit và lịch sử giao dịch của bạn", buyCredits: "Mua credit", promo: "Ưu đãi hôm nay", popular: "Phổ biến nhất", choose: "Chọn gói", creating: "Đang tạo lệnh",
+    error: "Không thể tạo lệnh thanh toán. Hãy thử lại", noExpiry: "Credit không hết hạn", mcpReady: "Dùng ngay cho MCP và kho skill",
+    autoOrder: "Tạo QR thanh toán SePay tự động", emptyPacks: "Chưa có gói credit nào đang hoạt động", creditLabel: "Credit",
+    scrollTopUp: "Nạp credit", transactionHistory: "Lịch sử giao dịch", colDate: "Ngày tạo lệnh", colType: "Loại giao dịch",
+    colUnits: "Số lượng", colAmount: "Số tiền", colStatus: "Trạng thái", topUpType: "Nạp tiền",
+  },
+  en: {
+    title: "Billing", description: "Manage your credits and transaction history", buyCredits: "Buy credits", promo: "Today's offer", popular: "Most popular", choose: "Choose plan", creating: "Creating order",
+    error: "Unable to create payment order. Please try again", noExpiry: "Credits never expire", mcpReady: "Ready for MCP and the skill library",
+    autoOrder: "Automatic SePay payment QR", emptyPacks: "No active credit plans are available", creditLabel: "Credits",
+    scrollTopUp: "Top up credits", transactionHistory: "Transaction history", colDate: "Created at", colType: "Transaction type",
+    colUnits: "Credits", colAmount: "Amount", colStatus: "Status", topUpType: "Top-up",
+  },
+} as const;
 
 const copy = {
   vi: {
@@ -66,6 +84,8 @@ const copy = {
   },
 } as const;
 
+void copy;
+
 export default async function BillingOverviewPage({params}: {readonly params: Promise<{locale: string}>}) {
   const {locale} = await params;
   const [t, profileData] = await Promise.all([
@@ -90,16 +110,16 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
       .order("price_vnd", {ascending: true}),
   ]);
 
-  const labels = locale === "vi" ? copy.vi : copy.en;
+  const labels = locale === "vi" ? billingLabels.vi : billingLabels.en;
   const packs = (creditPacks ?? []) as CreditPack[];
-  const formatDate = (value: string) => new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(value));
+  const formatDate = (value: string) => formatBillingDate(locale, value);
   const formatVnd = (value: number) => `${value.toLocaleString(locale)} VND`;
 
   return (
     <>
       <header>
-        <h1 className="font-geist text-4xl font-bold tracking-tight">{t("billing")}</h1>
-        <p className="mt-3 max-w-2xl text-on-surface-variant">{t("billingDescription")}</p>
+        <h1 className="font-geist text-4xl font-bold tracking-tight">{labels.title}</h1>
+        <p className="mt-3 max-w-2xl text-on-surface-variant">{labels.description}</p>
       </header>
 
       <div className="mt-10 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/80 via-secondary/80 to-tertiary/90 p-8 text-on-primary shadow-[0_0_48px_rgba(147,51,234,0.22)] sm:p-10">
@@ -196,7 +216,7 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
                   <td className="px-6 py-5 text-sm text-on-surface-variant">{labels.topUpType}</td>
                   <td className="px-6 py-5 text-sm font-semibold text-primary">+{Number(order.credit_units).toLocaleString(locale)} {labels.creditLabel}</td>
                   <td className="px-6 py-5 text-sm font-semibold">{formatVnd(Number(order.amount_vnd))}</td>
-                  <td className="px-6 py-5"><span className="rounded-full bg-primary/10 px-3 py-1 font-mono text-[10px] font-bold uppercase text-primary">{order.status}</span></td>
+                  <td className="px-6 py-5"><span className="rounded-full bg-primary/10 px-3 py-1 font-mono text-[10px] font-bold uppercase text-primary">{paymentStatusLabel(locale, order.status)}</span></td>
                 </tr>
               )) : (
                 <tr>

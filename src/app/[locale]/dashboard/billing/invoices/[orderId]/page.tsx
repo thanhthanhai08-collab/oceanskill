@@ -1,6 +1,7 @@
 import {getTranslations} from "next-intl/server";
 import {redirect, notFound} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
+import {formatBillingDate, paymentStatusLabel} from "@/lib/billing/formatters";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +23,7 @@ export default async function InvoiceDetailPage({params}: {readonly params: Prom
 
   if (!order) notFound();
 
-  const formatDate = (v: string) =>
-    new Intl.DateTimeFormat(locale, {dateStyle: "long", timeStyle: "short"}).format(new Date(v));
+  const formatDate = (v: string) => formatBillingDate(locale, v, "long");
 
   return (
     <>
@@ -55,7 +55,7 @@ export default async function InvoiceDetailPage({params}: {readonly params: Prom
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-on-surface-variant">{t("invoiceDate")}</p>
             <p className="mt-1 font-semibold">{formatDate(order.created_at)}</p>
             <span className="mt-2 inline-block rounded-full bg-tertiary/10 px-3 py-1 font-mono text-[10px] uppercase text-tertiary">
-              {order.status}
+              {paymentStatusLabel(locale, order.status)}
             </span>
           </div>
         </div>

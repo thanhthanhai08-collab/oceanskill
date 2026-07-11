@@ -1,6 +1,7 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
+import {formatBillingDate} from "@/lib/billing/formatters";
 
 export const dynamic = "force-dynamic";
 
@@ -23,8 +24,7 @@ export default async function BillingLedgerPage({params}: {readonly params: Prom
 
   const entries = ledgerResult.data ?? [];
   const hasTable = !ledgerResult.error;
-  const formatDate = (v: string) =>
-    new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(v));
+  const formatDate = (v: string) => formatBillingDate(locale, v);
 
   return (
     <>
