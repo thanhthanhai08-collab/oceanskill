@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {applySepayPayment} from "@/lib/billing/orders";
 import {serverEnv} from "@/lib/env/server";
+import {extractSepayOrderCode} from "@/lib/sepay/order-code";
 import {isSepayPayload, parseSepayTransactionDate, verifySepayWebhook} from "@/lib/sepay/webhook";
 
 export const runtime = "nodejs";
@@ -19,16 +20,22 @@ export async function POST(request: Request) {
   if (!isSepayPayload(payload)) return NextResponse.json({success: false, message: "invalid_payload"}, {status: 400});
   if (payload.transferType !== "in") return NextResponse.json({success: true, result: "ignored_outbound"});
   if (payload.accountNumber !== serverEnv.sepayBankAccountNumber) return NextResponse.json({success: false, message: "account_mismatch"}, {status: 400});
-  if (!payload.code || !/^(?:NSK|SEVQR)[A-F0-9]{18}$/.test(payload.code)) return NextResponse.json({success: true, result: "unmatched_code"});
+  const orderCode = extractSepayOrderCode(payload);
+  if (!orderCode) return NextResponse.json({success: true, result: "unmatched_code"});
 
   try {
     const result = await applySepayPayment({
-      orderCode: payload.code,
+      orderCode,
       providerTransactionId: String(payload.id),
       referenceCode: payload.referenceCode ? String(payload.referenceCode) : null,
       amountVnd: payload.transferAmount,
       transactionAt: parseSepayTransactionDate(payload.transactionDate),
-      metadata: {gateway: payload.gateway ?? null, content: payload.content?.slice(0, 500) ?? null, accountNumber: payload.accountNumber}
+      metadata: {
+        gateway: payload.gateway ?? null,
+        content: payload.content?.slice(0, 500) ?? null,
+        description: payload.description?.slice(0, 500) ?? null,
+        accountNumber: payload.accountNumber
+      }
     });
     return NextResponse.json({success: true, result});
   } catch (error) {

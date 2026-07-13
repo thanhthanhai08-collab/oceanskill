@@ -10,6 +10,7 @@ export type SepayWebhookPayload = {
   accountNumber: string;
   code?: string | null;
   content?: string;
+  description?: string;
   transferType: "in" | "out";
   transferAmount: number;
   referenceCode?: string | null;
@@ -40,5 +41,10 @@ export function isSepayPayload(value: unknown): value is SepayWebhookPayload {
   return (typeof payload.id === "number" || typeof payload.id === "string") &&
     typeof payload.transactionDate === "string" && typeof payload.accountNumber === "string" &&
     (payload.transferType === "in" || payload.transferType === "out") &&
-    typeof payload.transferAmount === "number" && Number.isSafeInteger(payload.transferAmount) && payload.transferAmount > 0;
+    typeof payload.transferAmount === "number" && Number.isSafeInteger(payload.transferAmount) && payload.transferAmount > 0 &&
+    (payload.gateway == null || typeof payload.gateway === "string") &&
+    (payload.code == null || typeof payload.code === "string") &&
+    (payload.content == null || typeof payload.content === "string") &&
+    (payload.description == null || typeof payload.description === "string") &&
+    (payload.referenceCode == null || typeof payload.referenceCode === "string");
 }
