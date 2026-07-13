@@ -1,5 +1,6 @@
 import "server-only";
 import {serverEnv} from "@/lib/env/server";
+import {createVietQrDataUrl as renderVietQrDataUrl} from "@/lib/sepay/vietqr";
 
 export type SepayRecipient = {
   accountNumber: string;
@@ -25,17 +26,6 @@ export function getSepayRecipient(): SepayRecipient {
   };
 }
 
-export function createSepayQrUrl(amountVnd: number, orderCode: string, recipient: SepayRecipient) {
-  const params = new URLSearchParams({
-    acc: recipient.accountNumber,
-    bank: recipient.bankName,
-    amount: String(amountVnd),
-    des: orderCode,
-    template: "compact",
-    showinfo: "true",
-    fullacc: "true",
-    store: "OceanSkill",
-  });
-  if (recipient.accountHolderName) params.set("holder", recipient.accountHolderName);
-  return `https://vietqr.app/img?${params.toString()}`;
+export async function createVietQrDataUrl(amountVnd: number, orderCode: string, recipient: SepayRecipient) {
+  return renderVietQrDataUrl(amountVnd, orderCode, recipient.accountNumber);
 }

@@ -1,6 +1,6 @@
 import "server-only";
 import {createAdminClient} from "@/lib/supabase/admin";
-import {createSepayQrUrl, getSepayRecipient} from "@/lib/sepay/qr";
+import {createVietQrDataUrl, getSepayRecipient} from "@/lib/sepay/qr";
 
 type PaymentOrder = {id: string; order_code: string; amount_vnd: number; credit_units: number; status: string; expires_at: string};
 
@@ -10,7 +10,7 @@ export async function createPaymentOrder(userId: string, packId: string) {
   const order = data as PaymentOrder | null;
   if (!order) throw new Error("Supabase returned no payment order");
   const recipient = getSepayRecipient();
-  return {...order, qr_url: createSepayQrUrl(order.amount_vnd, order.order_code, recipient), recipient};
+  return {...order, qr_url: await createVietQrDataUrl(order.amount_vnd, order.order_code, recipient), recipient};
 }
 
 export async function applySepayPayment(input: {orderCode: string; providerTransactionId: string; referenceCode: string | null; amountVnd: number; transactionAt: string; metadata: Record<string, string | null>}) {
