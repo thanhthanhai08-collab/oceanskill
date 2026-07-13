@@ -220,16 +220,17 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
 
       {order && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-6 backdrop-blur-md">
-          <section className="relative w-full max-w-lg rounded-3xl border border-white/10 bg-surface-container-low p-8 shadow-[0_0_48px_rgba(184,195,255,0.25)]">
+          <section className="relative max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/10 bg-surface-container-low p-5 shadow-[0_0_48px_rgba(184,195,255,0.25)] sm:p-6">
             <button type="button" aria-label={labels.close} onClick={() => { setOrder(null); setPaymentResult(null); }} className="absolute right-6 top-6 text-on-surface-variant transition hover:text-primary">
               <span className="material-symbols-outlined">close</span>
             </button>
-            <div className="mb-8 text-center">
+            <div className="mb-4 text-center">
               <h3 className="font-geist text-2xl font-bold text-primary">{labels.qrTitle}</h3>
               <p className="mt-2 text-sm text-on-surface-variant">{labels.qrDescription}</p>
             </div>
-            <div className="mb-8 flex aspect-square flex-col items-center justify-center rounded-2xl bg-white p-6">
-              <Image src={order.qr_url} alt="VietQR payment code" width={512} height={512} unoptimized className="h-full w-full object-contain" />
+            <div className="grid gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
+            <div className="flex h-[min(52vh,380px)] flex-col items-center justify-center rounded-2xl bg-white p-4">
+              <Image src={order.qr_url} alt="VietQR payment code" width={512} height={512} unoptimized className="min-h-0 w-full flex-1 object-contain" />
               <div className="mt-4 flex items-center gap-2 text-[#0A0C12]">
                 <span className="material-symbols-outlined text-[16px]">qr_code_scanner</span>
                 <span className="font-mono text-xs font-bold uppercase tracking-widest">VietQR System</span>
@@ -250,7 +251,8 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
                 <p><span className="text-on-surface-variant">{locale === "vi" ? "Số tài khoản" : "Account number"}: </span><span className="font-mono font-bold">{order.recipient.accountNumber}</span></p>
               </div>
             </div>
-            <p className="mt-5 text-center font-mono text-[10px] font-bold uppercase tracking-widest text-tertiary">{labels.waiting}</p>
+            <p className="mt-4 text-center font-mono text-[10px] font-bold uppercase tracking-widest text-tertiary">{labels.waiting}</p>
+            </div>
           </section>
         </div>
       )}

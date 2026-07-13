@@ -37,5 +37,5 @@ export function createSepayQrUrl(amountVnd: number, orderCode: string, recipient
     store: "OceanSkill",
   });
   if (recipient.accountHolderName) params.set("holder", recipient.accountHolderName);
-  return `https://qr.sepay.vn/img?${params.toString()}`;
+  return `https://vietqr.app/img?${params.toString()}`;
 }
