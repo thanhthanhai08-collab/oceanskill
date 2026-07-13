@@ -94,7 +94,7 @@ create table public.payment_orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete restrict,
   pack_id uuid not null references public.credit_packs(id) on delete restrict,
-  order_code text not null unique check (order_code ~ '^NSK[A-F0-9]{18}$'),
+  order_code text not null unique check (order_code ~ '^SEVQR[A-F0-9]{18}$'),
   provider text not null default 'sepay' check (provider = 'sepay'),
   provider_order_id text,
   amount_vnd bigint not null check (amount_vnd > 0),
@@ -286,7 +286,7 @@ begin
   ) values (
     p_user_id,
     v_pack.id,
-    'NSK' || upper(encode(extensions.gen_random_bytes(9), 'hex')),
+    'SEVQR' || upper(encode(extensions.gen_random_bytes(9), 'hex')),
     v_pack.price_vnd,
     v_pack.credit_units,
     p_expires_at

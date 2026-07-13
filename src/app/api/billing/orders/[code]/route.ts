@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
 
-const ORDER_CODE = /^NSK[A-F0-9]{18}$/;
+const ORDER_CODE = /^(?:NSK|SEVQR)[A-F0-9]{18}$/;
 
 export async function GET(_request: Request, {params}: {params: Promise<{code: string}>}) {
   const {code} = await params;

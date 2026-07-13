@@ -1,6 +1,13 @@
 import "server-only";
 import {serverEnv} from "@/lib/env/server";
 
+export type SepayRecipient = {
+  accountNumber: string;
+  accountHolderName?: string;
+  bankName: string;
+  bankFullName?: string;
+};
+
 export function isPaymentConfigured() {
   return Boolean(
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() &&
@@ -9,7 +16,26 @@ export function isPaymentConfigured() {
   );
 }
 
-export function createSepayQrUrl(amountVnd: number, orderCode: string) {
-  const params = new URLSearchParams({acc: serverEnv.sepayBankAccountNumber, bank: serverEnv.sepayBankName, amount: String(amountVnd), des: orderCode});
+export function getSepayRecipient(): SepayRecipient {
+  return {
+    accountNumber: serverEnv.sepayBankAccountNumber,
+    accountHolderName: "DOAN VU NAM",
+    bankName: serverEnv.sepayBankName,
+    bankFullName: "Ngân hàng TMCP Công thương Việt Nam (VietinBank)",
+  };
+}
+
+export function createSepayQrUrl(amountVnd: number, orderCode: string, recipient: SepayRecipient) {
+  const params = new URLSearchParams({
+    acc: recipient.accountNumber,
+    bank: recipient.bankName,
+    amount: String(amountVnd),
+    des: orderCode,
+    template: "compact",
+    showinfo: "true",
+    fullacc: "true",
+    store: "OceanSkill",
+  });
+  if (recipient.accountHolderName) params.set("holder", recipient.accountHolderName);
   return `https://qr.sepay.vn/img?${params.toString()}`;
 }

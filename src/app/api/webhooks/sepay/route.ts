@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   if (!isSepayPayload(payload)) return NextResponse.json({success: false, message: "invalid_payload"}, {status: 400});
   if (payload.transferType !== "in") return NextResponse.json({success: true, result: "ignored_outbound"});
   if (payload.accountNumber !== serverEnv.sepayBankAccountNumber) return NextResponse.json({success: false, message: "account_mismatch"}, {status: 400});
-  if (!payload.code || !/^NSK[A-F0-9]{18}$/.test(payload.code)) return NextResponse.json({success: true, result: "unmatched_code"});
+  if (!payload.code || !/^(?:NSK|SEVQR)[A-F0-9]{18}$/.test(payload.code)) return NextResponse.json({success: true, result: "unmatched_code"});
 
   try {
     const result = await applySepayPayment({

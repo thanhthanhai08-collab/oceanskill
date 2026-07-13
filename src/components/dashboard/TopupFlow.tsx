@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 
 export type TopupPack = Readonly<{
   id: string;
@@ -17,6 +17,12 @@ type CreatedOrder = Readonly<{
   amount_vnd: number;
   credit_units: number;
   qr_url: string;
+  recipient: {
+    accountNumber: string;
+    accountHolderName?: string;
+    bankName: string;
+    bankFullName?: string;
+  };
 }>;
 
 type TopupLabels = Readonly<{
@@ -65,9 +71,33 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<CreatedOrder | null>(null);
+  const [paymentResult, setPaymentResult] = useState<"success" | "failure" | null>(null);
   const selectedPack = useMemo(() => packs.find((pack) => pack.id === selectedId) ?? packs[0], [packs, selectedId]);
   const discount = 0;
   const total = selectedPack ? Number(selectedPack.price_vnd) - discount : 0;
+
+  useEffect(() => {
+    if (!order || paymentResult) return;
+    let active = true;
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(`/api/billing/orders/${encodeURIComponent(order.order_code)}`, {cache: "no-store"});
+        const payload = await response.json();
+        const status = payload?.order?.status;
+        if (!active) return;
+        if (status === "paid") setPaymentResult("success");
+        if (["failed", "expired", "refunded", "review"].includes(status)) setPaymentResult("failure");
+      } catch {
+        // Keep waiting: a transient network failure is not a failed payment.
+      }
+    };
+    void checkStatus();
+    const interval = window.setInterval(() => void checkStatus(), 3000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [order, paymentResult]);
 
   const createOrder = async () => {
     if (!selectedPack || !termsAccepted) return;
@@ -81,6 +111,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
       });
       const payload = await response.json();
       if (!response.ok || !payload?.order?.qr_url) throw new Error(payload?.error ?? "payment_order_create_failed");
+      setPaymentResult(null);
       setOrder(payload.order as CreatedOrder);
     } catch {
       setError(labels.error);
@@ -190,7 +221,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
       {order && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-6 backdrop-blur-md">
           <section className="relative w-full max-w-lg rounded-3xl border border-white/10 bg-surface-container-low p-8 shadow-[0_0_48px_rgba(184,195,255,0.25)]">
-            <button type="button" aria-label={labels.close} onClick={() => setOrder(null)} className="absolute right-6 top-6 text-on-surface-variant transition hover:text-primary">
+            <button type="button" aria-label={labels.close} onClick={() => { setOrder(null); setPaymentResult(null); }} className="absolute right-6 top-6 text-on-surface-variant transition hover:text-primary">
               <span className="material-symbols-outlined">close</span>
             </button>
             <div className="mb-8 text-center">
@@ -213,8 +244,23 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
                 <span className="text-xs text-on-surface-variant">{labels.total}</span>
                 <span className="font-mono text-sm font-bold">{formatVnd(locale, Number(order.amount_vnd))}</span>
               </div>
+              <div className="space-y-2 rounded-xl bg-surface-container-high p-4 text-sm">
+                <p><span className="text-on-surface-variant">{locale === "vi" ? "Ngân hàng" : "Bank"}: </span><span className="font-semibold">{order.recipient.bankFullName ?? order.recipient.bankName}</span></p>
+                <p><span className="text-on-surface-variant">{locale === "vi" ? "Chủ tài khoản" : "Account holder"}: </span><span className="font-semibold">{order.recipient.accountHolderName ?? "—"}</span></p>
+                <p><span className="text-on-surface-variant">{locale === "vi" ? "Số tài khoản" : "Account number"}: </span><span className="font-mono font-bold">{order.recipient.accountNumber}</span></p>
+              </div>
             </div>
             <p className="mt-5 text-center font-mono text-[10px] font-bold uppercase tracking-widest text-tertiary">{labels.waiting}</p>
+          </section>
+        </div>
+      )}
+      {paymentResult && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-background/80 p-6 backdrop-blur-md" role="alert">
+          <section className={`w-full max-w-sm rounded-3xl border p-8 text-center shadow-2xl ${paymentResult === "success" ? "border-tertiary/40 bg-tertiary-container/20" : "border-error/40 bg-error/10"}`}>
+            <span className={`material-symbols-outlined text-6xl ${paymentResult === "success" ? "text-tertiary" : "text-error"}`}>{paymentResult === "success" ? "check_circle" : "cancel"}</span>
+            <h3 className="mt-4 font-geist text-2xl font-bold">{paymentResult === "success" ? (locale === "vi" ? "Thanh toán thành công" : "Payment successful") : (locale === "vi" ? "Thanh toán thất bại" : "Payment failed")}</h3>
+            <p className="mt-2 text-sm text-on-surface-variant">{paymentResult === "success" ? (locale === "vi" ? "Credit đã được cộng vào tài khoản của bạn" : "Credits have been added to your account") : (locale === "vi" ? "Giao dịch chưa được xác nhận. Vui lòng kiểm tra lại" : "The transaction was not confirmed. Please try again")}</p>
+            <button type="button" onClick={() => { setPaymentResult(null); setOrder(null); }} className="mt-6 rounded-xl bg-primary px-6 py-3 font-bold text-on-primary">{labels.close}</button>
           </section>
         </div>
       )}
