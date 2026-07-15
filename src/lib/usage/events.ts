@@ -8,7 +8,7 @@ export type UsageEvent = Readonly<{
   units: number;
   status: string;
   created_at: string;
-  skills?: {title: string; domain: string} | {title: string; domain: string}[] | null;
+  skills?: {title: string; category: string} | {title: string; category: string}[] | null;
 }>;
 
 export type McpCallEvent = Readonly<{
@@ -38,7 +38,7 @@ export async function getUsageEvents({page = 1, limit = 20, range}: {page?: numb
 
   const paidEventsQuery = applyRange(
     supabase.from("usage_events")
-      .select("id,tool_name,skill_id,units,status,created_at,skills(title,domain)")
+      .select("id,tool_name,skill_id,units,status,created_at,skills(title,category)")
       .eq("user_id", String(userId))
       .order("created_at", {ascending: false}),
     range,
@@ -51,7 +51,7 @@ export async function getUsageEvents({page = 1, limit = 20, range}: {page?: numb
   );
   const paidAnalyticsQuery = applyRange(
     supabase.from("usage_events")
-      .select("id,tool_name,skill_id,units,status,created_at,skills(title,domain)")
+      .select("id,tool_name,skill_id,units,status,created_at,skills(title,category)")
       .eq("user_id", String(userId))
       .order("created_at", {ascending: false})
       .limit(1000),

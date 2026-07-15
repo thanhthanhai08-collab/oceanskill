@@ -12,7 +12,7 @@
     "featuredEyebrow": "Danh mục tuyển chọn",
     "featuredTitle": "Kỹ năng cho mục tiêu tiếp theo",
     "featuredSubtitle": "Lọc theo mục tiêu kinh doanh rồi kết nối quy trình chuẩn production với agent của bạn.",
-    "filters": {"all": "Tất cả", "marketing": "Marketing", "sales": "Bán hàng", "agent-first": "Agent-first"},
+    "filters": {"all": "Tất cả", "marketing": "Marketing", "sales": "Bán hàng", "ai-agent": "Agent-first"},
     "filterEmpty": "Chưa có kỹ năng đã phát hành phù hợp danh mục này. Bạn có thể xem toàn bộ marketplace hoặc quay lại khi danh mục được cập nhật.",
     "viewAll": "Xem tất cả",
     "viewSkill": "Xem kỹ năng",

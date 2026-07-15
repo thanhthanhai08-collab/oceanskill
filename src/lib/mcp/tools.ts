@@ -4,7 +4,7 @@ import {createAdminClient} from "@/lib/supabase/admin";
 import {finalizeMcpUsage, releaseMcpUsage, reserveMcpUsage} from "@/lib/mcp/usage";
 import type {AuthenticatedMcpKey} from "@/lib/mcp/authentication";
 
-const metadataFields = "id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
+const metadataFields = "id,slug,title,description,category,current_version,compatible_clients,license_spdx,visibility,updated_at";
 export type McpToolName =
   | "list_purchased_skills"
   | "search_skills"
@@ -72,7 +72,7 @@ export async function listCollections(auth: AuthenticatedMcpKey) {
   const admin = createAdminClient();
   const {data, error} = await admin
     .from("skill_collections")
-    .select("id,name,description,visibility,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at))")
+    .select("id,name,description,visibility,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,category,current_version,compatible_clients,license_spdx,visibility,updated_at))")
     .or(`visibility.eq.public,user_id.eq.${auth.userId}`)
     .order("updated_at", {ascending: false})
     .limit(100);

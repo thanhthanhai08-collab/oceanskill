@@ -22,10 +22,10 @@ export interface HomeSkillExplorerProps {
 
 function matchesFilter(skill: SkillSummary, filter: HomeCategoryFilter) {
   if (filter === "all") return true;
-  if (filter === "agent-first") return skill.domain === "agent-first";
-  const searchable = `${skill.title} ${skill.description} ${skill.domain}`.toLocaleLowerCase();
-  if (filter === "marketing") return skill.domain === "marketing" || searchable.includes("marketing");
-  return skill.domain === "productivity" || skill.domain === "marketing" || /sales|revenue|growth/.test(searchable);
+  if (filter === "ai-agent") return skill.category === "ai-agent";
+  const searchable = `${skill.title} ${skill.description} ${skill.category}`.toLocaleLowerCase();
+  if (filter === "marketing") return skill.category === "marketing" || searchable.includes("marketing");
+  return skill.category === "productivity" || skill.category === "marketing" || /sales|revenue|growth/.test(searchable);
 }
 
 export default function HomeSkillExplorer({skills, labels}: HomeSkillExplorerProps) {

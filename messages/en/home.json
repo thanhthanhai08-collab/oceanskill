@@ -12,7 +12,7 @@
     "featuredEyebrow": "Curated catalog",
     "featuredTitle": "Skills for your next outcome",
     "featuredSubtitle": "Filter by business goal, then connect a production-ready workflow to your agent.",
-    "filters": {"all": "All skills", "marketing": "Marketing", "sales": "Sales", "agent-first": "Agent-first"},
+    "filters": {"all": "All skills", "marketing": "Marketing", "sales": "Sales", "ai-agent": "Agent-first"},
     "filterEmpty": "No published skills match this category yet. Explore the full marketplace or check back as the catalog grows.",
     "viewAll": "View all",
     "viewSkill": "View skill",

@@ -26,3 +26,13 @@ test("duplicate collection names receive an id-based collision-resistant suffix"
   assert.match(sql, /\[deduplicated '\s*\|\|\s*duplicate_row\.id::text/i);
   assert.match(sql, /while exists[\s\S]+candidate_suffix/i);
 });
+
+test("new collections are atomically connected to the user collection library", async () => {
+  const sql = await readFile(new URL("../supabase/migrations/20260715121723_catalog_taxonomy_and_collection_library.sql", import.meta.url), "utf8");
+  assert.match(sql, /create or replace function public\.create_skill_collection/i);
+  assert.match(sql, /insert into public\.skill_collections[\s\S]+insert into public\.skill_collection_items[\s\S]+insert into public\.user_collection_library/i);
+  assert.match(sql, /grant execute on function public\.create_skill_collection[\s\S]+to authenticated/i);
+
+  const collectionData = await readFile(new URL("../src/lib/skills/collections.ts", import.meta.url), "utf8");
+  assert.match(collectionData, /from\("user_collection_library"\)[\s\S]+skill_collections!inner/);
+});

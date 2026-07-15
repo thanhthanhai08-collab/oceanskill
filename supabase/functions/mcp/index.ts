@@ -36,7 +36,7 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: {autoRefreshToken: false, persistSession: false},
 });
 
-const metadataFields = "id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
+const metadataFields = "id,slug,title,description,category,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
 const windows = new Map<string, {count: number; resetAt: number}>();
 type McpToolName =
   | "list_purchased_skills"
@@ -246,7 +246,7 @@ async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string, suppl
 async function listCollections(auth: AuthenticatedMcpKey) {
   const {data, error} = await admin
     .from("skill_collections")
-    .select("id,name,description,visibility,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,domain,current_version,compatible_clients,license_spdx,visibility,updated_at))")
+    .select("id,name,description,visibility,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,category,domain,current_version,compatible_clients,license_spdx,visibility,updated_at))")
     .or(`visibility.eq.public,user_id.eq.${auth.userId}`)
     .order("updated_at", {ascending: false})
     .limit(100);

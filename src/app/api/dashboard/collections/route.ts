@@ -38,32 +38,20 @@ export async function POST(request: Request) {
     .select("id", {count: "exact", head: true})
     .eq("user_id", userId);
 
-  const {data: collection, error: collectionError} = await supabase
-    .from("skill_collections")
-    .insert({
-      user_id: userId,
-      name: input.name,
-      slug: input.slug,
-      description: input.description,
-      accent: accents[(count ?? 0) % accents.length],
-    })
-    .select("id")
-    .single();
+  const {data: collectionId, error: collectionError} = await supabase.rpc("create_skill_collection", {
+    p_name: input.name,
+    p_slug: input.slug,
+    p_description: input.description,
+    p_accent: accents[(count ?? 0) % accents.length],
+    p_skill_ids: input.skillIds,
+  });
 
-  if (collectionError || !collection) {
+  if (collectionError || !collectionId) {
     if (collectionError?.code === "23505") return NextResponse.json({error: "collection_duplicate"}, {status: 409});
     return NextResponse.json({error: "collection_create_failed"}, {status: 500});
   }
 
-  const {error: itemsError} = await supabase
-    .from("skill_collection_items")
-    .insert(input.skillIds.map((skillId, position) => ({collection_id: collection.id, skill_id: skillId, position})));
-
-  if (itemsError) {
-    await supabase.from("skill_collections").delete().eq("id", collection.id).eq("user_id", userId);
-    return NextResponse.json({error: "collection_items_create_failed"}, {status: 500});
-  }
-
   const collections = await getUserSkillCollections();
-  return NextResponse.json({collections: collections ?? []}, {headers: {"Cache-Control": "no-store"}});
+  const locale = request.headers.get("referer")?.match(/\/(vi|en)\//)?.[1] ?? "vi";
+  return NextResponse.json({collections: collections ?? [], collectionId, href: `/${locale}/dashboard/collections/${input.slug}`}, {headers: {"Cache-Control": "no-store"}});
 }

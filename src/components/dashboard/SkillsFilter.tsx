@@ -19,7 +19,7 @@ export default function SkillsFilter({skills, renderSkill, labels}: SkillsFilter
         query.trim() === "" ||
         s.title.toLowerCase().includes(query.toLowerCase()) ||
         s.description.toLowerCase().includes(query.toLowerCase()) ||
-        s.domain.toLowerCase().includes(query.toLowerCase());
+        s.category.toLowerCase().includes(query.toLowerCase());
       const matchesStatus = statusFilter === "all" || s.status === statusFilter;
       return matchesQuery && matchesStatus;
     });

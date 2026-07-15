@@ -3,14 +3,14 @@
 import {useMemo, useState} from "react";
 import type {CreatorSkill, LibrarySkill} from "@/lib/skills/creator";
 import type {SkillCollection} from "@/lib/skills/collections";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 import {getCollectionDetailHref, isStarterCollectionId, isValidCollectionSlug, slugifyCollectionName} from "@/lib/skills/collectionSlug";
 
 type SkillItem = Readonly<{
   id: string;
   title: string;
   description: string;
-  domain: string;
+  category: string;
   source: "library" | "uploaded";
 }>;
 
@@ -44,16 +44,17 @@ const ACCENTS: SkillCollection["accent"][] = ["primary", "secondary", "tertiary"
 
 function buildStarterCollections(skills: SkillItem[], labels: Labels): SkillCollection[] {
   const byDomain = new Map<string, SkillItem[]>();
-  for (const skill of skills) byDomain.set(skill.domain, [...(byDomain.get(skill.domain) ?? []), skill]);
+  for (const skill of skills) byDomain.set(skill.category, [...(byDomain.get(skill.category) ?? []), skill]);
   const groups = [...byDomain.entries()].filter(([, items]) => items.length > 0).slice(0, 3);
-  return groups.map(([domain, items], index) => ({
-    id: `starter-${domain}`,
-    slug: `starter-${domain}`,
-    name: domain === "marketing" ? labels.starterMarketing : domain === "development" ? labels.starterDevelopment : labels.starterSet.replace("{domain}", domain),
+  return groups.map(([category, items], index) => ({
+    id: `starter-${category}`,
+    slug: `starter-${category}`,
+    name: category === "marketing" ? labels.starterMarketing : category === "development" ? labels.starterDevelopment : labels.starterSet.replace("{category}", category),
     description: items.slice(0, 3).map((item) => item.title).join(", "),
     skillIds: items.map((item) => item.id),
     accent: ACCENTS[index % ACCENTS.length],
     updatedAt: new Date().toISOString(),
+    owned: false,
   }));
 }
 
@@ -77,8 +78,8 @@ export default function DashboardCollections({
   readonly labels: Labels;
 }) {
   const skills = useMemo<SkillItem[]>(() => [
-    ...library.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, domain: skill.domain, source: "library" as const})),
-    ...uploaded.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, domain: skill.domain, source: "uploaded" as const})),
+    ...library.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, category: skill.category, source: "library" as const})),
+    ...uploaded.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, category: skill.category, source: "uploaded" as const})),
   ], [library, uploaded]);
 
   const [collections, setCollections] = useState<SkillCollection[]>(initialCollections);
@@ -98,7 +99,7 @@ export default function DashboardCollections({
   const filteredSkills = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return skills;
-    return skills.filter((skill) => [skill.title, skill.description, skill.domain].some((value) => value.toLowerCase().includes(term)));
+    return skills.filter((skill) => [skill.title, skill.description, skill.category].some((value) => value.toLowerCase().includes(term)));
   }, [query, skills]);
   const canCreate = name.trim().length > 0 && isValidCollectionSlug(slug) && selectedIds.length > 0;
 
@@ -143,7 +144,7 @@ export default function DashboardCollections({
       setCreateError(payload?.error === "collection_duplicate" ? labels.duplicateError : labels.duplicateError);
       return;
     }
-    const payload = await response.json() as {collections?: SkillCollection[]};
+    const payload = await response.json() as {collections?: SkillCollection[]; href?: string};
     setCollections(payload.collections ?? []);
     setName("");
     setDescription("");
@@ -152,6 +153,7 @@ export default function DashboardCollections({
     setQuery("");
     setSelectedIds([]);
     setIsCreateOpen(false);
+    if (payload.href) window.location.assign(payload.href);
   };
 
   const removeCollection = async (id: string) => {
@@ -185,7 +187,7 @@ export default function DashboardCollections({
               <div className="flex items-start justify-between gap-4">
                 <div className="grid h-24 w-24 shrink-0 grid-cols-2 gap-2 rounded-xl bg-surface-container p-2">
                   {collectionSkills.slice(0, 4).map((skill) => {
-                    const visual = getDomainVisual(skill.domain);
+                    const visual = getCategoryVisual(skill.category);
                     return (
                       <span key={skill.id} className={`flex items-center justify-center rounded-lg ${classes.bg} ${visual.accentClass}`}>
                         <span className="material-symbols-outlined text-[18px]">{visual.icon}</span>
@@ -251,7 +253,7 @@ export default function DashboardCollections({
               <div className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1">
                 {filteredSkills.length ? filteredSkills.map((skill) => {
                   const selected = selectedIds.includes(skill.id);
-                  const visual = getDomainVisual(skill.domain);
+                  const visual = getCategoryVisual(skill.category);
                   return (
                     <button key={skill.id} type="button" onClick={() => toggleSkill(skill.id)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm transition ${selected ? "border-primary/40 bg-primary/10" : "border-white/5 bg-surface-container/40 hover:bg-white/[0.04]"}`}>
                       <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-container-high ${visual.accentClass}`}>
@@ -259,7 +261,7 @@ export default function DashboardCollections({
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-semibold">{skill.title}</span>
-                        <span className="mt-1 block text-xs text-on-surface-variant">{skill.domain} - {skill.source === "uploaded" ? labels.uploaded : labels.library}</span>
+                        <span className="mt-1 block text-xs text-on-surface-variant">{skill.category} - {skill.source === "uploaded" ? labels.uploaded : labels.library}</span>
                       </span>
                       <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${selected ? "bg-error/15 text-error" : "bg-primary/15 text-primary"}`}>
                         <span className="material-symbols-outlined text-[18px]">{selected ? "remove" : "add"}</span>

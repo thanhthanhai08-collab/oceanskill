@@ -2,17 +2,17 @@ import "server-only";
 import {createClient} from "@/lib/supabase/server";
 import type {SkillAuthor} from "@/lib/catalog/skills";
 
-const authorFields = "id,name,handle,icon,domain,glow_class,bio,focus,website_url,avatar_path,avatar_url";
+const authorFields = "id,name,handle,icon,category,glow_class,bio,focus,website_url,avatar_path,avatar_url";
 
 export type CreatorSkill = Readonly<{
-  id: string; slug: string; title: string; description: string; domain: string; status: string;
+  id: string; slug: string; title: string; description: string; category: string; status: string;
   visibility: string; current_version: string | null; compatible_clients: string[]; updated_at: string;
   author_id: string | null; authors: SkillAuthor | null;
   skill_versions: Array<{version: string; scan_status: string; content_hash: string; scan_summary: Record<string, unknown>; created_at: string}>;
 }>;
 
 export type FoundationSkill = Readonly<{
-  id: string; slug: string; title: string; description: string; domain: string;
+  id: string; slug: string; title: string; description: string; category: string;
   status: string; current_version: string | null; compatible_clients: string[]; updated_at: string;
   author_id: string | null; authors: SkillAuthor | null;
 }>;
@@ -55,7 +55,7 @@ export async function getCreatorSkills() {
   if (!userId) return null;
   const [skillsResult, profileResult] = await Promise.all([
     supabase.from("skills")
-    .select(`id,slug,title,description,domain,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}),skill_versions!skill_versions_skill_id_fkey(version,scan_status,content_hash,scan_summary,created_at)`)
+    .select(`id,slug,title,description,category,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}),skill_versions!skill_versions_skill_id_fkey(version,scan_status,content_hash,scan_summary,created_at)`)
     .eq("owner_id", String(userId)).order("updated_at", {ascending: false}),
     supabase.from("profiles").select("creator_skill_limit").eq("id", String(userId)).maybeSingle(),
   ]);
@@ -80,7 +80,7 @@ export async function getUserSkillCount() {
 export async function getFoundationSkills(locale?: string) {
   const supabase = await createClient();
   const {data, error} = await supabase.from("skills")
-    .select(`id,slug,title,description,domain,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields})`)
+    .select(`id,slug,title,description,category,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields})`)
     .is("owner_id", null)
     .eq("status", "active")
     .order("updated_at", {ascending: false});
@@ -93,7 +93,7 @@ export async function getUserSkillLibrary(locale?: string) {
   const {data: claimsData} = await supabase.auth.getClaims();
   if (!claimsData?.claims?.sub) return null;
   const {data, error} = await supabase.from("user_skill_library")
-    .select(`added_at,skills!inner(id,slug,title,description,domain,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}))`)
+    .select(`added_at,skills!inner(id,slug,title,description,category,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}))`)
     .eq("user_id", String(claimsData.claims.sub)).order("added_at", {ascending: false});
   if (error) throw new Error(`Could not load user skill library: ${error.message}`);
   return localizeFoundationSkills((data ?? []).map((row) => normalizeAuthor({...((Array.isArray(row.skills) ? row.skills[0] : row.skills) as unknown as WithAuthorArray<FoundationSkill>), added_at: row.added_at} as WithAuthorArray<LibrarySkill>)), locale);

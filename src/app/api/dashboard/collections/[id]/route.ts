@@ -57,10 +57,22 @@ export async function DELETE(_request: Request, {params}: {params: Promise<{id: 
   const userId = claimsData?.claims?.sub ? String(claimsData.claims.sub) : null;
   if (!userId) return NextResponse.json({error: "unauthorized"}, {status: 401});
 
-  const {error} = await supabase
+  const {data: ownedCollection, error: lookupError} = await supabase
+    .from("skill_collections")
+    .select("id")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (lookupError) return NextResponse.json({error: "collection_delete_failed"}, {status: 500});
+
+  const {error} = ownedCollection ? await supabase
     .from("skill_collections")
     .delete()
     .eq("id", id)
+    .eq("user_id", userId) : await supabase
+    .from("user_collection_library")
+    .delete()
+    .eq("collection_id", id)
     .eq("user_id", userId);
 
   if (error) return NextResponse.json({error: "collection_delete_failed"}, {status: 500});

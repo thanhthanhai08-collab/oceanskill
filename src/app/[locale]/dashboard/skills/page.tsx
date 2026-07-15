@@ -14,7 +14,7 @@ export default async function DashboardSkillsPage({params}: {readonly params: Pr
   const atLimit = creatorData.skills.length >= limit;
   const reviewStatsBySkillId = await getSkillReviewStatsBySkillIds([...creatorData.skills, ...library].map((skill) => skill.id));
   const cardLabels = {empty: t("emptyUploaded"), privateBadge: t("privateBadge"), active: t("active"), draft: t("draft"), archived: t("archived"), version: t("version"), updated: t("updated"), contentHidden: t("contentHidden")};
-  const formLabels = {fields: t.raw("fields") as Record<string, string>, placeholders: t.raw("placeholders") as Record<string, string>, domains: t.raw("domains") as Record<string, string>, clients: t.raw("clients") as Record<string, string>, submit: t("submit"), submitting: t("submitting"), success: t("success"), scanFailed: t("scanFailed"), createFailed: t("createFailed"), invalidForm: t("invalidForm"), scanChecks: t("scanChecks"), passed: t("passed"), failed: t("failed")};
+  const formLabels = {fields: t.raw("fields") as Record<string, string>, placeholders: t.raw("placeholders") as Record<string, string>, categories: t.raw("categories") as Record<string, string>, clients: t.raw("clients") as Record<string, string>, submit: t("submit"), submitting: t("submitting"), success: t("success"), scanFailed: t("scanFailed"), createFailed: t("createFailed"), invalidForm: t("invalidForm"), scanChecks: t("scanChecks"), passed: t("passed"), failed: t("failed")};
   const tabsLabels = {
     tabAll: t("tabAll"), tabPlatform: t("tabPlatform"), tabUploaded: t("tabUploaded"),
     platformBadge: t("platformBadge"), uploadedBadge: t("uploadedBadge"),

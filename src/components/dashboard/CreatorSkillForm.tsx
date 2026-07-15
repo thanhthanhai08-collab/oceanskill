@@ -5,12 +5,12 @@ import {useFormStatus} from "react-dom";
 import {createPrivateSkill, type CreateSkillState} from "@/app/[locale]/dashboard/actions";
 
 export type CreatorSkillFormLabels = Readonly<{
-  fields: Record<string, string>; placeholders: Record<string, string>; domains: Record<string, string>; clients: Record<string, string>;
+  fields: Record<string, string>; placeholders: Record<string, string>; categories: Record<string, string>; clients: Record<string, string>;
   submit: string; submitting: string; success: string; scanFailed: string; createFailed: string; invalidForm: string; scanChecks: string; passed: string; failed: string;
 }>;
 
 const initialState: CreateSkillState = {status: "idle"};
-const domains = ["agent-first", "security", "productivity", "design", "marketing", "development", "research"];
+const categories = ["ai-agent", "security", "productivity", "design", "marketing", "development", "research"];
 const clients = ["codex", "claude-code", "cursor", "generic-mcp"];
 
 function SubmitButton({labels}: {labels: CreatorSkillFormLabels}) {
@@ -29,7 +29,7 @@ export default function CreatorSkillForm({labels}: {readonly labels: CreatorSkil
     </div>
     <label className="block text-sm font-medium">{labels.fields.description}<textarea required name="description" minLength={10} maxLength={1000} rows={3} placeholder={labels.placeholders.description} className={inputClass}/></label>
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      <label className="text-sm font-medium">{labels.fields.domain}<select required name="domain" className={inputClass}>{domains.map((domain) => <option key={domain} value={domain}>{labels.domains[domain]}</option>)}</select></label>
+      <label className="text-sm font-medium">{labels.fields.category}<select required name="category" className={inputClass}>{categories.map((category) => <option key={category} value={category}>{labels.categories[category]}</option>)}</select></label>
       <label className="text-sm font-medium">{labels.fields.version}<input required name="version" defaultValue="1.0.0" pattern="\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?" className={inputClass}/></label>
       <label className="text-sm font-medium sm:col-span-2 lg:col-span-1">{labels.fields.license}<input name="licenseSpdx" maxLength={80} placeholder={labels.placeholders.license} className={inputClass}/></label>
     </div>

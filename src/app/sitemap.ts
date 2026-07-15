@@ -3,6 +3,7 @@ import {supportedLocales, type Locale} from "@/i18n/locales";
 import {listPublicSkills} from "@/lib/catalog/skills";
 import {localizedUrl} from "@/lib/seo/site";
 import {getBlogPosts} from "@/content/blog";
+import {listPublicCategories} from "@/lib/catalog/categories";
 
 export const revalidate = 3600;
 
@@ -26,7 +27,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of supportedLocales) entries.push({url: localizedUrl(locale, path), lastModified: new Date(post.updatedAt), changeFrequency: "monthly", priority: 0.75, alternates: languageAlternates(path)});
   }
   try {
-    const skills = await listPublicSkills();
+    const [skills, categories] = await Promise.all([listPublicSkills(), listPublicCategories()]);
+    for (const category of categories) {
+      const path = `skills/category/${category.slug}`;
+      for (const locale of supportedLocales) entries.push({url: localizedUrl(locale as Locale, path), lastModified: new Date(), changeFrequency: "weekly", priority: 0.75, alternates: languageAlternates(path)});
+    }
     for (const skill of skills) {
       const path = `skills/${skill.slug}`;
       for (const locale of supportedLocales) entries.push({url: localizedUrl(locale as Locale, path), lastModified: new Date(skill.updated_at), changeFrequency: "weekly", priority: 0.8, alternates: languageAlternates(path)});

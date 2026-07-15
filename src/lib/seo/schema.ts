@@ -23,8 +23,8 @@ export function faqSchema(items: ReadonlyArray<{question: string; answer: string
   return {"@context": "https://schema.org", "@type": "FAQPage", mainEntity: items.map((item) => ({"@type": "Question", name: item.question, acceptedAnswer: {"@type": "Answer", text: item.answer}}))};
 }
 
-export function skillSchema(input: Readonly<{name: string; description: string; url: string; version: string | null; clients: string[]; license: string | null; category: string}>) {
-  return {"@context": "https://schema.org", "@type": "SoftwareApplication", name: input.name, description: input.description, url: input.url, applicationCategory: input.category, operatingSystem: input.clients.join(", ") || "AI agent clients", softwareVersion: input.version ?? undefined, license: input.license ?? undefined, publisher: {"@type": "Organization", name: siteName, url: getSiteUrl()}};
+export function skillSchema(input: Readonly<{name: string; description: string; url: string; version: string | null; clients: string[]; license: string | null; category: string; keywords?: string[]}>) {
+  return {"@context": "https://schema.org", "@type": "SoftwareApplication", name: input.name, description: input.description, url: input.url, applicationCategory: input.category, keywords: input.keywords?.join(", ") || undefined, operatingSystem: input.clients.join(", ") || "AI agent clients", softwareVersion: input.version ?? undefined, license: input.license ?? undefined, publisher: {"@type": "Organization", name: siteName, url: getSiteUrl()}};
 }
 
 export function blogSchema(input: Readonly<{name: string; description: string; url: string; locale: Locale}>) {

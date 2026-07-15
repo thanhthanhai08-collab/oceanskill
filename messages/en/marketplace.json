@@ -1,7 +1,8 @@
 {
   "Marketplace": {
     "eyebrow": "Curated private beta", "title": "Production-grade skills for coding agents.", "description": "Browse reviewed workflows and invoke protected content through OceanSkill MCP without changing your current agent setup.",
-    "searchPlaceholder": "Search skills", "allDomains": "All domains", "filter": "Apply", "resultCount": "{count, plural, =0 {No skills} =1 {1 skill} other {# skills}}", "empty": "No skills match these filters.",
-    "categories": "Categories", "catalogRank": "Catalog rank", "trending": "Trending", "sortFeatured": "Recommended", "sortDomain": "Domain", "sortVersion": "Latest version", "viewSkill": "Details"
+    "searchPlaceholder": "Search skills", "allCategories": "All categories", "filter": "Apply", "resultCount": "{count, plural, =0 {No skills} =1 {1 skill} other {# skills}}", "empty": "No skills match these filters.",
+    "categories": "Categories", "catalogRank": "Catalog rank", "trending": "Trending", "sortFeatured": "Recommended", "sortCategory": "Category", "sortVersion": "Latest version", "viewSkill": "Details",
+    "categoryEyebrow": "Skill category", "categorySkillCount": "{count, plural, =0 {No skills} =1 {1 published skill} other {# published skills}}", "categoryEmpty": "This category has no published skills yet."
   }
 }

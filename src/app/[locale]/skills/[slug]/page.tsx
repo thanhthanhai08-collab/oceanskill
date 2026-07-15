@@ -6,12 +6,13 @@ import AddSkillToLibraryButton from "@/components/skills/AddSkillToLibraryButton
 import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
 import CopyButton from "@/components/skills/CopyButton";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 import {getPublicSkill, listRelatedSkills, listSkillsByAuthor} from "@/lib/catalog/skills";
 import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
 import {listSkillFaqs} from "@/lib/catalog/skill-faqs";
 import {getSkillDetailContent} from "@/lib/catalog/skill-details";
+import {getPublicCategory} from "@/lib/catalog/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -24,21 +25,29 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   const skill = await getPublicSkill(slug, locale);
   if (!skill) notFound();
   const t = await getTranslations("SkillDetail");
-  const visual = getDomainVisual(skill.domain);
+  const visual = getCategoryVisual(skill.category);
   const version = skill.current_version ?? "1.0.0";
   const author = getSkillAuthor(skill);
-  const [moreFromAuthor, relatedSkills, reviewState, faqs, detailContent] = await Promise.all([
+  const [moreFromAuthor, relatedSkills, reviewState, faqs, detailContent, category] = await Promise.all([
     listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2, locale),
-    listRelatedSkills(skill.domain, skill.slug, 3, locale),
+    listRelatedSkills(skill.category, skill.slug, 3, locale),
     getSkillReviewState(skill.id),
     listSkillFaqs(skill.id, locale),
     getSkillDetailContent(skill.id, locale),
+    getPublicCategory(skill.category, locale),
   ]);
 
   return (
     <SiteShell>
       <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
         <div className="min-w-0 space-y-10">
+          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
+            <Link href="/skills" className="transition hover:text-primary">{locale === "vi" ? "Kho skill" : "Skills"}</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={`/skills/category/${skill.category}`} className="transition hover:text-primary">{category?.name ?? skill.category}</Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-on-surface">{skill.title}</span>
+          </nav>
           <section className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.2)]">
             <div className="flex items-start gap-6">
               <div className={`flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl border border-primary/50 bg-surface-container-lowest shadow-[0_0_32px_rgba(184,195,255,0.35)] ${visual.accentClass}`}>
@@ -46,7 +55,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-surface-container-highest px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{skill.domain}</span>
+                  <Link href={`/skills/category/${skill.category}`} className="rounded-full bg-surface-container-highest px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant transition hover:text-primary">{category?.name ?? skill.category}</Link>
                   <span className="rounded-full bg-secondary/10 px-3 py-1 font-mono text-[10px] font-bold uppercase text-secondary">OceanSkill</span>
                   <span className="rounded-full bg-surface-container-highest px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">v{version}</span>
                 </div>
@@ -197,7 +206,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
               <div className="space-y-3">
                 {moreFromAuthor.map((related) => (
                   <Link key={related.id} href={`/skills/${related.slug}` as "/skills"} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-surface-container-low/55 p-4 transition hover:bg-white/[0.04]">
-                    <span className="min-w-0"><span className="block truncate font-semibold">{related.title}</span><span className="text-xs text-on-surface-variant">{related.domain}</span></span>
+                    <span className="min-w-0"><span className="block truncate font-semibold">{related.title}</span><span className="text-xs text-on-surface-variant">{related.category}</span></span>
                     <span className="font-mono text-xs">{related.current_version ?? "1.0.0"}</span>
                   </Link>
                 ))}

@@ -19,7 +19,7 @@ export default async function HomePage({params}: {readonly params: Promise<{loca
     <SiteShell>
       <HomeStructuredData />
       <HomeHero />
-      <HomeSkillExplorer skills={skills} labels={{eyebrow: t("featuredEyebrow"), title: t("featuredTitle"), subtitle: t("featuredSubtitle"), viewAll: t("viewAll"), viewSkill: t("viewSkill"), empty: t("filterEmpty"), categories: {all: t("filters.all"), marketing: t("filters.marketing"), sales: t("filters.sales"), "agent-first": t("filters.agent-first")}}} />
+      <HomeSkillExplorer skills={skills} labels={{eyebrow: t("featuredEyebrow"), title: t("featuredTitle"), subtitle: t("featuredSubtitle"), viewAll: t("viewAll"), viewSkill: t("viewSkill"), empty: t("filterEmpty"), categories: {all: t("filters.all"), marketing: t("filters.marketing"), sales: t("filters.sales"), "ai-agent": t("filters.ai-agent")}}} />
       <FeaturedCreators />
       <HotCollections />
       <KnowledgeHub />

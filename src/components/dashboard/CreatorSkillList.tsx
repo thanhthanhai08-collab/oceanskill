@@ -1,7 +1,7 @@
 import type {CreatorSkill} from "@/lib/skills/creator";
 import Image from "next/image";
 import {Link} from "@/i18n/navigation";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 import type {SkillReviewStats} from "@/lib/skills/reviews";
 
 type Labels = Readonly<{empty: string; privateBadge: string; active: string; draft: string; archived: string; version: string; updated: string; contentHidden: string}>;
@@ -21,7 +21,7 @@ export default function CreatorSkillList({skills, reviewStatsBySkillId, labels, 
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {skills.map((skill) => {
         const latest = skill.skill_versions.find((item) => item.version === skill.current_version) ?? skill.skill_versions[0];
-        const visual = getDomainVisual(skill.domain);
+        const visual = getCategoryVisual(skill.category);
         const author = skill.authors;
         const reviewStats = reviewStatsBySkillId[skill.id];
         const rating = reviewStats?.count ? reviewStats.average.toFixed(1) : "0.0";

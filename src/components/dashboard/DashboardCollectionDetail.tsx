@@ -4,14 +4,14 @@ import {useMemo, useState} from "react";
 import {useRouter} from "@/i18n/navigation";
 import type {CreatorSkill, LibrarySkill} from "@/lib/skills/creator";
 import type {SkillCollection} from "@/lib/skills/collections";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 import {isValidCollectionSlug, slugifyCollectionName} from "@/lib/skills/collectionSlug";
 
 type SkillItem = Readonly<{
   id: string;
   title: string;
   description: string;
-  domain: string;
+  category: string;
   source: "library" | "uploaded";
 }>;
 
@@ -38,8 +38,8 @@ export default function DashboardCollectionDetail({collection, library, uploaded
 }) {
   const router = useRouter();
   const skills = useMemo<SkillItem[]>(() => [
-    ...library.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, domain: skill.domain, source: "library" as const})),
-    ...uploaded.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, domain: skill.domain, source: "uploaded" as const})),
+    ...library.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, category: skill.category, source: "library" as const})),
+    ...uploaded.map((skill) => ({id: skill.id, title: skill.title, description: skill.description, category: skill.category, source: "uploaded" as const})),
   ], [library, uploaded]);
 
   const [name, setName] = useState(collection.name);
@@ -53,7 +53,7 @@ export default function DashboardCollectionDetail({collection, library, uploaded
   const filteredSkills = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return skills;
-    return skills.filter((skill) => [skill.title, skill.description, skill.domain].some((value) => value.toLowerCase().includes(term)));
+    return skills.filter((skill) => [skill.title, skill.description, skill.category].some((value) => value.toLowerCase().includes(term)));
   }, [query, skills]);
   const canSave = name.trim().length > 0 && isValidCollectionSlug(slug) && selectedIds.length > 0;
 
@@ -108,7 +108,7 @@ export default function DashboardCollectionDetail({collection, library, uploaded
         <div className="mt-3 max-h-96 space-y-2 overflow-y-auto pr-1">
           {filteredSkills.length ? filteredSkills.map((skill) => {
             const selected = selectedIds.includes(skill.id);
-            const visual = getDomainVisual(skill.domain);
+            const visual = getCategoryVisual(skill.category);
             return (
               <button key={skill.id} type="button" onClick={() => toggleSkill(skill.id)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm transition ${selected ? "border-primary/40 bg-primary/10" : "border-white/5 bg-surface-container/40 hover:bg-white/[0.04]"}`}>
                 <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-container-high ${visual.accentClass}`}>
@@ -116,7 +116,7 @@ export default function DashboardCollectionDetail({collection, library, uploaded
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">{skill.title}</span>
-                  <span className="mt-1 block text-xs text-on-surface-variant">{skill.domain} - {skill.source === "uploaded" ? labels.uploaded : labels.library}</span>
+                  <span className="mt-1 block text-xs text-on-surface-variant">{skill.category} - {skill.source === "uploaded" ? labels.uploaded : labels.library}</span>
                 </span>
                 <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${selected ? "bg-error/15 text-error" : "bg-primary/15 text-primary"}`}>
                   <span className="material-symbols-outlined text-[18px]">{selected ? "remove" : "add"}</span>

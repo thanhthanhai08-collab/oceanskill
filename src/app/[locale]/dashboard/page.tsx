@@ -10,6 +10,17 @@ export interface DashboardPageProps {
   readonly params: Promise<{locale: string}>;
 }
 
+function isSuccessfulStatus(status: string) {
+  return status === "succeeded" || status === "ok" || status === "reserved";
+}
+
+function formatUsageStatus(status: string, locale: string) {
+  if (locale !== "vi") return status;
+  if (isSuccessfulStatus(status)) return "Thành công";
+  if (status === "failed" || status === "fail") return "Thất bại";
+  return status;
+}
+
 export default async function DashboardPage({params}: DashboardPageProps) {
   const {locale} = await params;
   const [t, data] = await Promise.all([
@@ -87,7 +98,7 @@ export default async function DashboardPage({params}: DashboardPageProps) {
                           <span className="font-semibold">{item.tool_name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4"><span className={`rounded-md border px-2 py-1 font-mono text-[10px] uppercase ${item.status === "ok" ? "border-green-400/20 bg-green-400/10 text-green-300" : "border-error/30 bg-error/10 text-error"}`}>{item.status}</span></td>
+                      <td className="px-6 py-4"><span className={`rounded-md border px-2 py-1 font-mono text-[10px] uppercase ${isSuccessfulStatus(item.status) ? "border-green-400/20 bg-green-400/10 text-green-300" : "border-error/30 bg-error/10 text-error"}`}>{formatUsageStatus(item.status, locale)}</span></td>
                       <td className="px-6 py-4 text-on-surface-variant">{item.units.toLocaleString(locale)} credits</td>
                       <td className="px-6 py-4 text-right text-on-surface-variant">{formatDate(item.created_at)}</td>
                     </tr>

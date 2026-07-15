@@ -1,7 +1,8 @@
 {
   "Marketplace": {
     "eyebrow": "Private beta tuyển chọn", "title": "Kỹ năng chuẩn production cho coding agent.", "description": "Khám phá quy trình đã kiểm duyệt và gọi nội dung được bảo vệ qua OceanSkill MCP mà không cần đổi agent hiện tại.",
-    "searchPlaceholder": "Tìm kỹ năng", "allDomains": "Tất cả lĩnh vực", "filter": "Áp dụng", "resultCount": "{count} kỹ năng", "empty": "Không có kỹ năng phù hợp với bộ lọc.",
-    "categories": "Danh mục", "catalogRank": "Xếp hạng danh mục", "trending": "Đang nổi", "sortFeatured": "Đề xuất", "sortDomain": "Lĩnh vực", "sortVersion": "Phiên bản mới", "viewSkill": "Chi tiết"
+    "searchPlaceholder": "Tìm kỹ năng", "allCategories": "Tất cả danh mục", "filter": "Áp dụng", "resultCount": "{count} kỹ năng", "empty": "Không có kỹ năng phù hợp với bộ lọc.",
+    "categories": "Danh mục", "catalogRank": "Xếp hạng danh mục", "trending": "Đang nổi", "sortFeatured": "Đề xuất", "sortCategory": "Danh mục", "sortVersion": "Phiên bản mới", "viewSkill": "Chi tiết",
+    "categoryEyebrow": "Danh mục skill", "categorySkillCount": "{count} skill đã xuất bản", "categoryEmpty": "Danh mục này chưa có skill được xuất bản."
   }
 }

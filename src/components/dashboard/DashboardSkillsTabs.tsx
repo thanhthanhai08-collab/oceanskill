@@ -4,7 +4,7 @@ import Image from "next/image";
 import {useMemo, useState, useTransition} from "react";
 import {Link} from "@/i18n/navigation";
 import type {CreatorSkill, FoundationSkill, LibrarySkill} from "@/lib/skills/creator";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 import CreatorSkillList from "@/components/dashboard/CreatorSkillList";
 import CreatorSkillAddCard from "@/components/dashboard/CreatorSkillAddCard";
 import type {CreatorSkillFormLabels} from "@/components/dashboard/CreatorSkillForm";
@@ -33,7 +33,7 @@ interface PlatformCardProps {
 }
 
 function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeLabel, onRemove}: PlatformCardProps) {
-  const visual = getDomainVisual(skill.domain);
+  const visual = getCategoryVisual(skill.category);
   const author = skill.authors;
   const rating = reviewStats?.count ? reviewStats.average.toFixed(1) : "0.0";
   return (
@@ -59,7 +59,7 @@ function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeL
         <div>
           <h3 className="line-clamp-1 font-geist text-base font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
-            <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">{skill.domain}</span>
+            <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">{skill.category}</span>
             {skill.current_version && <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">v{skill.current_version}</span>}
           </div>
         </div>

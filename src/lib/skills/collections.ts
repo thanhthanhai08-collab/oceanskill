@@ -9,6 +9,7 @@ export type SkillCollection = Readonly<{
   skillIds: string[];
   accent: "primary" | "secondary" | "tertiary";
   updatedAt: string;
+  owned: boolean;
 }>;
 
 type CollectionRow = {
@@ -18,8 +19,14 @@ type CollectionRow = {
   description: string;
   accent: "primary" | "secondary" | "tertiary";
   updated_at: string;
+  user_id: string;
   skill_collection_items?: Array<{skill_id: string; position: number}> | null;
 };
+
+type LibraryRow = Readonly<{
+  added_at: string;
+  skill_collections: CollectionRow | CollectionRow[] | null;
+}>;
 
 export async function getUserSkillCollections() {
   const supabase = await createClient();
@@ -28,24 +35,29 @@ export async function getUserSkillCollections() {
   if (!userId) return null;
 
   const {data, error} = await supabase
-    .from("skill_collections")
-    .select("id,slug,name,description,accent,updated_at,skill_collection_items(skill_id,position)")
+    .from("user_collection_library")
+    .select("added_at,skill_collections!inner(id,user_id,slug,name,description,accent,updated_at,skill_collection_items(skill_id,position))")
     .eq("user_id", String(userId))
-    .order("updated_at", {ascending: false});
+    .order("added_at", {ascending: false});
 
   if (error) throw new Error(`Could not load skill collections: ${error.message}`);
 
-  return ((data ?? []) as CollectionRow[]).map((row) => ({
+  return ((data ?? []) as unknown as LibraryRow[]).flatMap((libraryRow) => {
+    const row = Array.isArray(libraryRow.skill_collections) ? libraryRow.skill_collections[0] : libraryRow.skill_collections;
+    if (!row) return [];
+    return [{
     id: row.id,
     slug: row.slug,
     name: row.name,
     description: row.description,
     accent: row.accent,
     updatedAt: row.updated_at,
+    owned: row.user_id === String(userId),
     skillIds: [...(row.skill_collection_items ?? [])]
       .sort((a, b) => a.position - b.position)
       .map((item) => item.skill_id),
-  })) as SkillCollection[];
+    }];
+  }) as SkillCollection[];
 }
 
 export async function getUserSkillCollectionBySlug(slug: string) {

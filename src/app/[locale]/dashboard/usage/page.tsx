@@ -1,7 +1,8 @@
 import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
+import DashboardStat from "@/components/dashboard/DashboardStat";
 import {getUsageEvents, type McpCallEvent, type UsageEvent, type UsageRange} from "@/lib/usage/events";
-import {getDomainVisual} from "@/data/mockData";
+import {getCategoryVisual} from "@/data/mockData";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ type UsagePageProps = {
 type SkillUsageRow = Readonly<{
   key: string;
   title: string;
-  domain: string;
+  category: string;
   calls: number;
   units: number;
   successRate: number;
@@ -67,7 +68,7 @@ function getSkillMeta(event: UsageEvent) {
   const raw = Array.isArray(event.skills) ? event.skills[0] : event.skills;
   return {
     title: raw?.title ?? event.tool_name,
-    domain: raw?.domain ?? "agent-first",
+    category: raw?.category ?? "ai-agent",
   };
 }
 
@@ -76,11 +77,11 @@ function isSuccessful(status: string) {
 }
 
 function buildSkillRows(events: UsageEvent[]): SkillUsageRow[] {
-  const rows = new Map<string, {title: string; domain: string; calls: number; units: number; ok: number; lastUsed: string}>();
+  const rows = new Map<string, {title: string; category: string; calls: number; units: number; ok: number; lastUsed: string}>();
   for (const event of events) {
     const meta = getSkillMeta(event);
     const key = event.skill_id ?? event.tool_name;
-    const current = rows.get(key) ?? {title: meta.title, domain: meta.domain, calls: 0, units: 0, ok: 0, lastUsed: event.created_at};
+    const current = rows.get(key) ?? {title: meta.title, category: meta.category, calls: 0, units: 0, ok: 0, lastUsed: event.created_at};
     current.calls += 1;
     current.units += event.units;
     current.ok += isSuccessful(event.status) ? 1 : 0;
@@ -88,7 +89,7 @@ function buildSkillRows(events: UsageEvent[]): SkillUsageRow[] {
     rows.set(key, current);
   }
   return [...rows.entries()]
-    .map(([key, row]) => ({key, title: row.title, domain: row.domain, calls: row.calls, units: row.units, successRate: row.calls ? row.ok / row.calls : 0, lastUsed: row.lastUsed}))
+    .map(([key, row]) => ({key, title: row.title, category: row.category, calls: row.calls, units: row.units, successRate: row.calls ? row.ok / row.calls : 0, lastUsed: row.lastUsed}))
     .sort((a, b) => b.calls - a.calls)
     .slice(0, 8);
 }
@@ -203,23 +204,11 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
         <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{t("usageDescription")}</p>
       </header>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 min-[1180px]:grid-cols-4">
-        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
-          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">api</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].mcpCalls}</p><p className="mt-1 font-geist text-2xl font-bold">{data.totalMcpCalls.toLocaleString(locale)}</p></div></div>
-          <p className="mt-3 truncate text-xs font-semibold text-tertiary">{labels[code].successfulCalls}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
-          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">paid</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].paidCalls}</p><p className="mt-1 font-geist text-2xl font-bold">{data.paidTotal.toLocaleString(locale)}</p></div></div>
-          <p className="mt-3 truncate text-xs font-semibold text-on-surface-variant">{labels[code].paidDescription}</p>
-        </div>
-        <div className="rounded-xl border border-primary/30 bg-surface-container-low/55 p-4 shadow-[0_0_20px_rgba(184,195,255,0.07)]">
-          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary/10 material-symbols-outlined text-secondary">check_circle</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("successRate")}</p><p className="mt-1 font-geist text-2xl font-bold">{(successRate * 100).toFixed(2)}%</p></div></div>
-          <p className="mt-3 truncate text-xs font-semibold text-secondary">{successCount.toLocaleString(locale)} / {data.totalMcpCalls.toLocaleString(locale)}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
-          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">account_balance_wallet</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].creditsSpent}</p><p className="mt-1 font-geist text-2xl font-bold">{totalUnits.toLocaleString(locale)}</p></div></div>
-          <p className="mt-3 truncate text-xs font-semibold text-on-surface-variant">{labels[code].selectedRange}</p>
-        </div>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <DashboardStat icon="api" label={labels[code].mcpCalls} value={data.totalMcpCalls.toLocaleString(locale)} description={labels[code].successfulCalls} accent="tertiary" />
+        <DashboardStat icon="paid" label={labels[code].paidCalls} value={data.paidTotal.toLocaleString(locale)} description={labels[code].paidDescription} />
+        <DashboardStat icon="check_circle" label={t("successRate")} value={`${(successRate * 100).toFixed(2)}%`} description={`${successCount.toLocaleString(locale)} / ${data.totalMcpCalls.toLocaleString(locale)}`} accent="secondary" />
+        <DashboardStat icon="account_balance_wallet" label={labels[code].creditsSpent} value={totalUnits.toLocaleString(locale)} description={labels[code].selectedRange} />
       </div>
 
       <section className="mt-10 rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 md:p-8">
@@ -299,13 +288,13 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
               </thead>
               <tbody className="divide-y divide-white/5">
                 {rows.map((row) => {
-                  const visual = getDomainVisual(row.domain);
+                  const visual = getCategoryVisual(row.category);
                   return (
                     <tr key={row.key} className="transition hover:bg-white/[0.03]">
                       <td className="p-5">
                         <div className="flex items-center gap-3">
                           <span className={`flex h-9 w-9 items-center justify-center rounded-lg bg-surface-container-highest ${visual.accentClass}`}><span className="material-symbols-outlined text-[20px]">{visual.icon}</span></span>
-                          <div><p className="font-geist font-bold">{row.title}</p><p className="text-xs text-on-surface-variant">{row.domain}</p></div>
+                          <div><p className="font-geist font-bold">{row.title}</p><p className="text-xs text-on-surface-variant">{row.category}</p></div>
                         </div>
                       </td>
                       <td className="p-5 font-geist font-bold">{compact.format(row.calls)}</td>

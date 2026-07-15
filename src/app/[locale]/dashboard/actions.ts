@@ -70,7 +70,7 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
     if (!scan.passed) return {status: "error", message: "scan_failed", checks: scan.checks};
     const {data: skill, error: skillError} = await supabase.from("skills").insert({
       owner_id: String(userId), visibility: "private", status: "draft", slug: input.slug,
-      title: input.title, description: input.description, domain: input.domain,
+      title: input.title, description: input.description, category: input.category,
       compatible_clients: input.compatibleClients, source_url: input.sourceUrl, license_spdx: input.licenseSpdx,
     }).select("id").single();
     if (skillError) throw skillError;
