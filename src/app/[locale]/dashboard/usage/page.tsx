@@ -203,30 +203,22 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
         <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{t("usageDescription")}</p>
       </header>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-          <span className="material-symbols-outlined text-primary">api</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].mcpCalls}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{data.totalMcpCalls.toLocaleString(locale)}</p>
-          <p className="mt-2 text-xs font-semibold text-tertiary">{labels[code].successfulCalls}</p>
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 min-[1180px]:grid-cols-4">
+        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
+          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">api</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].mcpCalls}</p><p className="mt-1 font-geist text-2xl font-bold">{data.totalMcpCalls.toLocaleString(locale)}</p></div></div>
+          <p className="mt-3 truncate text-xs font-semibold text-tertiary">{labels[code].successfulCalls}</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-          <span className="material-symbols-outlined text-primary">paid</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].paidCalls}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{data.paidTotal.toLocaleString(locale)}</p>
-          <p className="mt-2 text-xs font-semibold text-on-surface-variant">{labels[code].paidDescription}</p>
+        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
+          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">paid</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].paidCalls}</p><p className="mt-1 font-geist text-2xl font-bold">{data.paidTotal.toLocaleString(locale)}</p></div></div>
+          <p className="mt-3 truncate text-xs font-semibold text-on-surface-variant">{labels[code].paidDescription}</p>
         </div>
-        <div className="rounded-2xl border border-primary/30 bg-surface-container-low/55 p-6 shadow-[0_0_24px_rgba(184,195,255,0.08)]">
-          <span className="material-symbols-outlined text-secondary">check_circle</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{t("successRate")}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{(successRate * 100).toFixed(2)}%</p>
-          <p className="mt-2 text-xs font-semibold text-secondary">{successCount.toLocaleString(locale)} / {data.totalMcpCalls.toLocaleString(locale)}</p>
+        <div className="rounded-xl border border-primary/30 bg-surface-container-low/55 p-4 shadow-[0_0_20px_rgba(184,195,255,0.07)]">
+          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary/10 material-symbols-outlined text-secondary">check_circle</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("successRate")}</p><p className="mt-1 font-geist text-2xl font-bold">{(successRate * 100).toFixed(2)}%</p></div></div>
+          <p className="mt-3 truncate text-xs font-semibold text-secondary">{successCount.toLocaleString(locale)} / {data.totalMcpCalls.toLocaleString(locale)}</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-          <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
-          <p className="mt-6 font-mono text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">{labels[code].creditsSpent}</p>
-          <p className="mt-3 font-geist text-3xl font-bold">{totalUnits.toLocaleString(locale)}</p>
-          <p className="mt-2 text-xs font-semibold text-on-surface-variant">{labels[code].selectedRange}</p>
+        <div className="rounded-xl border border-white/10 bg-surface-container-low/55 p-4">
+          <div className="flex items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 material-symbols-outlined text-primary">account_balance_wallet</span><div className="min-w-0"><p className="font-mono text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{labels[code].creditsSpent}</p><p className="mt-1 font-geist text-2xl font-bold">{totalUnits.toLocaleString(locale)}</p></div></div>
+          <p className="mt-3 truncate text-xs font-semibold text-on-surface-variant">{labels[code].selectedRange}</p>
         </div>
       </div>
 

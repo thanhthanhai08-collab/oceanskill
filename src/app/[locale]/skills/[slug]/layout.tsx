@@ -11,16 +11,16 @@ export interface SkillDetailLayoutProps { readonly children: React.ReactNode; re
 
 export async function generateMetadata({params}: SkillDetailLayoutProps): Promise<Metadata> {
   const {locale, slug} = await params;
-  const skill = await getPublicSkill(slug);
+  const skill = await getPublicSkill(slug, locale);
   if (!skill) return {title: "OceanSkill", robots: {index: false, follow: false}};
   return createPageMetadata({locale: locale as Locale, path: `skills/${slug}`, title: skill.title, description: skill.description, type: "article"});
 }
 
 export default async function SkillDetailLayout({children, params}: SkillDetailLayoutProps) {
   const {locale, slug} = await params;
-  const skill = await getPublicSkill(slug);
+  const skill = await getPublicSkill(slug, locale);
   if (!skill) return children;
-  const [t, faqs] = await Promise.all([getTranslations({locale, namespace: "SEO"}), listSkillFaqs(skill.id)]);
+  const [t, faqs] = await Promise.all([getTranslations({locale, namespace: "SEO"}), listSkillFaqs(skill.id, locale)]);
   const code = locale as Locale;
   const url = localizedUrl(code, `skills/${slug}`);
   return (

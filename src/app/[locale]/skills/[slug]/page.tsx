@@ -11,6 +11,7 @@ import {getPublicSkill, listRelatedSkills, listSkillsByAuthor} from "@/lib/catal
 import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
 import {listSkillFaqs} from "@/lib/catalog/skill-faqs";
+import {getSkillDetailContent} from "@/lib/catalog/skill-details";
 
 export const dynamic = "force-dynamic";
 
@@ -20,17 +21,18 @@ export interface SkillDetailPageProps {
 
 export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   const {slug, locale} = await params;
-  const skill = await getPublicSkill(slug);
+  const skill = await getPublicSkill(slug, locale);
   if (!skill) notFound();
   const t = await getTranslations("SkillDetail");
   const visual = getDomainVisual(skill.domain);
   const version = skill.current_version ?? "1.0.0";
   const author = getSkillAuthor(skill);
-  const [moreFromAuthor, relatedSkills, reviewState, faqs] = await Promise.all([
-    listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2),
-    listRelatedSkills(skill.domain, skill.slug),
+  const [moreFromAuthor, relatedSkills, reviewState, faqs, detailContent] = await Promise.all([
+    listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2, locale),
+    listRelatedSkills(skill.domain, skill.slug, 3, locale),
     getSkillReviewState(skill.id),
-    listSkillFaqs(skill.id),
+    listSkillFaqs(skill.id, locale),
+    getSkillDetailContent(skill.id, locale),
   ]);
 
   return (
@@ -70,18 +72,18 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
           <section>
             <h2 className="mb-4 font-geist text-xl font-bold">{t("descriptionTitle")}</h2>
             <div className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6">
-              <h3 className="font-geist text-2xl font-bold">{t("powerTitle")}</h3>
-              <p className="mt-4 leading-7 text-on-surface-variant">{t("powerDescription", {title: skill.title})}</p>
+              <h3 className="font-geist text-2xl font-bold">{detailContent?.headline ?? t("powerTitle")}</h3>
+              <p className="mt-4 leading-7 text-on-surface-variant">{detailContent?.overview ?? t("powerDescription", {title: skill.title})}</p>
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl bg-surface-container-high p-5">
                   <span className="material-symbols-outlined text-primary">insights</span>
-                  <h4 className="mt-3 font-geist font-bold">{t("featureOneTitle")}</h4>
-                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">{t("featureOneDescription")}</p>
+                  <h4 className="mt-3 font-geist font-bold">{detailContent?.feature_one_title ?? t("featureOneTitle")}</h4>
+                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">{detailContent?.feature_one_description ?? t("featureOneDescription")}</p>
                 </div>
                 <div className="rounded-xl bg-surface-container-high p-5">
                   <span className="material-symbols-outlined text-primary">psychology</span>
-                  <h4 className="mt-3 font-geist font-bold">{t("featureTwoTitle")}</h4>
-                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">{t("featureTwoDescription")}</p>
+                  <h4 className="mt-3 font-geist font-bold">{detailContent?.feature_two_title ?? t("featureTwoTitle")}</h4>
+                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">{detailContent?.feature_two_description ?? t("featureTwoDescription")}</p>
                 </div>
               </div>
             </div>

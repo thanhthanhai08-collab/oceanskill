@@ -16,7 +16,7 @@ export interface LeaderboardPageProps { readonly params: Promise<{locale: string
 export default async function LeaderboardPage({params}: LeaderboardPageProps) {
   const {locale} = await params;
   const [t, seo] = await Promise.all([getTranslations("Leaderboard"), getTranslations("SEO")]);
-  const skills = rankSkillsByReadiness(await listPublicSkills());
+  const skills = rankSkillsByReadiness(await listPublicSkills(locale));
   const code = locale as Locale;
   return (
     <SiteShell>

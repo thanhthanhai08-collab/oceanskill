@@ -20,9 +20,31 @@ export type FoundationSkill = Readonly<{
 export type LibrarySkill = FoundationSkill & Readonly<{added_at: string}>;
 
 type WithAuthorArray<T> = Omit<T, "authors"> & {authors: SkillAuthor | SkillAuthor[] | null};
+type SkillTranslationRow = Readonly<{skill_id: string; locale: string; title: string; description: string}>;
 
 function normalizeAuthor<T extends {authors: SkillAuthor | null}>(skill: WithAuthorArray<T>): T {
   return {...skill, authors: Array.isArray(skill.authors) ? skill.authors[0] ?? null : skill.authors} as T;
+}
+
+async function localizeFoundationSkills<T extends FoundationSkill>(skills: T[], locale?: string) {
+  if (!locale || !skills.length) return skills;
+  const supabase = await createClient();
+  const locales = locale === "en" ? ["en"] : [locale, "en"];
+  const {data, error} = await supabase
+    .from("skill_translations")
+    .select("skill_id,locale,title,description")
+    .in("skill_id", skills.map((skill) => skill.id))
+    .in("locale", locales);
+  if (error) return skills;
+  const bySkillId = new Map<string, SkillTranslationRow>();
+  for (const row of (data ?? []) as SkillTranslationRow[]) {
+    const existing = bySkillId.get(row.skill_id);
+    if (!existing || (existing.locale !== locale && row.locale === locale)) bySkillId.set(row.skill_id, row);
+  }
+  return skills.map((skill) => {
+    const translation = bySkillId.get(skill.id);
+    return translation ? {...skill, title: translation.title, description: translation.description} : skill;
+  });
 }
 
 /** Fetch all skills owned by the current user (private + published). */
@@ -55,7 +77,7 @@ export async function getUserSkillCount() {
 }
 
 /** Fetch curated platform/foundation skills (no owner, or owner_id is null). */
-export async function getFoundationSkills() {
+export async function getFoundationSkills(locale?: string) {
   const supabase = await createClient();
   const {data, error} = await supabase.from("skills")
     .select(`id,slug,title,description,domain,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields})`)
@@ -63,10 +85,10 @@ export async function getFoundationSkills() {
     .eq("status", "active")
     .order("updated_at", {ascending: false});
   if (error) throw new Error(`Could not load foundation skills: ${error.message}`);
-  return ((data ?? []) as unknown as Array<WithAuthorArray<FoundationSkill>>).map(normalizeAuthor);
+  return localizeFoundationSkills(((data ?? []) as unknown as Array<WithAuthorArray<FoundationSkill>>).map(normalizeAuthor), locale);
 }
 
-export async function getUserSkillLibrary() {
+export async function getUserSkillLibrary(locale?: string) {
   const supabase = await createClient();
   const {data: claimsData} = await supabase.auth.getClaims();
   if (!claimsData?.claims?.sub) return null;
@@ -74,5 +96,5 @@ export async function getUserSkillLibrary() {
     .select(`added_at,skills!inner(id,slug,title,description,domain,status,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}))`)
     .eq("user_id", String(claimsData.claims.sub)).order("added_at", {ascending: false});
   if (error) throw new Error(`Could not load user skill library: ${error.message}`);
-  return (data ?? []).map((row) => normalizeAuthor({...((Array.isArray(row.skills) ? row.skills[0] : row.skills) as unknown as WithAuthorArray<FoundationSkill>), added_at: row.added_at} as WithAuthorArray<LibrarySkill>));
+  return localizeFoundationSkills((data ?? []).map((row) => normalizeAuthor({...((Array.isArray(row.skills) ? row.skills[0] : row.skills) as unknown as WithAuthorArray<FoundationSkill>), added_at: row.added_at} as WithAuthorArray<LibrarySkill>)), locale);
 }

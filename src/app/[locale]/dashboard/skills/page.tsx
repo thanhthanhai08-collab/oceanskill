@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardSkillsPage({params}: {readonly params: Promise<{locale: string}>}) {
   const {locale} = await params;
-  const [t, creatorData, library] = await Promise.all([getTranslations("CreatorSkills"), getCreatorSkills(), getUserSkillLibrary()]);
+  const [t, creatorData, library] = await Promise.all([getTranslations("CreatorSkills"), getCreatorSkills(), getUserSkillLibrary(locale)]);
   if (!creatorData || !library) redirect(`/${locale}/login`);
   const limit = creatorData.limit;
   const atLimit = creatorData.skills.length >= limit;

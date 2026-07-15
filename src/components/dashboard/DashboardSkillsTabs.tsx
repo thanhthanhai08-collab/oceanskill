@@ -37,7 +37,7 @@ function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeL
   const author = skill.authors;
   const rating = reviewStats?.count ? reviewStats.average.toFixed(1) : "0.0";
   return (
-    <article className="group relative flex min-h-[260px] flex-col rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 transition hover:-translate-y-1 hover:bg-white/[0.04]">
+    <article className="group relative flex min-h-[200px] flex-col rounded-xl border border-white/10 bg-surface-container-low/55 p-4 transition hover:-translate-y-0.5 hover:bg-white/[0.04]">
       {removable && (
         <button
           type="button"
@@ -50,21 +50,21 @@ function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeL
         </button>
       )}
       <Link href={`/skills/${skill.slug}` as "/skills"} className="flex flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-highest ${visual.accentClass}`}>
-            <span className="material-symbols-outlined text-3xl">{visual.icon}</span>
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className={`flex h-11 w-11 items-center justify-center rounded-lg bg-surface-container-highest ${visual.accentClass}`}>
+            <span className="material-symbols-outlined text-2xl">{visual.icon}</span>
           </div>
           {typeLabel && <span className="rounded-full bg-surface-container-highest/50 px-3 py-1 font-mono text-[10px] font-bold uppercase text-on-surface-variant">{typeLabel}</span>}
         </div>
         <div>
-          <h3 className="font-geist text-xl font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
+          <h3 className="line-clamp-1 font-geist text-base font-bold tracking-tight transition group-hover:text-primary">{skill.title}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">{skill.domain}</span>
             {skill.current_version && <span className="rounded bg-surface-container-highest px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">v{skill.current_version}</span>}
           </div>
         </div>
-        <p className="mt-4 line-clamp-3 text-sm leading-6 text-on-surface-variant">{skill.description}</p>
-        <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-5">
+        <p className="mt-3 line-clamp-2 text-sm leading-5 text-on-surface-variant">{skill.description}</p>
+        <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-3">
           <div className="flex items-center gap-2 text-xs text-on-surface-variant">
             <span className={`relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br ${author?.glow_class ?? visual.glowClass}`}>
               {author?.avatar_url ? <Image src={author.avatar_url} alt="" fill unoptimized sizes="24px" className="object-cover" /> : <span className="material-symbols-outlined text-[14px] text-white">{author?.icon ?? "person"}</span>}
@@ -151,7 +151,7 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
       {tab === "all" && (
         <div className="mt-8">
           {allSkills.length ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {allSkills.map((skill) => skill.source === "library" ? (
                 <PlatformCard key={`library-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
               ) : (
@@ -167,7 +167,7 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
       {tab === "platform" && (
         <div className="mt-8">
           {librarySkills.length ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {librarySkills.map((skill) => <PlatformCard key={skill.id} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />)}
             </div>
           ) : (

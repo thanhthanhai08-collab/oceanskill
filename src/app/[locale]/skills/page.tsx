@@ -17,7 +17,7 @@ export default async function SkillsPage({params, searchParams}: SkillsPageProps
   const [t, seo] = await Promise.all([getTranslations("Marketplace"), getTranslations("SEO")]);
   const {q = "", domain = "all", sort = "featured"} = await searchParams;
   const query = q.trim().toLocaleLowerCase();
-  const allSkills = await listPublicSkills();
+  const allSkills = await listPublicSkills(locale);
   const domains = [...new Set(allSkills.map((skill) => skill.domain))].sort();
   const filtered = allSkills.filter((skill) => (domain === "all" || skill.domain === domain) && (!query || `${skill.title} ${skill.description} ${skill.domain}`.toLocaleLowerCase().includes(query)));
   const skills = [...filtered].sort((a, b) => sort === "domain" ? a.domain.localeCompare(b.domain) : sort === "version" ? String(b.current_version).localeCompare(String(a.current_version)) : b.compatible_clients.length - a.compatible_clients.length || a.title.localeCompare(b.title));

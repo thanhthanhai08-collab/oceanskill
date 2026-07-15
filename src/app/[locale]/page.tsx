@@ -12,8 +12,9 @@ import {getTranslations} from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const [skills, t] = await Promise.all([listPublicSkills(), getTranslations("Home")]);
+export default async function HomePage({params}: {readonly params: Promise<{locale: string}>}) {
+  const {locale} = await params;
+  const [skills, t] = await Promise.all([listPublicSkills(locale), getTranslations("Home")]);
   return (
     <SiteShell>
       <HomeStructuredData />
