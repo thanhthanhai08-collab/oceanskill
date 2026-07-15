@@ -1,4 +1,5 @@
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
+import {hasReplayScopeConflict} from "./replay.ts";
 
 type RpcRequest = Readonly<{
   jsonrpc?: string;
@@ -8,6 +9,26 @@ type RpcRequest = Readonly<{
 }>;
 
 type AuthenticatedMcpKey = Readonly<{apiKeyId: string; userId: string}>;
+type McpErrorData = Readonly<{
+  errorCode: string;
+  retryable: boolean;
+  requestId?: string;
+  previousErrorCode?: string | null;
+}>;
+
+class McpToolError extends Error {
+  constructor(
+    readonly errorCode: string,
+    message: string,
+    readonly status: number,
+    readonly retryable = false,
+    readonly requestId?: string,
+    readonly previousErrorCode?: string | null,
+  ) {
+    super(message);
+    this.name = "McpToolError";
+  }
+}
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -30,8 +51,8 @@ function rpc(id: RpcRequest["id"], result: unknown, status = 200) {
   return Response.json({jsonrpc: "2.0", id: id ?? null, result}, {status, headers: {"Cache-Control": "no-store"}});
 }
 
-function rpcError(id: RpcRequest["id"], code: number, message: string, status = 400) {
-  return Response.json({jsonrpc: "2.0", id: id ?? null, error: {code, message}}, {status, headers: {"Cache-Control": "no-store"}});
+function rpcError(id: RpcRequest["id"], code: number, message: string, status = 400, data?: McpErrorData) {
+  return Response.json({jsonrpc: "2.0", id: id ?? null, error: {code, message, ...(data ? {data} : {})}}, {status, headers: {"Cache-Control": "no-store"}});
 }
 
 function limited(key: string) {
@@ -96,11 +117,12 @@ async function searchAvailableSkills(auth: AuthenticatedMcpKey, query: string) {
   return data ?? [];
 }
 
-async function reserveMcpUsage(input: {userId: string; apiKeyId: string; skillId: string; requestId: string}) {
-  const {data, error} = await admin.rpc("reserve_mcp_usage", {
+async function reserveMcpUsage(input: {userId: string; apiKeyId: string; skillId: string; skillVersionId: string; requestId: string}) {
+  const {data, error} = await admin.rpc("reserve_mcp_usage_versioned", {
     p_user_id: input.userId,
     p_api_key_id: input.apiKeyId,
     p_skill_id: input.skillId,
+    p_skill_version_id: input.skillVersionId,
     p_tool_name: "get_skill_content",
     p_request_id: input.requestId,
     p_units: 1,
@@ -110,18 +132,31 @@ async function reserveMcpUsage(input: {userId: string; apiKeyId: string; skillId
 }
 
 async function finalizeMcpUsage(requestId: string) {
-  const {error} = await admin.rpc("finalize_mcp_usage", {p_request_id: requestId});
+  const {data, error} = await admin.rpc("finalize_mcp_usage", {p_request_id: requestId});
   if (error) throw new Error(error.message);
+  return data === true;
 }
 
 async function releaseMcpUsage(requestId: string, errorCode: string) {
-  const {error} = await admin.rpc("release_mcp_usage", {p_request_id: requestId, p_error_code: errorCode});
+  const {data, error} = await admin.rpc("release_mcp_usage", {p_request_id: requestId, p_error_code: errorCode});
   if (error) throw new Error(error.message);
+  return data === true;
 }
 
-async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string, requestId = crypto.randomUUID()) {
+async function getUsageEvent(auth: AuthenticatedMcpKey, requestId: string) {
+  const {data, error} = await admin.from("usage_events")
+    .select("skill_id,skill_version_id,tool_name,status,error_code")
+    .eq("user_id", auth.userId)
+    .eq("request_id", requestId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string, suppliedRequestId?: string) {
+  const requestId = suppliedRequestId ?? crypto.randomUUID();
   const {data: skill, error} = await admin.from("skills")
-    .select(`${metadataFields},owner_id,skill_versions!inner(id,version,content_md,content_hash,scan_status)`)
+    .select(`${metadataFields},owner_id,skill_versions!skills_current_version_fkey(id,version,content_md,content_hash,scan_status)`)
     .eq("id", skillId)
     .eq("status", "active")
     .eq("skill_versions.scan_status", "passed")
@@ -133,20 +168,77 @@ async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string, reque
     if (!libraryEntry) throw new Error("skill_not_in_user_library");
   }
 
-  const reservation = await reserveMcpUsage({userId: auth.userId, apiKeyId: auth.apiKeyId, skillId, requestId});
-  if (!reservation || reservation.result === "insufficient_credits") throw new Error("insufficient_credits");
+  const version = skill.skill_versions;
+  if (!version || Array.isArray(version) || version.version !== skill.current_version) throw new Error("version_not_available");
+
+  const reservation = await reserveMcpUsage({userId: auth.userId, apiKeyId: auth.apiKeyId, skillId, skillVersionId: version.id, requestId});
+  if (!reservation) throw new McpToolError("USAGE_RESERVATION_FAILED", "Unable to reserve credit for this request.", 503, true, requestId);
+  if (reservation.result === "insufficient_credits") {
+    throw new McpToolError("INSUFFICIENT_CREDITS", "Not enough credits to read this skill.", 402, false, requestId);
+  }
+  if (reservation.result === "version_conflict") {
+    throw new McpToolError("VERSION_CHANGED", "The skill version changed while this request was starting. Retry with a new requestId.", 409, true, requestId);
+  }
+
+  let replayed = false;
+  if (reservation.result === "duplicate") {
+    const existing = await getUsageEvent(auth, requestId);
+    if (!existing) throw new McpToolError("USAGE_STATE_NOT_FOUND", "The existing request could not be verified.", 503, true, requestId);
+    if (hasReplayScopeConflict(existing, {
+      skillId,
+      skillVersionId: version.id,
+      toolName: "get_skill_content",
+    })) {
+      throw new McpToolError(
+        "REQUEST_ID_CONFLICT",
+        "This requestId was already used for a different skill, skill version, or MCP tool. Use a new requestId for this operation.",
+        409,
+        false,
+        requestId,
+      );
+    }
+    if (existing.status === "reserved") {
+      throw new McpToolError("REQUEST_IN_PROGRESS", "A request with this requestId is still being processed. Retry later with the same requestId.", 409, true, requestId);
+    }
+    if (existing.status === "failed") {
+      throw new McpToolError(
+        "REQUEST_PREVIOUSLY_FAILED",
+        "A previous request with this requestId failed. Use a new requestId to start a new attempt.",
+        409,
+        true,
+        requestId,
+        existing.error_code,
+      );
+    }
+    if (existing.status !== "succeeded") {
+      throw new McpToolError("USAGE_STATE_INVALID", "The existing request has an unsupported usage state.", 500, false, requestId);
+    }
+    replayed = true;
+  } else if (reservation.result !== "reserved") {
+    throw new McpToolError("USAGE_RESERVATION_INVALID", "The credit reservation returned an unsupported result.", 500, false, requestId);
+  }
 
   try {
-    const versions = Array.isArray(skill.skill_versions) ? skill.skill_versions : [];
-    const version = versions.find((item) => item.version === skill.current_version);
-    if (!version) throw new Error("version_not_available");
-    await finalizeMcpUsage(requestId);
+    if (!replayed && !(await finalizeMcpUsage(requestId))) {
+      throw new McpToolError("USAGE_FINALIZATION_FAILED", "The request completed, but its credit usage could not be finalized.", 503, true, requestId);
+    }
     const publicSkill = {...skill};
     delete publicSkill.owner_id;
     delete publicSkill.skill_versions;
-    return {skill: publicSkill, version: version.version, content: version.content_md, contentHash: version.content_hash};
+    return {
+      skill: publicSkill,
+      version: version.version,
+      content: version.content_md,
+      contentHash: version.content_hash,
+      requestId,
+      replayed,
+      creditsCharged: replayed ? 0 : 1,
+    };
   } catch (error) {
-    await releaseMcpUsage(requestId, error instanceof Error ? error.message : "execution_failed");
+    if (!replayed) {
+      await releaseMcpUsage(requestId, error instanceof McpToolError ? error.errorCode : "EXECUTION_FAILED")
+        .catch((releaseError) => console.error("mcp_usage_release_failed", {requestId, releaseError}));
+    }
     throw error;
   }
 }
@@ -250,10 +342,10 @@ Deno.serve(async (request) => {
   try {
     auth = await authenticateMcpRequest(request);
   } catch {
-    return rpcError(body.id, -32603, "Authentication service unavailable", 503);
+    return rpcError(body.id, -32603, "Authentication service unavailable.", 503, {errorCode: "AUTH_SERVICE_UNAVAILABLE", retryable: true});
   }
-  if (!auth) return rpcError(body.id, -32001, "Invalid or revoked API key", 401);
-  if (limited(auth.apiKeyId)) return rpcError(body.id, -32029, "Rate limit exceeded", 429);
+  if (!auth) return rpcError(body.id, -32001, "The API key is invalid or has been revoked.", 401, {errorCode: "INVALID_API_KEY", retryable: false});
+  if (limited(auth.apiKeyId)) return rpcError(body.id, -32029, "Rate limit exceeded. Retry after one minute.", 429, {errorCode: "RATE_LIMIT_EXCEEDED", retryable: true});
 
   if (body.method === "initialize") {
     return rpc(body.id, {protocolVersion: "2025-06-18", capabilities: {tools: {}}, serverInfo: {name: "OceanSkill", version: "1.0.0"}});
@@ -274,23 +366,42 @@ Deno.serve(async (request) => {
 
   const name = typeof body.params?.name === "string" ? body.params.name : "";
   const args = body.params?.arguments && typeof body.params.arguments === "object" ? body.params.arguments as Record<string, unknown> : {};
+  const requestId = typeof args.requestId === "string" ? args.requestId : undefined;
+  if (requestId !== undefined && (!requestId.trim() || requestId.length > 120)) {
+    return rpcError(body.id, -32602, "requestId must contain 1 to 120 characters.", 400, {errorCode: "INVALID_REQUEST_ID", retryable: false, requestId});
+  }
 
   try {
     let value: unknown;
     let toolName: McpToolName;
     if (name === "list_purchased_skills") { toolName = "list_purchased_skills"; value = await listAvailableSkills(auth); }
     else if (name === "search_skills" && typeof args.query === "string") { toolName = "search_skills"; value = await searchAvailableSkills(auth, args.query); }
-    else if (name === "get_skill_content" && typeof args.skillId === "string") { toolName = "get_skill_content"; value = await getSkillContent(auth, args.skillId, typeof args.requestId === "string" ? args.requestId : undefined); }
+    else if (name === "get_skill_content" && typeof args.skillId === "string") { toolName = "get_skill_content"; value = await getSkillContent(auth, args.skillId, requestId); }
     else if (name === "list_collections") { toolName = "list_collections"; value = await listCollections(auth); }
     else if (name === "add_collection_to_library" && typeof args.collectionId === "string") { toolName = "add_collection_to_library"; value = await addCollectionToLibrary(auth, args.collectionId); }
     else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") { toolName = "toggle_skill"; value = await toggleSkill(auth, args.skillId, args.enabled); }
     else if (name === "get_usage_summary") { toolName = "get_usage_summary"; value = await getUsageSummary(auth); }
     else return rpcError(body.id, -32602, "Invalid tool name or arguments");
-    await recordMcpCall(auth, toolName, typeof args.requestId === "string" ? args.requestId : undefined).catch(() => undefined);
+    await recordMcpCall(auth, toolName, requestId).catch(() => undefined);
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
+    let failure: McpToolError;
     const message = error instanceof Error ? error.message : "tool_failed";
-    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" ? 403 : message === "insufficient_credits" ? 402 : 500;
-    return rpcError(body.id, -32000, message, status);
+    if (error instanceof McpToolError) failure = error;
+    else if (message === "skill_not_available") failure = new McpToolError("SKILL_NOT_AVAILABLE", "This skill is unavailable or you do not have access to it.", 403, false, requestId);
+    else if (message === "skill_not_in_user_library") failure = new McpToolError("SKILL_NOT_ENABLED", "This skill is not enabled in your library.", 403, false, requestId);
+    else if (message === "collection_not_available") failure = new McpToolError("COLLECTION_NOT_AVAILABLE", "This collection is unavailable or you do not have access to it.", 403, false, requestId);
+    else if (message === "insufficient_credits") failure = new McpToolError("INSUFFICIENT_CREDITS", "Not enough credits to complete this request.", 402, false, requestId);
+    else if (message === "version_not_available") failure = new McpToolError("VERSION_NOT_AVAILABLE", "The skill's current scanned version is unavailable.", 409, true, requestId);
+    else {
+      console.error("mcp_tool_failed", {toolName: name, requestId, error});
+      failure = new McpToolError("INTERNAL_ERROR", "An unexpected server error occurred while processing this MCP tool call.", 500, true, requestId);
+    }
+    return rpcError(body.id, -32000, failure.message, failure.status, {
+      errorCode: failure.errorCode,
+      retryable: failure.retryable,
+      ...(failure.requestId ? {requestId: failure.requestId} : {}),
+      ...(failure.previousErrorCode !== undefined ? {previousErrorCode: failure.previousErrorCode} : {}),
+    });
   }
 });
