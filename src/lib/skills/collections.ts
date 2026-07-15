@@ -3,6 +3,7 @@ import {createClient} from "@/lib/supabase/server";
 
 export type SkillCollection = Readonly<{
   id: string;
+  slug: string;
   name: string;
   description: string;
   skillIds: string[];
@@ -12,6 +13,7 @@ export type SkillCollection = Readonly<{
 
 type CollectionRow = {
   id: string;
+  slug: string;
   name: string;
   description: string;
   accent: "primary" | "secondary" | "tertiary";
@@ -27,7 +29,7 @@ export async function getUserSkillCollections() {
 
   const {data, error} = await supabase
     .from("skill_collections")
-    .select("id,name,description,accent,updated_at,skill_collection_items(skill_id,position)")
+    .select("id,slug,name,description,accent,updated_at,skill_collection_items(skill_id,position)")
     .eq("user_id", String(userId))
     .order("updated_at", {ascending: false});
 
@@ -35,6 +37,7 @@ export async function getUserSkillCollections() {
 
   return ((data ?? []) as CollectionRow[]).map((row) => ({
     id: row.id,
+    slug: row.slug,
     name: row.name,
     description: row.description,
     accent: row.accent,
@@ -43,4 +46,10 @@ export async function getUserSkillCollections() {
       .sort((a, b) => a.position - b.position)
       .map((item) => item.skill_id),
   })) as SkillCollection[];
+}
+
+export async function getUserSkillCollectionBySlug(slug: string) {
+  const collections = await getUserSkillCollections();
+  if (!collections) return null;
+  return collections.find((collection) => collection.slug === slug) ?? null;
 }

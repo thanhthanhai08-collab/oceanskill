@@ -1,21 +1,25 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@/lib/supabase/server";
 import {getUserSkillCollections} from "@/lib/skills/collections";
+import {isValidCollectionSlug, slugifyCollectionName} from "@/lib/skills/collectionSlug";
 
-type CollectionBody = Readonly<{name?: unknown; description?: unknown; skillIds?: unknown}>;
+type CollectionBody = Readonly<{name?: unknown; slug?: unknown; description?: unknown; skillIds?: unknown}>;
 const accents = ["primary", "secondary", "tertiary"] as const;
 
 function cleanBody(input: unknown) {
   const value = input as CollectionBody;
   const name = typeof value?.name === "string" ? value.name.trim() : "";
+  const rawSlug = typeof value?.slug === "string" ? value.slug.trim() : "";
+  const slug = rawSlug ? slugifyCollectionName(rawSlug) : slugifyCollectionName(name);
   const description = typeof value?.description === "string" ? value.description.trim() : "";
   const skillIds = Array.isArray(value?.skillIds)
     ? [...new Set(value.skillIds.filter((id): id is string => typeof id === "string" && id.length > 0))]
     : [];
   if (!name || name.length > 120) return null;
+  if (!isValidCollectionSlug(slug)) return null;
   if (description.length > 500) return null;
   if (!skillIds.length || skillIds.length > 100) return null;
-  return {name, description, skillIds};
+  return {name, slug, description, skillIds};
 }
 
 export async function POST(request: Request) {
@@ -39,13 +43,17 @@ export async function POST(request: Request) {
     .insert({
       user_id: userId,
       name: input.name,
+      slug: input.slug,
       description: input.description,
       accent: accents[(count ?? 0) % accents.length],
     })
     .select("id")
     .single();
 
-  if (collectionError || !collection) return NextResponse.json({error: "collection_create_failed"}, {status: 500});
+  if (collectionError || !collection) {
+    if (collectionError?.code === "23505") return NextResponse.json({error: "collection_duplicate"}, {status: 409});
+    return NextResponse.json({error: "collection_create_failed"}, {status: 500});
+  }
 
   const {error: itemsError} = await supabase
     .from("skill_collection_items")

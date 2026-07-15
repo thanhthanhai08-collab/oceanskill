@@ -11,7 +11,7 @@ export default async function DashboardCollectionsPage({params}: {readonly param
   const [t, creatorData, library, collections] = await Promise.all([
     getTranslations("Dashboard"),
     getCreatorSkills(),
-    getUserSkillLibrary(),
+    getUserSkillLibrary(locale),
     getUserSkillCollections(),
   ]);
 
@@ -21,13 +21,43 @@ export default async function DashboardCollectionsPage({params}: {readonly param
     <>
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">Thư viện skill của bạn</p>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{t("collectionsEyebrow")}</p>
           <h1 className="mt-3 font-geist text-5xl font-bold tracking-tight">{t("collections")}</h1>
-          <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">Tổ chức và gom nhóm các kỹ năng của bạn theo dự án hoặc chủ đề để quản lý quy trình làm việc hiệu quả hơn.</p>
+          <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{t("collectionsDescription")}</p>
         </div>
       </header>
 
-      <DashboardCollections library={library} uploaded={creatorData.skills} locale={locale} initialCollections={collections} />
+      <DashboardCollections
+        library={library}
+        uploaded={creatorData.skills}
+        locale={locale}
+        initialCollections={collections}
+        labels={{
+          addNew: t("collectionAddNew"),
+          addHint: t("collectionAddHint"),
+          createTitle: t("collectionCreateTitle"),
+          namePlaceholder: t("collectionNamePlaceholder"),
+          slugPlaceholder: t("collectionSlugPlaceholder"),
+          slugHint: t("collectionSlugHint"),
+          descriptionPlaceholder: t("collectionDescriptionPlaceholder"),
+          searchPlaceholder: t("collectionSearchPlaceholder"),
+          emptySkills: t("collectionEmptySkills"),
+          creating: t("collectionCreating"),
+          create: t("collectionCreate"),
+          library: t("collectionSkillLibrary"),
+          uploaded: t("collectionSkillUploaded"),
+          suggested: t("collectionSuggested"),
+          open: t("collectionOpen"),
+          delete: t("collectionDelete"),
+          skillCount: t("collectionSkillCount"),
+          duplicateError: t("collectionDuplicateError"),
+          defaultDescription: t("collectionDefaultDescription"),
+          starterMarketing: t("collectionStarterMarketing"),
+          starterDevelopment: t("collectionStarterDevelopment"),
+          starterSet: t("collectionStarterSet"),
+          close: t("collectionClose"),
+        }}
+      />
     </>
   );
 }
