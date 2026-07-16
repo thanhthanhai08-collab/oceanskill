@@ -1,26 +1,36 @@
+import Image from "next/image";
 import {Link} from "@/i18n/navigation";
 import {getCategoryVisual} from "@/data/mockData";
-import type {RankedSkill} from "@/lib/catalog/readiness";
+import type {LeaderboardSkill} from "@/lib/catalog/leaderboard";
 
-export interface LeaderboardListProps { readonly skills: RankedSkill[]; readonly scoreLabel: string; readonly integrationsLabel: string; }
+export interface LeaderboardListProps {
+  readonly skills: LeaderboardSkill[];
+  readonly labels: Readonly<{calls: string; rating: string; reviews: string; noRating: string; empty: string}>;
+  readonly locale: string;
+}
 
-export default function LeaderboardList({skills, scoreLabel, integrationsLabel}: LeaderboardListProps) {
+export default function LeaderboardList({skills, labels, locale}: LeaderboardListProps) {
+  if (!skills.length) return <div className="border-y border-outline-variant/50 py-16 text-center text-on-surface-variant">{labels.empty}</div>;
   return (
-    <div className="space-y-4">
-      {skills.map((skill, index) => {
+    <div className="border-t border-outline-variant/55">
+      {skills.map((skill) => {
         const visual = getCategoryVisual(skill.category);
-        const top = index === 0;
+        const top = skill.rank === 1;
         return (
-          <Link key={skill.id} href={`/skills/${skill.slug}`} className={`group grid items-center gap-4 rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:border-primary/60 sm:grid-cols-[72px_1fr_auto] ${top ? "border-primary/60 bg-gradient-to-r from-primary-container/30 via-surface-container-low to-secondary-container/25 shadow-[0_0_30px_rgba(46,91,255,.14)]" : "border-outline-variant/40 bg-surface-container-low/60"}`}>
-            <div className="flex items-center gap-3 sm:block">
-              <span className={`font-geist text-2xl font-bold ${top ? "text-tertiary" : "text-on-surface-variant"}`}>#{index + 1}</span>
-              {top && <span className="material-symbols-outlined ml-2 align-middle text-tertiary">emoji_events</span>}
+          <Link key={skill.skill_id} href={`/skills/${skill.slug}`} className={`group grid gap-5 border-b border-outline-variant/55 px-3 py-6 transition duration-200 hover:bg-surface-container-low/60 sm:grid-cols-[4rem_minmax(0,1fr)] sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_9rem_9rem_7rem] lg:items-center ${top ? "bg-primary/[.055] py-8" : ""}`}>
+            <div className="flex items-baseline gap-2">
+              <span className={`font-mono text-[10px] text-on-surface-variant ${top ? "text-primary" : ""}`}>#</span>
+              <span className={`font-geist font-semibold tabular-nums tracking-[-0.04em] ${top ? "text-5xl text-primary" : "text-3xl text-on-surface-variant"}`}>{String(skill.rank).padStart(2, "0")}</span>
             </div>
             <div className="flex min-w-0 items-center gap-4">
-              <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${visual.glowClass}`}><span className={`material-symbols-outlined ${visual.accentClass}`}>{visual.icon}</span></div>
-              <div className="min-w-0"><h2 className="truncate font-geist text-lg font-semibold transition group-hover:text-primary sm:text-xl">{skill.title}</h2><p className="mt-1 truncate text-sm text-on-surface-variant"><span className="capitalize">{skill.category}</span> · {skill.compatible_clients.length} {integrationsLabel}</p></div>
+              <span className="relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-lg border border-outline-variant/45 bg-surface-container-lowest">
+                {skill.author_avatar_url ? <Image src={skill.author_avatar_url} alt="" fill unoptimized sizes="48px" className="object-cover" /> : <span className="material-symbols-outlined text-primary">{visual.icon}</span>}
+              </span>
+              <span className="min-w-0"><span className="block truncate font-geist text-lg font-semibold tracking-tight transition group-hover:text-primary sm:text-xl">{skill.title}</span><span className="mt-1 block truncate text-sm text-on-surface-variant">{skill.author_name} · <span className="capitalize">{skill.category}</span></span></span>
             </div>
-            <div className="flex items-end justify-between gap-4 sm:block sm:text-right"><span className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant">{scoreLabel}</span><p className="font-geist text-2xl font-bold text-primary">{skill.readinessScore}</p></div>
+            <div className="col-start-2 lg:col-start-auto lg:text-right"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.calls}</span><p className="mt-1 font-geist text-2xl font-semibold tabular-nums text-primary">{skill.mcp_calls.toLocaleString(locale)}</p></div>
+            <div className="col-start-2 lg:col-start-auto lg:text-right"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.rating}</span><p className="mt-1 font-geist text-lg font-semibold tabular-nums">{skill.review_count ? `${skill.average_rating.toLocaleString(locale, {minimumFractionDigits: 1, maximumFractionDigits: 2})} / 5` : labels.noRating}</p></div>
+            <div className="col-start-2 lg:col-start-auto lg:text-right"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.reviews}</span><p className="mt-1 font-geist text-lg font-semibold tabular-nums">{skill.review_count.toLocaleString(locale)}</p></div>
           </Link>
         );
       })}

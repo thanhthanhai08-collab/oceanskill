@@ -1,3 +1,22 @@
 {
-  "Leaderboard": {"eyebrow": "Catalog intelligence", "titleBefore": "Global skill", "titleAccent": "readiness rankings", "description": "Compare active skills by verified metadata, agent compatibility, licensing, and release readiness.", "tabSkills": "Top skills", "tabReadiness": "Readiness score", "scoreLabel": "Readiness", "integrationsLabel": "integrations", "advertisement": "Reserved for advertisement", "methodology": "The readiness score is derived from catalog metadata and compatibility coverage. It does not claim sales, ratings, or usage data that the current schema does not collect."}
+  "Leaderboard": {
+    "eyebrow": "Usage rankings",
+    "titleBefore": "The skills people",
+    "titleAccent": "actually call.",
+    "description": "Rank active skills by successful MCP calls. When usage is tied, the higher average rating ranks first, followed by review count.",
+    "periodLabel": "Ranking period",
+    "periods": {"day": "Today", "month": "This month", "year": "This year"},
+    "periodDescriptions": {
+      "day": "Successful calls recorded during the current UTC day.",
+      "month": "Successful calls recorded during the current UTC calendar month.",
+      "year": "Successful calls recorded during the current UTC calendar year."
+    },
+    "callsLabel": "MCP calls",
+    "ratingLabel": "Rating",
+    "reviewsLabel": "Reviews",
+    "noRating": "Not rated",
+    "empty": "No active skills are available for this ranking yet.",
+    "advertisement": "Reserved for advertisement",
+    "methodology": "Only successful get_skill_md and get_skill_reference usage events count. Rankings use UTC calendar periods. Ties are resolved by average rating, then review count, title, and skill ID for a stable order."
+  }
 }

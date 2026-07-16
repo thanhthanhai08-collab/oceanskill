@@ -1,3 +1,22 @@
 {
-  "Leaderboard": {"eyebrow": "Chỉ số danh mục", "titleBefore": "Bảng xếp hạng", "titleAccent": "mức sẵn sàng", "description": "So sánh kỹ năng đang hoạt động theo metadata đã xác minh, độ phủ agent, giấy phép và chất lượng phát hành.", "tabSkills": "Kỹ năng hàng đầu", "tabReadiness": "Điểm sẵn sàng", "scoreLabel": "Sẵn sàng", "integrationsLabel": "tích hợp", "advertisement": "Vị trí dành cho quảng cáo", "methodology": "Điểm sẵn sàng được tính từ metadata và độ phủ tương thích. Hệ thống không giả định lượt bán, đánh giá hoặc dữ liệu sử dụng mà schema hiện tại chưa thu thập."}
+  "Leaderboard": {
+    "eyebrow": "Xếp hạng theo lượt dùng",
+    "titleBefore": "Những skill được",
+    "titleAccent": "gọi nhiều nhất.",
+    "description": "Xếp hạng skill đang hoạt động theo số lượt gọi MCP thành công. Khi bằng lượt gọi, skill có điểm đánh giá trung bình cao hơn sẽ đứng trên, sau đó xét số lượt đánh giá.",
+    "periodLabel": "Khoảng thời gian",
+    "periods": {"day": "Hôm nay", "month": "Tháng này", "year": "Năm nay"},
+    "periodDescriptions": {
+      "day": "Các lượt gọi thành công được ghi nhận trong ngày UTC hiện tại.",
+      "month": "Các lượt gọi thành công được ghi nhận trong tháng UTC hiện tại.",
+      "year": "Các lượt gọi thành công được ghi nhận trong năm UTC hiện tại."
+    },
+    "callsLabel": "Lượt gọi MCP",
+    "ratingLabel": "Đánh giá",
+    "reviewsLabel": "Lượt đánh giá",
+    "noRating": "Chưa có",
+    "empty": "Chưa có skill đang hoạt động để xếp hạng.",
+    "advertisement": "Vị trí dành cho quảng cáo",
+    "methodology": "Chỉ tính usage event thành công của get_skill_md và get_skill_reference. Bảng xếp hạng dùng ngày, tháng và năm theo UTC. Khi bằng điểm, hệ thống lần lượt xét đánh giá trung bình, số lượt đánh giá, tiêu đề và ID skill để giữ thứ tự ổn định."
+  }
 }

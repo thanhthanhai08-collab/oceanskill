@@ -8,30 +8,14 @@ export type DashboardNavLabels = Readonly<Record<(typeof dashboardNavItems)[numb
 
 export default function DashboardNav({labels, locale}: {readonly labels: DashboardNavLabels; readonly locale: string}) {
   const pathname = usePathname();
-
-  const isActive = (href: string) => {
-    // Strip locale prefix for comparison: "/en/dashboard/skills" → "/dashboard/skills"
-    const normalized = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
-    if (href === "/dashboard") return normalized === "/dashboard" || normalized === "/dashboard/";
-    return normalized.startsWith(href);
-  };
+  const normalized = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
+  const isActive = (href: string) => href === "/dashboard" ? normalized === "/dashboard" || normalized === "/dashboard/" : normalized.startsWith(href);
 
   return (
-    <nav className="mt-8 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+    <nav className="flex gap-x-1 overflow-x-auto" aria-label="Dashboard">
       {dashboardNavItems.map((item) => {
         const active = isActive(item.href);
-        return (
-          <Link
-            key={item.label}
-            href={item.href as "/dashboard"}
-            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-surface-variant/20 hover:text-on-surface ${
-              active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-            <span className="truncate">{labels[item.label]}</span>
-          </Link>
-        );
+        return <Link key={item.label} href={item.href as "/dashboard"} aria-current={active ? "page" : undefined} className={`relative flex min-h-11 shrink-0 items-center gap-2 px-3 py-3 text-sm font-semibold transition ${active ? "text-primary after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-primary" : "text-on-surface-variant hover:text-on-surface"}`}><span className="material-symbols-outlined text-[18px]">{item.icon}</span><span>{labels[item.label]}</span></Link>;
       })}
     </nav>
   );

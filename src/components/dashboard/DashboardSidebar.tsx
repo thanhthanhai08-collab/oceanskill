@@ -13,59 +13,23 @@ export interface DashboardSidebarProps {
 }
 
 export default function DashboardSidebar({displayName, avatarUrl, roleLabel, balance, locale, labels, logoutAction}: DashboardSidebarProps) {
-  const navLabels: DashboardNavLabels = {
-    overview: labels.overview,
-    skills: labels.skills,
-    collections: labels.collections,
-    mcpKeys: labels.mcpKeys,
-    usage: labels.usage,
-    billing: labels.billing,
-    settings: labels.settings,
-  };
-
+  const navLabels: DashboardNavLabels = {overview: labels.overview, skills: labels.skills, collections: labels.collections, mcpKeys: labels.mcpKeys, usage: labels.usage, billing: labels.billing, settings: labels.settings};
   return (
-    <aside className="h-fit rounded-2xl border border-white/5 bg-surface-container-lowest/70 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl lg:sticky lg:top-24 lg:min-h-[calc(100vh-7rem)]">
-      {/* User info */}
-      <div className="flex items-center gap-3 px-2 py-4">
-        {avatarUrl ? (
-          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-primary/30">
-            <Image src={avatarUrl} alt={displayName} fill unoptimized sizes="40px" className="object-cover" />
-          </div>
-        ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/20">
-            <span className="material-symbols-outlined text-[21px] text-primary">person</span>
-          </div>
-        )}
-        <div className="min-w-0">
-          <p className="truncate font-mono text-[11px] font-bold">{displayName}</p>
-          <p className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.08em] text-on-surface-variant">{roleLabel}</p>
+    <aside className="border-b border-outline-variant/55 bg-background/90 pt-5 backdrop-blur lg:sticky lg:top-16 lg:z-30">
+      <div className="flex flex-col gap-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg border border-outline-variant/50 bg-surface-container-low">
+            {avatarUrl ? <Image src={avatarUrl} alt={displayName} fill unoptimized sizes="40px" className="object-cover" /> : <span className="material-symbols-outlined text-[21px] text-primary">person</span>}
+          </span>
+          <span className="min-w-0"><span className="block truncate font-geist text-sm font-semibold">{displayName}</span><span className="mt-0.5 block truncate font-mono text-[10px] uppercase tracking-[0.1em] text-on-surface-variant">{roleLabel}</span></span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="border-r border-outline-variant/50 pr-4"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.creditBalance}</p><p className="mt-1 font-geist text-xl font-semibold tabular-nums text-primary">{balance.toLocaleString(locale)}</p></div>
+          <a href={`/${locale}/dashboard/billing/topup`} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-primary-container px-4 py-2 text-xs font-semibold text-white transition hover:-translate-y-0.5 hover:brightness-110"><span className="material-symbols-outlined text-[16px]">add</span>{labels.topUp}</a>
+          <form action={logoutAction}><button className="inline-flex min-h-10 items-center gap-2 px-3 py-2 text-xs font-semibold text-on-surface-variant transition hover:text-red-600 dark:hover:text-red-300"><span className="material-symbols-outlined text-[17px]">logout</span>{labels.logout}</button></form>
         </div>
       </div>
-
-      {/* Credit balance mini-card */}
-      <div className="mt-3 rounded-lg border border-white/10 bg-gradient-to-br from-surface-container-low via-surface-container-low to-primary/10 px-4 py-3 shadow-[0_0_24px_rgba(46,91,255,0.08)]">
-        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface-variant">{labels.creditBalance}</p>
-        <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="font-geist text-2xl font-bold">{balance.toLocaleString(locale)}</p>
-          <a
-            href={`/${locale}/dashboard/billing/topup`}
-            className="inline-flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/15 px-3 py-1.5 text-[11px] font-bold text-primary shadow-[0_0_18px_rgba(46,91,255,0.12)] transition hover:bg-primary hover:text-on-primary"
-          >
-            <span className="material-symbols-outlined text-[14px]">add_circle</span>
-            {labels.topUp}
-          </a>
-        </div>
-      </div>
-
-      {/* Navigation */}
       <DashboardNav labels={navLabels} locale={locale} />
-
-      <form action={logoutAction} className="mt-2 border-t border-outline-variant/20 pt-2">
-        <button className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-on-surface-variant transition hover:bg-error/10 hover:text-error">
-          <span className="material-symbols-outlined text-[20px]">logout</span>
-          <span className="truncate">{labels.logout}</span>
-        </button>
-      </form>
     </aside>
   );
 }
