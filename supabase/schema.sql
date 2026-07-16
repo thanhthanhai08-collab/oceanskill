@@ -57,8 +57,7 @@ create table public.skill_versions (
   scan_status text not null default 'pending' check (scan_status in ('pending','passed','failed','review')),
   scan_summary jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
-  unique (skill_id, version),
-  unique (skill_id, skill_md_hash)
+  unique (skill_id, version)
 );
 
 create table public.skill_reference_files (

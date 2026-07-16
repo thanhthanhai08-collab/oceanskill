@@ -7,6 +7,7 @@ const storageMigrationUrl = new URL("../supabase/migrations/20260716080441_mcp_s
 const storageHashMigrationUrl = new URL("../supabase/migrations/20260716082210_verify_storage_skill_md_hash.sql", import.meta.url);
 const hardeningMigrationUrl = new URL("../supabase/migrations/20260716090509_harden_mcp_storage_pinning.sql", import.meta.url);
 const publishedHashBackfillUrl = new URL("../supabase/migrations/20260716103000_backfill_published_skill_md_hash.sql", import.meta.url);
+const tasteV2MigrationUrl = new URL("../supabase/migrations/20260716122256_publish_taste_skill_v2.sql", import.meta.url);
 const edgeUrl = new URL("../supabase/functions/mcp/index.ts", import.meta.url);
 const publishActionUrl = new URL("../src/app/[locale]/dashboard/actions.ts", import.meta.url);
 
@@ -74,4 +75,12 @@ test("SKILL.md cannot bypass get_skill_md through references and every file is p
   assert.match(publishAction, /skill_md_hash: scan\.skillMdHash/);
   assert.match(publishAction, /skill_md_verified_at: new Date\(\)\.toISOString\(\)/);
   assert.doesNotMatch(publishAction, /content_hash:/);
+});
+
+test("identical reviewed bytes can be published under a new semantic version", async () => {
+  const sql = await readFile(tasteV2MigrationUrl, "utf8");
+  assert.match(sql, /drop constraint if exists skill_versions_skill_id_skill_md_hash_key/i);
+  assert.match(sql, /'2\.0\.0'/);
+  assert.match(sql, /taste-skill-redesign-skill\/v2\.0\.0\/SKILL\.md/);
+  assert.match(sql, /set current_version = '2\.0\.0'/i);
 });
