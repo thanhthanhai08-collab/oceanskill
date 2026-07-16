@@ -55,7 +55,7 @@ RLS permits owners to list key metadata and revoke their own keys. Hash lookup a
 
 - `access_type`: `free` or `paid`
 - `version`
-- `content_hash`
+- `skill_md_hash` (SHA-256 pin của raw `SKILL.md` trong Storage)
 - `source_url`
 - `license_spdx`
 - `attribution_text`

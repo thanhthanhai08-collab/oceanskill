@@ -8,7 +8,7 @@ export type CreatorSkill = Readonly<{
   id: string; slug: string; title: string; description: string; category: string; status: string;
   visibility: string; current_version: string | null; compatible_clients: string[]; updated_at: string;
   author_id: string | null; authors: SkillAuthor | null;
-  skill_versions: Array<{version: string; scan_status: string; content_hash: string; scan_summary: Record<string, unknown>; created_at: string}>;
+  skill_versions: Array<{version: string; scan_status: string; skill_md_hash: string | null; scan_summary: Record<string, unknown>; created_at: string}>;
 }>;
 
 export type FoundationSkill = Readonly<{
@@ -55,7 +55,7 @@ export async function getCreatorSkills() {
   if (!userId) return null;
   const [skillsResult, profileResult] = await Promise.all([
     supabase.from("skills")
-    .select(`id,slug,title,description,category,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}),skill_versions!skill_versions_skill_id_fkey(version,scan_status,content_hash,scan_summary,created_at)`)
+    .select(`id,slug,title,description,category,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}),skill_versions!skill_versions_skill_id_fkey(version,scan_status,skill_md_hash,scan_summary,created_at)`)
     .eq("owner_id", String(userId)).order("updated_at", {ascending: false}),
     supabase.from("profiles").select("creator_skill_limit").eq("id", String(userId)).maybeSingle(),
   ]);

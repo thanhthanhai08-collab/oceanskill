@@ -20,7 +20,7 @@ export type PrivateSkillInput = Readonly<{
 }>;
 
 export type SkillScan = Readonly<{
-  passed: boolean; contentHash: string; checks: Array<{id: string; passed: boolean; message: string}>;
+  passed: boolean; skillMdHash: string; checks: Array<{id: string; passed: boolean; message: string}>;
 }>;
 
 function clean(value: FormDataEntryValue | null) { return typeof value === "string" ? value.trim() : ""; }
@@ -55,5 +55,5 @@ export function scanSkillContent(content: string): SkillScan {
     {id: "secrets", passed: !secretPatterns.some((pattern) => pattern.test(content)), message: "No recognizable secrets"},
     {id: "commands", passed: !dangerousPatterns.some((pattern) => pattern.test(content)), message: "No high-risk command pattern"},
   ];
-  return {passed: checks.every((check) => check.passed), contentHash: createHash("sha256").update(content, "utf8").digest("hex"), checks};
+  return {passed: checks.every((check) => check.passed), skillMdHash: createHash("sha256").update(content, "utf8").digest("hex"), checks};
 }

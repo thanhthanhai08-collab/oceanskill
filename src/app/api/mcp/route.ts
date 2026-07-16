@@ -26,8 +26,8 @@ export async function POST(request: Request) {
   if (body.method === "tools/list") return rpc(body.id, {tools: [
     {name: "list_purchased_skills", description: "List enabled public and caller-owned private OceanSkill skills available through MCP.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
     {name: "search_skills", description: "Search available skill metadata without exposing protected content.", inputSchema: {type: "object", properties: {query: {type: "string", minLength: 1, maxLength: 80}}, required: ["query"], additionalProperties: false}},
-    {name: "get_skill_md", description: "Return a permitted skill's scanned current SKILL.md. A successful new request costs 1 credit.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, requestId: {type: "string", maxLength: 120}}, required: ["skillId"], additionalProperties: false}},
-    {name: "get_skill_reference", description: "Return one mapped reference file for a permitted skill's current version. A successful new request costs 1 credit.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, referenceKey: {type: "string", minLength: 1, maxLength: 240}, requestId: {type: "string", maxLength: 120}}, required: ["skillId", "referenceKey"], additionalProperties: false}},
+    {name: "get_skill_md", description: "Download a permitted skill's scanned current SKILL.md directly from private Storage. A successful new request costs 1 credit; an exact replay is free for 10 minutes.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, requestId: {type: "string", maxLength: 120}}, required: ["skillId"], additionalProperties: false}},
+    {name: "get_skill_reference", description: "Download one publish-time hash-pinned reference file for a permitted skill's current version. SKILL.md is reserved for get_skill_md. A successful new request costs 1 credit; an exact replay is free for 10 minutes.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, referenceKey: {type: "string", minLength: 1, maxLength: 240}, requestId: {type: "string", maxLength: 120}}, required: ["skillId", "referenceKey"], additionalProperties: false}},
     {name: "list_collections", description: "List public collections and the caller's own collections.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
     {name: "add_collection_to_library", description: "Add a public or owned collection to the caller's library and enable its skills.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}}, required: ["collectionId"], additionalProperties: false}},
     {name: "toggle_skill", description: "Enable or disable a skill in the caller's library without fetching paid content.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, enabled: {type: "boolean"}}, required: ["skillId", "enabled"], additionalProperties: false}},
@@ -52,7 +52,12 @@ export async function POST(request: Request) {
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
     const message = error instanceof Error ? error.message : "tool_failed";
-    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" ? 403 : message === "insufficient_credits" ? 402 : 500;
+    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" ? 403
+      : message === "insufficient_credits" ? 402
+      : message === "reference_key_reserved" ? 400
+      : ["skill_md_not_available", "skill_md_not_verified", "skill_md_hash_mismatch", "reference_not_verified", "reference_hash_mismatch"].includes(message) ? 409
+      : message === "reference_not_available" ? 404
+      : 500;
     return rpcError(body.id, -32000, message, status);
   }
 }

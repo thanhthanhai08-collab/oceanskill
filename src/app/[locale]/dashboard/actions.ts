@@ -4,6 +4,7 @@ import {revalidatePath} from "next/cache";
 import {getLocale} from "next-intl/server";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
+import {createAdminClient} from "@/lib/supabase/admin";
 import {parsePrivateSkillForm, scanSkillContent} from "@/lib/skills/validation";
 
 export type CreateSkillState = Readonly<{status: "idle" | "success" | "error"; message?: string; checks?: Array<{id: string; passed: boolean; message: string}>}>;
@@ -74,16 +75,37 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
       compatible_clients: input.compatibleClients, source_url: input.sourceUrl, license_spdx: input.licenseSpdx,
     }).select("id").single();
     if (skillError) throw skillError;
-    const {error: versionError} = await supabase.from("skill_versions").insert({
-      skill_id: skill.id, version: input.version, content_md: input.content, content_hash: scan.contentHash,
+    const admin = createAdminClient();
+    const skillMdBucket = "skill-artifacts";
+    const skillMdPath = `skills/${skill.id}/${input.version}/SKILL.md`;
+    const skillMdBytes = Buffer.from(input.content, "utf8");
+    const {error: uploadError} = await admin.storage.from(skillMdBucket).upload(skillMdPath, skillMdBytes, {
+      contentType: "text/markdown; charset=utf-8",
+      cacheControl: "31536000",
+      upsert: false,
+    });
+    if (uploadError) {
+      await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
+      throw uploadError;
+    }
+    const {error: versionError} = await admin.from("skill_versions").insert({
+      skill_id: skill.id, version: input.version, content_md: input.content,
+      skill_md_bucket: skillMdBucket, skill_md_path: skillMdPath, skill_md_size_bytes: skillMdBytes.byteLength,
+      skill_md_hash: scan.skillMdHash, skill_md_verified_at: new Date().toISOString(),
       scan_status: "passed", scan_summary: {pipeline: "creator-private-v1", checks: scan.checks},
     });
     if (versionError) {
+      await admin.storage.from(skillMdBucket).remove([skillMdPath]);
       await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
       throw versionError;
     }
     const {error: activateError} = await supabase.from("skills").update({status: "active", current_version: input.version}).eq("id", skill.id);
-    if (activateError) throw activateError;
+    if (activateError) {
+      await admin.from("skill_versions").delete().eq("skill_id", skill.id).eq("version", input.version);
+      await admin.storage.from(skillMdBucket).remove([skillMdPath]);
+      await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
+      throw activateError;
+    }
     revalidatePath(`/${locale}/dashboard/skills`);
     return {status: "success", message: "created", checks: scan.checks};
   } catch (error) {

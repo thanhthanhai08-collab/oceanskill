@@ -55,7 +55,7 @@ export default function CreatorSkillList({skills, reviewStatsBySkillId, labels, 
                     {rating}/5
                   </span>
                 </div>
-                <p><span className="font-semibold text-on-surface">SHA-256:</span> {latest?.content_hash.slice(0, 12) ?? "n/a"}...</p>
+                <p><span className="font-semibold text-on-surface">SHA-256:</span> {latest?.skill_md_hash?.slice(0, 12) ?? "n/a"}...</p>
                 <p className="mt-1"><span className="font-semibold text-on-surface">{labels.updated}:</span> {date.format(new Date(skill.updated_at))}</p>
               </div>
             </Link>

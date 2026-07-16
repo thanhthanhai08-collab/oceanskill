@@ -38,6 +38,8 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 
 const metadataFields = "id,slug,title,description,category,domain,current_version,compatible_clients,license_spdx,visibility,updated_at";
 const windows = new Map<string, {count: number; resetAt: number}>();
+const requestReplayWindowMs = 10 * 60 * 1000;
+const maxSkillMdBytes = 1_048_576;
 type McpToolName =
   | "list_purchased_skills"
   | "search_skills"
@@ -67,10 +69,13 @@ function limited(key: string) {
   return existing.count > 60;
 }
 
-async function sha256Hex(value: string) {
-  const bytes = new TextEncoder().encode(value);
+async function sha256BytesHex(bytes: Uint8Array) {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(value: string) {
+  return sha256BytesHex(new TextEncoder().encode(value));
 }
 
 async function authenticateMcpRequest(request: Request): Promise<AuthenticatedMcpKey | null> {
@@ -147,7 +152,7 @@ async function releaseMcpUsage(requestId: string, errorCode: string) {
 
 async function getUsageEvent(auth: AuthenticatedMcpKey, requestId: string) {
   const {data, error} = await admin.from("usage_events")
-    .select("skill_id,skill_version_id,tool_name,status,error_code,resource_key")
+    .select("skill_id,skill_version_id,tool_name,status,error_code,resource_key,created_at")
     .eq("user_id", auth.userId)
     .eq("request_id", requestId)
     .maybeSingle();
@@ -172,6 +177,11 @@ async function withReservedUsage<T>(
     if (hasReplayScopeConflict(existing, {skillId: input.skillId, skillVersionId: input.skillVersionId, toolName: input.toolName, resourceKey: input.resourceKey})) {
       throw new McpToolError("REQUEST_ID_CONFLICT", "This requestId was already used for another tool, skill, version, or reference. Use a new requestId.", 409, false, input.requestId);
     }
+    const createdAt = Date.parse(existing.created_at);
+    if (!Number.isFinite(createdAt) || Date.now() - createdAt > requestReplayWindowMs) {
+      if (existing.status === "reserved") await releaseMcpUsage(input.requestId, "REQUEST_ID_EXPIRED").catch(() => undefined);
+      throw new McpToolError("REQUEST_ID_EXPIRED", "This requestId's 10-minute replay window has expired. Use a new requestId.", 409, false, input.requestId);
+    }
     if (existing.status === "reserved") throw new McpToolError("REQUEST_IN_PROGRESS", "A request with this requestId is still being processed. Retry later with the same requestId.", 409, true, input.requestId);
     if (existing.status === "failed") throw new McpToolError("REQUEST_PREVIOUSLY_FAILED", "A previous request with this requestId failed. Use a new requestId.", 409, true, input.requestId, existing.error_code);
     if (existing.status !== "succeeded") throw new McpToolError("USAGE_STATE_INVALID", "The existing request has an unsupported usage state.", 500, false, input.requestId);
@@ -192,7 +202,7 @@ async function withReservedUsage<T>(
 
 async function loadAccessibleSkillVersion(auth: AuthenticatedMcpKey, skillId: string) {
   const {data: skill, error} = await admin.from("skills")
-    .select(`${metadataFields},owner_id,skill_versions!skills_current_version_fkey(id,version,content_md,content_hash,scan_status)`)
+    .select(`${metadataFields},owner_id,skill_versions!skills_current_version_fkey(id,version,scan_status,skill_md_bucket,skill_md_path,skill_md_size_bytes,skill_md_hash,skill_md_verified_at)`)
     .eq("id", skillId)
     .eq("status", "active")
     .eq("skill_versions.scan_status", "passed")
@@ -216,7 +226,7 @@ async function listSkillReferences(skillVersionId: string) {
     .order("reference_key")
     .limit(100);
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return (data ?? []).filter((reference) => !isReservedSkillMdReference(reference.reference_key));
 }
 
 async function getSkillMd(auth: AuthenticatedMcpKey, skillId: string, suppliedRequestId?: string) {
@@ -224,16 +234,39 @@ async function getSkillMd(auth: AuthenticatedMcpKey, skillId: string, suppliedRe
   const {skill, version} = await loadAccessibleSkillVersion(auth, skillId);
   const usage = await withReservedUsage(
     {auth, skillId, skillVersionId: version.id, toolName: "get_skill_md", requestId},
-    async () => ({references: await listSkillReferences(version.id)}),
+    async () => {
+      if (!version.skill_md_path) throw new Error("skill_md_not_available");
+      if (!version.skill_md_hash || !version.skill_md_verified_at) throw new Error("skill_md_not_verified");
+      if (Number(version.skill_md_size_bytes ?? 0) > maxSkillMdBytes) throw new Error("skill_md_too_large");
+      const {data: blob, error: downloadError} = await admin.storage
+        .from(version.skill_md_bucket)
+        .download(version.skill_md_path, {}, {cache: "no-store"});
+      if (downloadError || !blob) throw new Error("skill_md_download_failed");
+      if (blob.size > maxSkillMdBytes) throw new Error("skill_md_too_large");
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const contentHash = await sha256BytesHex(bytes);
+      if (contentHash !== version.skill_md_hash) throw new Error("skill_md_hash_mismatch");
+      let content: string;
+      try {
+        content = new TextDecoder("utf-8", {fatal: true}).decode(bytes);
+      } catch {
+        throw new Error("skill_md_invalid_utf8");
+      }
+      return {content, contentHash, sizeBytes: bytes.length, references: await listSkillReferences(version.id)};
+    },
   );
   const publicSkill = {...skill};
   delete publicSkill.owner_id;
   delete publicSkill.skill_versions;
-  return {skill: publicSkill, version: version.version, content: version.content_md, contentHash: version.content_hash, references: usage.value.references, requestId, replayed: usage.replayed, creditsCharged: usage.creditsCharged};
+  return {skill: publicSkill, version: version.version, content: usage.value.content, contentHash: usage.value.contentHash, sizeBytes: usage.value.sizeBytes, references: usage.value.references, requestId, replayed: usage.replayed, creditsCharged: usage.creditsCharged};
 }
 
 function isTextMimeType(mimeType: string) {
   return mimeType.startsWith("text/") || ["application/json", "application/yaml", "application/xml", "application/javascript"].includes(mimeType);
+}
+
+function isReservedSkillMdReference(value: string) {
+  return /(^|\/)skill\.md$/i.test(value.trim().replaceAll("\\", "/"));
 }
 
 function bytesToBase64(bytes: Uint8Array) {
@@ -246,31 +279,36 @@ function bytesToBase64(bytes: Uint8Array) {
 
 async function getSkillReference(auth: AuthenticatedMcpKey, skillId: string, referenceKey: string, suppliedRequestId?: string) {
   const requestId = suppliedRequestId ?? crypto.randomUUID();
+  if (isReservedSkillMdReference(referenceKey)) throw new Error("reference_key_reserved");
   const {skill, version} = await loadAccessibleSkillVersion(auth, skillId);
   const usage = await withReservedUsage(
     {auth, skillId, skillVersionId: version.id, toolName: "get_skill_reference", requestId, resourceKey: referenceKey},
     async () => {
       const {data: reference, error: referenceError} = await admin.from("skill_reference_files")
-        .select("reference_key,storage_bucket,storage_path,display_name,mime_type,size_bytes")
+        .select("reference_key,storage_bucket,storage_path,display_name,mime_type,size_bytes,content_hash,verified_at")
         .eq("skill_version_id", version.id)
         .eq("reference_key", referenceKey)
         .maybeSingle();
       if (referenceError) throw new Error(referenceError.message);
       if (!reference) throw new Error("reference_not_available");
+      if (isReservedSkillMdReference(reference.reference_key) || isReservedSkillMdReference(reference.storage_path)) throw new Error("reference_key_reserved");
+      if (!reference.content_hash || !reference.verified_at) throw new Error("reference_not_verified");
       if (Number(reference.size_bytes ?? 0) > 1_048_576) throw new Error("reference_too_large");
       const {data: blob, error: downloadError} = await admin.storage.from(reference.storage_bucket).download(reference.storage_path);
       if (downloadError || !blob) throw new Error("reference_download_failed");
       if (blob.size > 1_048_576) throw new Error("reference_too_large");
       const bytes = new Uint8Array(await blob.arrayBuffer());
+      const referenceHash = await sha256BytesHex(bytes);
+      if (referenceHash !== reference.content_hash) throw new Error("reference_hash_mismatch");
       const text = isTextMimeType(reference.mime_type);
-      return {reference, bytes, text, content: text ? new TextDecoder().decode(bytes) : bytesToBase64(bytes)};
+      return {reference, referenceHash, bytes, text, content: text ? new TextDecoder().decode(bytes) : bytesToBase64(bytes)};
     },
   );
-  const {reference, bytes, text, content} = usage.value;
+  const {reference, referenceHash, bytes, text, content} = usage.value;
   return {
     skill: {id: skill.id, slug: skill.slug, title: skill.title},
     version: version.version,
-    reference: {key: reference.reference_key, name: reference.display_name, mimeType: reference.mime_type, sizeBytes: bytes.length},
+    reference: {key: reference.reference_key, name: reference.display_name, mimeType: reference.mime_type, sizeBytes: bytes.length, contentHash: referenceHash},
     encoding: text ? "utf-8" : "base64",
     content,
     requestId,
@@ -391,8 +429,8 @@ Deno.serve(async (request) => {
     return rpc(body.id, {tools: [
       {name: "list_purchased_skills", description: "List enabled public and caller-owned private OceanSkill skills available through MCP.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
       {name: "search_skills", description: "Search available skill metadata without exposing protected content.", inputSchema: {type: "object", properties: {query: {type: "string", minLength: 1, maxLength: 80}}, required: ["query"], additionalProperties: false}},
-      {name: "get_skill_md", description: "Return a permitted skill's scanned current SKILL.md. A successful new request costs 1 credit.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, requestId: {type: "string", maxLength: 120}}, required: ["skillId"], additionalProperties: false}},
-      {name: "get_skill_reference", description: "Return one mapped reference file for a permitted skill's current version. Text is UTF-8 and binary content is base64. A successful new request costs 1 credit.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, referenceKey: {type: "string", minLength: 1, maxLength: 240}, requestId: {type: "string", maxLength: 120}}, required: ["skillId", "referenceKey"], additionalProperties: false}},
+      {name: "get_skill_md", description: "Download a permitted skill's scanned current SKILL.md directly from private Storage. A successful new request costs 1 credit; the same requestId can replay the same call for 10 minutes without another charge.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, requestId: {type: "string", maxLength: 120}}, required: ["skillId"], additionalProperties: false}},
+      {name: "get_skill_reference", description: "Download one publish-time hash-pinned reference file for a permitted skill's current version. SKILL.md is reserved for get_skill_md and cannot be retrieved here. Text is UTF-8 and binary content is base64. A successful new request costs 1 credit; the same requestId can replay the same call for 10 minutes without another charge.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, referenceKey: {type: "string", minLength: 1, maxLength: 240}, requestId: {type: "string", maxLength: 120}}, required: ["skillId", "referenceKey"], additionalProperties: false}},
       {name: "list_collections", description: "List public collections and the caller's own collections.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
       {name: "add_collection_to_library", description: "Add a public or owned collection to the caller's library and enable its skills.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}}, required: ["collectionId"], additionalProperties: false}},
       {name: "toggle_skill", description: "Enable or disable a skill in the caller's library without fetching paid content.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, enabled: {type: "boolean"}}, required: ["skillId", "enabled"], additionalProperties: false}},
@@ -431,7 +469,16 @@ Deno.serve(async (request) => {
     else if (message === "collection_not_available") failure = new McpToolError("COLLECTION_NOT_AVAILABLE", "This collection is unavailable or you do not have access to it.", 403, false, requestId);
     else if (message === "insufficient_credits") failure = new McpToolError("INSUFFICIENT_CREDITS", "Not enough credits to complete this request.", 402, false, requestId);
     else if (message === "version_not_available") failure = new McpToolError("VERSION_NOT_AVAILABLE", "The skill's current scanned version is unavailable.", 409, true, requestId);
+    else if (message === "skill_md_not_available") failure = new McpToolError("SKILL_MD_NOT_AVAILABLE", "This skill version does not have a verified SKILL.md object in Storage. No credit was charged.", 409, false, requestId);
+    else if (message === "skill_md_not_verified") failure = new McpToolError("SKILL_MD_NOT_VERIFIED", "This Storage SKILL.md has not passed the publish review gate. No credit was charged.", 409, false, requestId);
+    else if (message === "skill_md_too_large") failure = new McpToolError("SKILL_MD_TOO_LARGE", "This SKILL.md exceeds the 1 MB MCP response limit. No credit was charged.", 413, false, requestId);
+    else if (message === "skill_md_download_failed") failure = new McpToolError("SKILL_MD_DOWNLOAD_FAILED", "SKILL.md could not be downloaded from Storage. No credit was charged.", 503, true, requestId);
+    else if (message === "skill_md_hash_mismatch") failure = new McpToolError("SKILL_MD_HASH_MISMATCH", "The Storage object changed after verification. Publish a new verified version before retrying. No credit was charged.", 409, false, requestId);
+    else if (message === "skill_md_invalid_utf8") failure = new McpToolError("SKILL_MD_INVALID_UTF8", "The Storage object is not valid UTF-8 Markdown. No credit was charged.", 422, false, requestId);
+    else if (message === "reference_key_reserved") failure = new McpToolError("REFERENCE_KEY_RESERVED", "SKILL.md is reserved for get_skill_md and cannot be retrieved as a reference. No credit was charged.", 400, false, requestId);
     else if (message === "reference_not_available") failure = new McpToolError("REFERENCE_NOT_AVAILABLE", "This reference is not mapped to the skill's current version.", 404, false, requestId);
+    else if (message === "reference_not_verified") failure = new McpToolError("REFERENCE_NOT_VERIFIED", "This reference was not hash-pinned at publish time. Publish a verified version before retrying. No credit was charged.", 409, false, requestId);
+    else if (message === "reference_hash_mismatch") failure = new McpToolError("REFERENCE_HASH_MISMATCH", "The reference Storage object changed after publish verification. Publish a new verified version before retrying. No credit was charged.", 409, false, requestId);
     else if (message === "reference_too_large") failure = new McpToolError("REFERENCE_TOO_LARGE", "This reference exceeds the 1 MB MCP response limit.", 413, false, requestId);
     else if (message === "reference_download_failed") failure = new McpToolError("REFERENCE_DOWNLOAD_FAILED", "The reference could not be downloaded from Storage. No credit was charged.", 503, true, requestId);
     else {

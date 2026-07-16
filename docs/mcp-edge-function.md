@@ -67,8 +67,8 @@ If a client only supports command-based MCP servers, wrap the HTTP endpoint with
 
 - `list_purchased_skills`: returns public skills in the user's library plus private skills owned by the user.
 - `search_skills`: searches skill metadata only. It does not expose protected skill content.
-- `get_skill_md`: returns the scanned current `SKILL.md` and mapped reference keys for an allowed skill.
-- `get_skill_reference`: returns one mapped Storage file for the skill's current version.
+- `get_skill_md`: downloads the scanned current `SKILL.md` directly from its verified private Storage path and returns mapped reference keys for an allowed skill.
+- `get_skill_reference`: returns one publish-time hash-pinned Storage reference for the skill's current version. `SKILL.md` is reserved exclusively for `get_skill_md`.
 - `list_collections`: returns public collections and the caller's own collections.
 - `add_collection_to_library`: adds a public or owned collection to the caller's collection library and enables all skills in that collection.
 - `toggle_skill`: enables or disables a skill in the caller's skill library without fetching paid content.
@@ -85,9 +85,12 @@ Both paid tools use reserve-then-complete:
 1. Resolve and authorize the API key.
 2. Confirm the skill is public in the user's library, or private and owned by the user.
 3. Call `reserve_mcp_usage_resource_versioned` to reserve one credit against the exact skill version and optional reference key.
-4. Load the scanned Markdown or exact mapped Storage reference.
-5. Call `finalize_mcp_usage` after successful response preparation.
-6. Call `release_mcp_usage` if reading or response preparation fails.
+4. Download the exact current-version `SKILL.md` or mapped reference from private Storage.
+5. Enforce the 1 MB limit and verify the downloaded file against its publish-time SHA-256 pin (`skill_md_hash` for `SKILL.md`, reference `content_hash` for other files).
+6. Call `finalize_mcp_usage` after successful response preparation.
+7. Call `release_mcp_usage` if reading, hash verification, or response preparation fails.
+
+Each paid tool call has its own `requestId`. An exact replay of the same tool, skill, version, and reference is free for 10 minutes. After that window the caller must use a new `requestId`; stale reservations are released.
 
 ## Security Notes
 
@@ -99,3 +102,5 @@ Both paid tools use reserve-then-complete:
 - `list_purchased_skills` only returns enabled skills from `user_skill_library.enabled = true`, plus private skills owned by the caller.
 - `toggle_skill` is free and only changes the library enabled flag; it does not fetch protected content or reserve credits.
 - Credit is deducted only through `usage_events` plus `credit_ledger`, currently via `get_skill_md` and `get_skill_reference`.
+- A normalized reference key or Storage path ending in `SKILL.md` is rejected before credit reservation. Database constraints enforce the same rule.
+- Publishing uploads an immutable, versioned `SKILL.md`, records its SHA-256 pin, and only then activates the version. Retrieval never initializes hashes lazily.

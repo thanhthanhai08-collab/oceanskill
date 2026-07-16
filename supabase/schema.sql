@@ -48,13 +48,33 @@ create table public.skill_versions (
   skill_id uuid not null references public.skills(id) on delete cascade,
   version text not null,
   content_md text not null,
-  content_hash text not null,
   storage_path text,
+  skill_md_bucket text not null default 'skill-artifacts' check (skill_md_bucket = 'skill-artifacts'),
+  skill_md_path text check (skill_md_path is null or (char_length(skill_md_path) between 1 and 1024 and skill_md_path !~ '(^/|\\|(^|/)\.\.(/|$))' and lower(skill_md_path) like '%/skill.md')),
+  skill_md_size_bytes bigint check (skill_md_size_bytes is null or skill_md_size_bytes between 1 and 1048576),
+  skill_md_hash text check (skill_md_hash is null or skill_md_hash ~ '^[0-9a-f]{64}$'),
+  skill_md_verified_at timestamptz,
   scan_status text not null default 'pending' check (scan_status in ('pending','passed','failed','review')),
   scan_summary jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   unique (skill_id, version),
-  unique (skill_id, content_hash)
+  unique (skill_id, skill_md_hash)
+);
+
+create table public.skill_reference_files (
+  id uuid primary key default gen_random_uuid(),
+  skill_version_id uuid not null references public.skill_versions(id) on delete cascade,
+  reference_key text not null check (char_length(reference_key) between 1 and 240 and reference_key !~ '(^/|\\|(^|/)\.\.(/|$))' and lower(replace(reference_key, '\\', '/')) !~ '(^|/)skill\.md$'),
+  storage_bucket text not null default 'skill-artifacts' check (storage_bucket = 'skill-artifacts'),
+  storage_path text not null check (char_length(storage_path) between 1 and 1024 and storage_path !~ '(^/|\\|(^|/)\.\.(/|$))' and lower(replace(storage_path, '\\', '/')) !~ '(^|/)skill\.md$'),
+  display_name text not null check (char_length(display_name) between 1 and 240),
+  mime_type text not null default 'application/octet-stream' check (char_length(mime_type) between 1 and 160),
+  size_bytes bigint check (size_bytes is null or size_bytes between 0 and 1048576),
+  content_hash text not null check (content_hash ~ '^[0-9a-f]{64}$'),
+  verified_at timestamptz not null,
+  created_at timestamptz not null default now(),
+  unique (skill_version_id, reference_key),
+  unique (skill_version_id, storage_bucket, storage_path)
 );
 
 alter table public.skills
