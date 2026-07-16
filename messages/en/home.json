@@ -1,8 +1,8 @@
 {
   "Home": {
-    "heroBadge": "Private beta · MCP delivery is live",
-    "heroTitlePart1": "Unleash human potential with",
-    "heroTitlePart2": "Synthetic Intelligence.",
+    "heroBadge": "Reviewed skill library · MCP delivery is live",
+    "heroTitlePart1": "Put proven workflows inside",
+    "heroTitlePart2": "the agents you already use.",
     "heroSearchPlaceholder": "Search skills, workflows, or agent use cases...",
     "heroSearchButton": "Search skills",
     "heroDescription": "Discover reviewed skills, connect them to your existing coding agents, and receive protected instructions only when you are authenticated.",

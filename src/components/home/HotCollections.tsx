@@ -1,16 +1,15 @@
 import {getTranslations} from "next-intl/server";
 import {Link} from "@/i18n/navigation";
-import WaterTiltCard from "@/components/ui/WaterTiltCard";
 import {hotCollections} from "@/data/mockData";
 
 export default async function HotCollections() {
   const t = await getTranslations("Home");
   return (
-    <section className="border-b border-outline-variant/25 bg-surface-container-lowest/45 py-16 sm:py-20">
+    <section className="border-b border-outline-variant/35 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="flex items-end justify-between gap-6"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-tertiary">{t("collectionsEyebrow")}</p><h2 className="mt-3 font-geist text-3xl font-bold tracking-tight">{t("collectionsTitle")}</h2><p className="mt-2 text-on-surface-variant">{t("collectionsSubtitle")}</p></div><Link href="/skills" className="hidden text-sm font-semibold text-primary hover:underline sm:block">{t("viewAll")}</Link></div>
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {hotCollections.map((collection) => <WaterTiltCard key={collection.id} className="rounded-2xl"><Link href="/skills" className={`group flex h-full min-h-64 flex-col overflow-hidden rounded-2xl border border-outline-variant/40 bg-gradient-to-br ${collection.glowClass} p-7`}><span className="material-symbols-outlined text-5xl text-primary transition group-hover:scale-110">{collection.icon}</span><div className="mt-auto"><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-tertiary">{t("collectionBadge")}</p><h3 className="mt-2 font-geist text-2xl font-semibold">{t(`collections.${collection.id}.title`)}</h3><p className="mt-3 text-sm leading-6 text-on-surface-variant">{t(`collections.${collection.id}.description`)}</p></div></Link></WaterTiltCard>)}
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-end"><div className="lg:col-span-8"><p className="font-mono text-[11px] uppercase tracking-[0.18em] text-primary">{t("collectionsEyebrow")}</p><h2 className="mt-5 text-balance font-geist text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">{t("collectionsTitle")}</h2><p className="mt-4 max-w-2xl leading-7 text-on-surface-variant">{t("collectionsSubtitle")}</p></div><Link href="/skills" className="hidden text-right text-sm font-semibold text-primary underline decoration-outline-variant underline-offset-4 hover:decoration-primary sm:block lg:col-span-4">{t("viewAll")}</Link></div>
+        <div className="mt-12 grid gap-5 lg:grid-cols-12">
+          {hotCollections.map((collection, index) => <Link key={collection.id} href="/skills" className={`group relative flex min-h-64 flex-col overflow-hidden border border-outline-variant/45 bg-surface-container-low/55 p-7 transition duration-300 hover:-translate-y-1 hover:border-primary/55 ${index === 0 ? "lg:col-span-7 lg:min-h-[30rem] lg:p-10" : "lg:col-span-5"}`}><span className="absolute right-5 top-3 font-mono text-7xl font-semibold tracking-[-0.08em] text-primary/[.07]">0{index + 1}</span><span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">{t("collectionBadge")}</span><div className="mt-auto max-w-xl"><h3 className={`${index === 0 ? "text-3xl sm:text-4xl" : "text-2xl"} text-balance font-geist font-semibold tracking-tight`}>{t(`collections.${collection.id}.title`)}</h3><p className="mt-4 text-sm leading-6 text-on-surface-variant">{t(`collections.${collection.id}.description`)}</p><span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary">{t("viewAll")}<span className="material-symbols-outlined text-[18px] transition group-hover:translate-x-1">arrow_forward</span></span></div></Link>)}
         </div>
       </div>
     </section>
