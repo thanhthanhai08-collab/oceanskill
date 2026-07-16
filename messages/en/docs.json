@@ -42,10 +42,10 @@
     },
     "requestEyebrow": "Usage safety",
     "requestTitle": "How requestId prevents duplicate charges",
-    "requestDescription": "requestId is an idempotency key for get_skill_md and get_skill_reference. Most MCP clients can let OceanSkill generate it automatically.",
+    "requestDescription": "requestId is a per-call idempotency key for get_skill_md and get_skill_reference. Its exact-replay window lasts 10 minutes, and most MCP clients can let OceanSkill generate it automatically.",
     "requestRules": {
       "new": {"title": "New work, new ID", "description": "Use a new requestId for a new skill-content attempt. It may contain 1–120 characters."},
-      "retry": {"title": "Retry the same successful request", "description": "Reuse the same requestId only for the same tool, skill, and current version. OceanSkill marks it replayed and charges 0 extra credits."},
+      "retry": {"title": "Retry within 10 minutes", "description": "Reuse the same requestId only for the same tool, skill, current version, and reference within 10 minutes. OceanSkill marks it replayed and charges 0 extra credits."},
       "failed": {"title": "A failed attempt needs a new ID", "description": "Failed calls release their reservation and explain whether retry is allowed. Start the next attempt with a new requestId."},
       "conflict": {"title": "Never reuse it across scopes", "description": "Using one requestId for another skill, version, or tool returns REQUEST_ID_CONFLICT instead of charging ambiguously."}
     },
@@ -54,7 +54,7 @@
     "tools": {
       "list": {"name": "list_purchased_skills", "description": "List enabled public and owned private skills available to the account."},
       "search": {"name": "search_skills", "description": "Search available metadata without exposing protected SKILL.md content."},
-      "content": {"name": "get_skill_md", "description": "Return the scanned current SKILL.md and available reference keys for an enabled skill; accepts an optional requestId."},
+      "content": {"name": "get_skill_md", "description": "Download the scanned current SKILL.md directly from private Storage and return available reference keys; accepts an optional requestId."},
       "reference": {"name": "get_skill_reference", "description": "Return one mapped file from the current skill version. Text uses UTF-8 and binary content uses base64."},
       "collections": {"name": "list_collections", "description": "List public collections and collections owned by the authenticated user."},
       "addCollection": {"name": "add_collection_to_library", "description": "Add an accessible collection to the user library and enable its skills."},

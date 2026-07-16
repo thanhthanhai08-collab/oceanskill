@@ -42,10 +42,10 @@
     },
     "requestEyebrow": "An toàn usage",
     "requestTitle": "requestId ngăn trừ credit trùng như thế nào",
-    "requestDescription": "requestId là khóa idempotency của get_skill_md và get_skill_reference. Phần lớn trường hợp bạn có thể để OceanSkill tự tạo.",
+    "requestDescription": "requestId là khóa idempotency riêng cho từng lần gọi get_skill_md và get_skill_reference. Cửa sổ replay chính xác kéo dài 10 phút; phần lớn trường hợp bạn có thể để OceanSkill tự tạo.",
     "requestRules": {
       "new": {"title": "Việc mới, ID mới", "description": "Dùng requestId mới cho một lần lấy nội dung skill mới. Giá trị dài từ 1–120 ký tự."},
-      "retry": {"title": "Gọi lại đúng request đã thành công", "description": "Chỉ dùng lại requestId cho đúng tool, skill và phiên bản hiện tại. OceanSkill đánh dấu replay và không trừ thêm credit."},
+      "retry": {"title": "Gọi lại trong 10 phút", "description": "Chỉ dùng lại requestId cho đúng tool, skill, phiên bản hiện tại và reference trong 10 phút. OceanSkill đánh dấu replay và không trừ thêm credit."},
       "failed": {"title": "Lần thất bại cần ID mới", "description": "Lệnh thất bại sẽ hoàn credit đã giữ và cho biết có thể retry hay không. Lần thử mới phải dùng requestId mới."},
       "conflict": {"title": "Không dùng lại khác phạm vi", "description": "Dùng cùng requestId cho skill, phiên bản hoặc tool khác sẽ trả REQUEST_ID_CONFLICT thay vì trừ credit không rõ ràng."}
     },
@@ -54,7 +54,7 @@
     "tools": {
       "list": {"name": "list_purchased_skills", "description": "Liệt kê skill công khai đã bật và skill riêng thuộc tài khoản."},
       "search": {"name": "search_skills", "description": "Tìm metadata khả dụng mà không lộ nội dung SKILL.md được bảo vệ."},
-      "content": {"name": "get_skill_md", "description": "Trả về SKILL.md phiên bản hiện tại cùng các reference key khả dụng; nhận requestId tùy chọn."},
+      "content": {"name": "get_skill_md", "description": "Tải SKILL.md đã scan của phiên bản hiện tại trực tiếp từ private Storage và trả về các reference key khả dụng; nhận requestId tùy chọn."},
       "reference": {"name": "get_skill_reference", "description": "Trả về một file được mapping của phiên bản skill hiện tại. File text dùng UTF-8, file nhị phân dùng base64."},
       "collections": {"name": "list_collections", "description": "Liệt kê bộ sưu tập công khai và bộ sưu tập do người dùng sở hữu."},
       "addCollection": {"name": "add_collection_to_library", "description": "Thêm bộ sưu tập khả dụng vào thư viện và bật các skill trong đó."},
