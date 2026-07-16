@@ -1,6 +1,6 @@
 {
   "Metadata": {"title": "OceanSkill", "description": "Production-ready skills for AI agents."},
   "Common": {"brand": "OceanSkill", "dashboard": "Dashboard", "marketplace": "Marketplace", "login": "Sign in", "logout": "Sign out", "back": "← OceanSkill", "signup": "Sign up"},
-  "Navigation": {"mainLabel": "Primary navigation", "homeLabel": "OceanSkill home", "searchPlaceholder": "Search skills...", "marketplace": "Marketplace", "leaderboard": "Leaderboard", "blog": "Blog", "docs": "Docs", "chatbot": "OceanGuide", "faq": "FAQ", "about": "About"},
+  "Navigation": {"mainLabel": "Primary navigation", "homeLabel": "OceanSkill home", "searchPlaceholder": "Search skills...", "marketplace": "Marketplace", "leaderboard": "Leaderboard", "pricing": "Pricing", "blog": "Blog", "docs": "Docs", "chatbot": "OceanGuide", "faq": "FAQ", "about": "About"},
   "Footer": {"description": "A curated marketplace for secure, production-ready skills delivered directly to your AI agent workflow.", "platform": "Platform", "company": "Company", "privacy": "Privacy policy", "terms": "Terms of service", "copyright": "© {year} OceanSkill. All rights reserved."}
 }

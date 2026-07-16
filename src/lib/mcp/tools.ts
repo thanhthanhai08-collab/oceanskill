@@ -5,10 +5,12 @@ import {finalizeMcpUsage, releaseMcpUsage, reserveMcpUsage} from "@/lib/mcp/usag
 import type {AuthenticatedMcpKey} from "@/lib/mcp/authentication";
 
 const metadataFields = "id,slug,title,description,category,current_version,compatible_clients,license_spdx,visibility,updated_at";
+type CurrentSkillVersion = Readonly<{id: string; version: string; content_md: string; content_hash: string; scan_status: string}>;
 export type McpToolName =
   | "list_purchased_skills"
   | "search_skills"
-  | "get_skill_content"
+  | "get_skill_md"
+  | "get_skill_reference"
   | "list_collections"
   | "add_collection_to_library"
   | "toggle_skill"
@@ -45,9 +47,39 @@ export async function searchAvailableSkills(auth: AuthenticatedMcpKey, query: st
   return data ?? [];
 }
 
-export async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string, requestId: string = randomUUID()) {
+async function withReservedUsage<T>(
+  input: {auth: AuthenticatedMcpKey; skillId: string; skillVersionId: string; toolName: "get_skill_md" | "get_skill_reference"; requestId: string; resourceKey?: string},
+  operation: () => Promise<T>,
+) {
+  const reservation = await reserveMcpUsage(input);
+  if (!reservation || reservation.result === "insufficient_credits") throw new Error("insufficient_credits");
+  if (reservation.result === "version_conflict") throw new Error("version_conflict");
+  if (reservation.result === "resource_conflict") throw new Error("request_id_conflict");
+  let replayed = false;
+  if (reservation.result === "duplicate") {
+    const {data: existing, error} = await createAdminClient().from("usage_events")
+      .select("user_id,api_key_id,skill_id,skill_version_id,tool_name,status,resource_key")
+      .eq("request_id", input.requestId)
+      .maybeSingle();
+    if (error || !existing) throw new Error("usage_state_not_found");
+    if (existing.user_id !== input.auth.userId || existing.api_key_id !== input.auth.apiKeyId || existing.skill_id !== input.skillId || existing.skill_version_id !== input.skillVersionId || existing.tool_name !== input.toolName || (existing.resource_key ?? null) !== (input.resourceKey ?? null)) throw new Error("request_id_conflict");
+    if (existing.status !== "succeeded") throw new Error(existing.status === "reserved" ? "request_in_progress" : "request_previously_failed");
+    replayed = true;
+  } else if (reservation.result !== "reserved") throw new Error("usage_reservation_invalid");
+
+  try {
+    const value = await operation();
+    if (!replayed) await finalizeMcpUsage(input.requestId);
+    return {value, replayed, creditsCharged: replayed ? 0 : 1};
+  } catch (error) {
+    if (!replayed) await releaseMcpUsage(input.requestId, error instanceof Error ? error.message : "execution_failed").catch(() => undefined);
+    throw error;
+  }
+}
+
+async function loadAccessibleSkillVersion(auth: AuthenticatedMcpKey, skillId: string) {
   const admin = createAdminClient();
-  const {data: skill, error} = await admin.from("skills").select(`${metadataFields},owner_id,skill_versions!inner(id,version,content_md,content_hash,scan_status)`)
+  const {data: skill, error} = await admin.from("skills").select(`${metadataFields},owner_id,skill_versions!skills_current_version_fkey(id,version,content_md,content_hash,scan_status)`)
     .eq("id", skillId).eq("status", "active").eq("skill_versions.scan_status", "passed").maybeSingle();
   if (error) throw new Error(`Could not load MCP skill: ${error.message}`);
   if (!skill || (skill.visibility === "private" && skill.owner_id !== auth.userId)) throw new Error("skill_not_available");
@@ -55,17 +87,37 @@ export async function getSkillContent(auth: AuthenticatedMcpKey, skillId: string
     const {data: libraryEntry} = await admin.from("user_skill_library").select("id").eq("user_id", auth.userId).eq("skill_id", skillId).eq("enabled", true).maybeSingle();
     if (!libraryEntry) throw new Error("skill_not_in_user_library");
   }
-  const reservation = await reserveMcpUsage({userId: auth.userId, apiKeyId: auth.apiKeyId, skillId, toolName: "get_skill_content", requestId});
-  if (!reservation || reservation.result === "insufficient_credits") throw new Error("insufficient_credits");
-  try {
-    const version = Array.isArray(skill.skill_versions) ? skill.skill_versions.find((item) => item.version === skill.current_version) : null;
-    if (!version) throw new Error("version_not_available");
-    await finalizeMcpUsage(requestId);
-    return {skill: Object.fromEntries(Object.entries(skill).filter(([key]) => !["owner_id", "skill_versions"].includes(key))), version: version.version, content: version.content_md, contentHash: version.content_hash};
-  } catch (error) {
-    await releaseMcpUsage(requestId, error instanceof Error ? error.message : "execution_failed");
-    throw error;
-  }
+  const relation = skill.skill_versions as unknown as CurrentSkillVersion | CurrentSkillVersion[] | null;
+  const version = Array.isArray(relation) ? relation[0] : relation;
+  if (!version || version.version !== skill.current_version) throw new Error("version_not_available");
+  return {admin, skill, version};
+}
+
+export async function getSkillMd(auth: AuthenticatedMcpKey, skillId: string, requestId: string = randomUUID()) {
+  const {admin, skill, version} = await loadAccessibleSkillVersion(auth, skillId);
+  const usage = await withReservedUsage({auth, skillId, skillVersionId: version.id, toolName: "get_skill_md", requestId}, async () => {
+    const {data, error} = await admin.from("skill_reference_files").select("reference_key,display_name,mime_type,size_bytes").eq("skill_version_id", version.id).order("reference_key").limit(100);
+    if (error) throw new Error("reference_list_failed");
+    return data ?? [];
+  });
+  return {skill: Object.fromEntries(Object.entries(skill).filter(([key]) => !["owner_id", "skill_versions"].includes(key))), version: version.version, content: version.content_md, contentHash: version.content_hash, references: usage.value, requestId, replayed: usage.replayed, creditsCharged: usage.creditsCharged};
+}
+
+export async function getSkillReference(auth: AuthenticatedMcpKey, skillId: string, referenceKey: string, requestId: string = randomUUID()) {
+  const {admin, skill, version} = await loadAccessibleSkillVersion(auth, skillId);
+  const usage = await withReservedUsage({auth, skillId, skillVersionId: version.id, toolName: "get_skill_reference", requestId, resourceKey: referenceKey}, async () => {
+    const {data: reference, error} = await admin.from("skill_reference_files").select("reference_key,storage_bucket,storage_path,display_name,mime_type,size_bytes").eq("skill_version_id", version.id).eq("reference_key", referenceKey).maybeSingle();
+    if (error || !reference) throw new Error("reference_not_available");
+    if (Number(reference.size_bytes ?? 0) > 1_048_576) throw new Error("reference_too_large");
+    const {data: blob, error: downloadError} = await admin.storage.from(reference.storage_bucket).download(reference.storage_path);
+    if (downloadError || !blob) throw new Error("reference_download_failed");
+    if (blob.size > 1_048_576) throw new Error("reference_too_large");
+    const bytes = Buffer.from(await blob.arrayBuffer());
+    const text = reference.mime_type.startsWith("text/") || ["application/json", "application/yaml", "application/xml", "application/javascript"].includes(reference.mime_type);
+    return {reference, bytes, text, content: text ? bytes.toString("utf8") : bytes.toString("base64")};
+  });
+  const {reference, bytes, text, content} = usage.value;
+  return {skill: {id: skill.id, slug: skill.slug, title: skill.title}, version: version.version, reference: {key: reference.reference_key, name: reference.display_name, mimeType: reference.mime_type, sizeBytes: bytes.length}, encoding: text ? "utf-8" : "base64", content, requestId, replayed: usage.replayed, creditsCharged: usage.creditsCharged};
 }
 
 export async function listCollections(auth: AuthenticatedMcpKey) {

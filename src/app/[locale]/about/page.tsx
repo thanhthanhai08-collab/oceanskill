@@ -109,7 +109,7 @@ export default async function AboutPage({params}: {readonly params: Promise<{loc
             <p className="mt-3 max-w-2xl leading-7 text-on-surface-variant">{page.ctaDescription}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/skills" className="rounded-lg bg-primary-container px-5 py-3 text-sm font-semibold text-white">{page.marketplace}</Link>
-              <Link href="/docs" className="rounded-lg border border-outline-variant/50 px-5 py-3 text-sm font-semibold text-on-surface hover:border-primary hover:text-primary">{page.docs}</Link>
+              <Link href="/document" className="rounded-lg border border-outline-variant/50 px-5 py-3 text-sm font-semibold text-on-surface hover:border-primary hover:text-primary">{page.docs}</Link>
             </div>
           </div>
         </section>

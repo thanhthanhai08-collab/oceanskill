@@ -2,15 +2,18 @@ import type {Metadata} from "next";
 import {getTranslations} from "next-intl/server";
 import {notFound} from "next/navigation";
 import JsonLd from "@/components/seo/JsonLd";
-import SiteShell from "@/components/layout/SiteShell";
 import SkillCard from "@/components/skills/SkillCard";
+import SkillFilterBar from "@/components/skills/SkillFilterBar";
 import type {Locale} from "@/i18n/locales";
 import {getPublicCategory} from "@/lib/catalog/categories";
 import {listPublicSkills} from "@/lib/catalog/skills";
 import {breadcrumbSchema, itemListSchema} from "@/lib/seo/schema";
 import {createPageMetadata, localizedUrl} from "@/lib/seo/site";
 
-type CategoryPageProps = Readonly<{params: Promise<{locale: string; slug: string}>}>;
+type CategoryPageProps = Readonly<{
+  params: Promise<{locale: string; slug: string}>;
+  searchParams: Promise<{q?: string; sort?: string}>;
+}>;
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +24,10 @@ export async function generateMetadata({params}: CategoryPageProps): Promise<Met
   return createPageMetadata({locale: locale as Locale, path: `skills/category/${slug}`, title: category.seoTitle, description: category.seoDescription});
 }
 
-export default async function CategoryPage({params}: CategoryPageProps) {
+export default async function CategoryPage({params, searchParams}: CategoryPageProps) {
   const {locale, slug} = await params;
+  const {q = "", sort = "featured"} = await searchParams;
+  const query = q.trim().toLocaleLowerCase();
   const [category, allSkills, t, seo] = await Promise.all([
     getPublicCategory(slug, locale),
     listPublicSkills(locale),
@@ -30,21 +35,23 @@ export default async function CategoryPage({params}: CategoryPageProps) {
     getTranslations({locale, namespace: "SEO"}),
   ]);
   if (!category) notFound();
-  const skills = allSkills.filter((skill) => skill.category === category.slug);
+  const categorySkills = allSkills.filter((skill) => skill.category === category.slug);
+  const filtered = categorySkills.filter((skill) => !query || `${skill.title} ${skill.description} ${skill.category}`.toLocaleLowerCase().includes(query));
+  const skills = [...filtered].sort((a, b) => sort === "category" ? a.category.localeCompare(b.category) : sort === "version" ? String(b.current_version).localeCompare(String(a.current_version)) : b.compatible_clients.length - a.compatible_clients.length || a.title.localeCompare(b.title));
   const code = locale as Locale;
   const url = localizedUrl(code, `skills/category/${slug}`);
 
   return (
-    <SiteShell>
+    <>
       <JsonLd data={[
         breadcrumbSchema([
           {name: seo("homeBreadcrumb"), url: localizedUrl(code)},
           {name: seo("marketplaceBreadcrumb"), url: localizedUrl(code, "skills")},
           {name: category.name, url},
         ]),
-        itemListSchema({name: category.seoTitle, description: category.seoDescription, items: skills.map((skill) => ({name: skill.title, url: localizedUrl(code, `skills/${skill.slug}`)}))}),
+        itemListSchema({name: category.seoTitle, description: category.seoDescription, items: categorySkills.map((skill) => ({name: skill.title, url: localizedUrl(code, `skills/${skill.slug}`)}))}),
       ]} />
-      <main className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
+      <div>
         <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 shadow-[0_18px_60px_rgba(0,0,0,0.22)] sm:p-8">
           <div className="absolute -left-28 -top-28 h-80 w-80 rounded-full bg-primary/10 blur-[100px]" />
           <div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-secondary/10 blur-[100px]" />
@@ -60,23 +67,26 @@ export default async function CategoryPage({params}: CategoryPageProps) {
               </div>
             </div>
             <div className="min-w-52 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 p-5 text-center">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{t("categorySkillCount", {count: skills.length})}</p>
-              <p className="mt-2 font-geist text-3xl font-bold">{skills.length}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">{t("categorySkillCount", {count: categorySkills.length})}</p>
+              <p className="mt-2 font-geist text-3xl font-bold">{categorySkills.length}</p>
             </div>
           </div>
         </section>
+        <div className="mt-8">
+          <SkillFilterBar query={q} sort={sort} labels={{searchPlaceholder: t("searchPlaceholder"), sortFeatured: t("sortFeatured"), sortCategory: t("sortCategory"), sortVersion: t("sortVersion"), filter: t("filter")}} />
+        </div>
         <div className="mb-8 mt-12 flex items-center gap-4">
-          <h2 className="shrink-0 font-geist text-2xl font-bold">{t("categorySkillCount", {count: skills.length})}</h2>
+          <h2 className="shrink-0 font-geist text-2xl font-bold">{t("resultCount", {count: skills.length})}</h2>
           <div className="h-px w-full bg-gradient-to-r from-outline-variant/70 to-transparent" />
         </div>
         {skills.length ? (
-          <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {skills.map((skill, index) => <SkillCard key={skill.id} skill={skill} featured={index === 0} actionLabel={t("viewSkill")} categoryName={category.name} />)}
           </section>
         ) : (
-          <p className="rounded-2xl border border-dashed border-outline-variant/50 p-10 text-on-surface-variant">{t("categoryEmpty")}</p>
+          <p className="rounded-2xl border border-dashed border-outline-variant/50 p-10 text-on-surface-variant">{categorySkills.length ? t("empty") : t("categoryEmpty")}</p>
         )}
-      </main>
-    </SiteShell>
+      </div>
+    </>
   );
 }

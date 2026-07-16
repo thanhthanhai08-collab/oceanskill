@@ -15,8 +15,9 @@ export default async function SiteFooter() {
           <div className="mt-4 flex flex-col gap-3 text-sm text-on-surface-variant">
             <Link href="/skills" className="hover:text-primary">{navigation("marketplace")}</Link>
             <Link href="/leaderboard" className="hover:text-primary">{navigation("leaderboard")}</Link>
+            <Link href="/pricing" className="hover:text-primary">{navigation("pricing")}</Link>
             <Link href="/blog" className="hover:text-primary">{navigation("blog")}</Link>
-            <Link href="/docs" className="hover:text-primary">{navigation("docs")}</Link>
+            <Link href="/document" className="hover:text-primary">{navigation("docs")}</Link>
             <Link href="/faq" className="hover:text-primary">{navigation("faq")}</Link>
             <Link href="/dashboard" className="hover:text-primary">{common("dashboard")}</Link>
           </div>

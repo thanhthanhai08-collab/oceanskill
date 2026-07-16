@@ -23,8 +23,9 @@ export const fallbackCategoryVisual: CategoryVisual = {
 export const navItems = [
   {href: "/skills", label: "marketplace"},
   {href: "/leaderboard", label: "leaderboard"},
+  {href: "/pricing", label: "pricing"},
   {href: "/blog", label: "blog"},
-  {href: "/docs", label: "docs"},
+  {href: "/document", label: "docs"},
 ] as const;
 
 export const dashboardNavItems = [

@@ -50,7 +50,7 @@
     "scanChecks": "Kết quả quét gần nhất",
     "passed": "Đạt",
     "failed": "Cần xem lại",
-    "mcpHint": "Dùng list_purchased_skills trong MCP client để thấy skill riêng tư, sau đó gọi get_skill_content với ID của skill.",
+    "mcpHint": "Dùng list_purchased_skills trong MCP client để thấy skill riêng tư, sau đó gọi get_skill_md với ID của skill.",
     "searchPlaceholder": "Tìm skill của bạn...",
     "filterAll": "Tất cả"
   }

@@ -1,7 +1,6 @@
 import {getTranslations} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {Link} from "@/i18n/navigation";
-import SiteShell from "@/components/layout/SiteShell";
 import AddSkillToLibraryButton from "@/components/skills/AddSkillToLibraryButton";
 import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
@@ -38,8 +37,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   ]);
 
   return (
-    <SiteShell>
-      <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
+    <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
         <div className="min-w-0 space-y-10">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
             <Link href="/skills" className="transition hover:text-primary">{locale === "vi" ? "Kho skill" : "Skills"}</Link>
@@ -221,7 +219,6 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             </section>
           )}
         </aside>
-      </main>
-    </SiteShell>
+    </main>
   );
 }

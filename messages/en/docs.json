@@ -1,23 +1,74 @@
 {
   "Docs": {
-    "eyebrow": "OceanSkill documentation", "title": "Connect your first skill in minutes", "description": "Learn the core workflow, copy a safe MCP configuration, understand available tools, and see why protected content stays behind authentication.",
-    "tutorial": "Tutorial", "howTo": "How-to", "reference": "Reference", "explanation": "Explanation", "onThisPage": "On this page",
-    "quickstartTitle": "Quickstart: connect OceanSkill MCP", "quickstartDescription": "Go from an account to a discoverable skill in three visible steps.",
+    "eyebrow": "OceanSkill documentation",
+    "title": "From marketplace to MCP in one clear workflow",
+    "description": "Connect an agent client, manage skills and collections, understand credits and requestId, and troubleshoot MCP calls without exposing your key.",
+    "onThisPage": "On this page",
+    "nav": {"start": "Get started", "connect": "Connect MCP", "workflow": "Use skills", "collections": "Collections", "requestId": "requestId & credits", "tools": "Tool reference", "errors": "Troubleshooting"},
+    "startEyebrow": "Quickstart",
+    "startTitle": "Connect OceanSkill in four steps",
+    "startDescription": "Your dashboard is the control plane; your MCP-compatible client is where skills are used.",
     "steps": {
-      "account": {"title": "Create an account and API key", "description": "Sign in to the dashboard and create a separate key for the client you plan to connect."},
-      "configure": {"title": "Add the MCP server", "description": "Open your agent client's MCP settings and add the OceanSkill endpoint with your key as authorization."},
-      "verify": {"title": "Verify skill discovery", "description": "Ask the client to list available OceanSkill skills, then open one public detail page to compare its version."}
+      "account": {"title": "Create your account", "description": "Sign up to receive 50 trial credits and open the OceanSkill dashboard."},
+      "key": {"title": "Create an MCP key", "description": "Create a dedicated key in Dashboard → MCP keys. Copy it immediately because the full key is shown once."},
+      "client": {"title": "Configure your client", "description": "Add the Supabase Edge Function endpoint and send the key in the Authorization header."},
+      "verify": {"title": "Verify the connection", "description": "Ask your agent to list OceanSkill tools, search the catalog, or show your available skills."}
     },
-    "configTitle": "Configuration example", "configDescription": "Use placeholders locally. Never commit a real API key to Git.", "copyHint": "Replace the endpoint and key with values from your dashboard.",
-    "toolsTitle": "MCP tool reference", "toolsDescription": "OceanSkill currently exposes these workflow-level tools.",
+    "connectEyebrow": "Configuration",
+    "connectTitle": "Add the MCP server to your client",
+    "connectDescription": "Use this JSON shape in Codex, Claude Code, Cursor, or another MCP client. Replace both placeholders with your project endpoint and MCP key.",
+    "copy": "Copy config", "copied": "Copied", "configWarning": "Keep keys local. Never commit an nsk_ key, paste it into frontend code, or share it in screenshots.",
+    "clientNoteTitle": "What each value means",
+    "clientNotes": {
+      "url": "serverUrl points to the deployed Supabase Edge Function: /functions/v1/mcp.",
+      "key": "Authorization uses Bearer followed by the nsk_ key created in your dashboard.",
+      "reload": "After saving, restart or reload the MCP client so it discovers the latest tools."
+    },
+    "workflowEyebrow": "Daily workflow",
+    "workflowTitle": "Discover, enable, then invoke",
+    "workflowDescription": "Public pages help you evaluate skills. Your library and collections decide what your agent can use.",
+    "workflow": {
+      "discover": {"title": "Discover", "description": "Browse categories, authors, compatibility, versions, tags, and public descriptions."},
+      "enable": {"title": "Enable", "description": "Add a skill or collection to your library, then enable only the skills you want exposed to your agent."},
+      "invoke": {"title": "Invoke", "description": "Ask the agent to use a named skill. OceanSkill returns the scanned current version through authenticated MCP."}
+    },
+    "collectionsEyebrow": "Collections",
+    "collectionsTitle": "Group skills into reusable collections",
+    "collectionsDescription": "Collections keep related skills together for a project, team, or workflow. Create and edit your own collections in the dashboard, or add an available collection through MCP.",
+    "collectionSteps": {
+      "create": {"title": "Create", "description": "Open Dashboard → Collections, name the collection, choose its skills, and save."},
+      "open": {"title": "Open", "description": "Each collection receives its own localized URL so you can return to it and edit the selected skills."},
+      "agent": {"title": "Use from your agent", "description": "Call list_collections, then add_collection_to_library. Its skills become available in your library and can be toggled individually."}
+    },
+    "requestEyebrow": "Usage safety",
+    "requestTitle": "How requestId prevents duplicate charges",
+    "requestDescription": "requestId is an idempotency key for get_skill_md and get_skill_reference. Most MCP clients can let OceanSkill generate it automatically.",
+    "requestRules": {
+      "new": {"title": "New work, new ID", "description": "Use a new requestId for a new skill-content attempt. It may contain 1–120 characters."},
+      "retry": {"title": "Retry the same successful request", "description": "Reuse the same requestId only for the same tool, skill, and current version. OceanSkill marks it replayed and charges 0 extra credits."},
+      "failed": {"title": "A failed attempt needs a new ID", "description": "Failed calls release their reservation and explain whether retry is allowed. Start the next attempt with a new requestId."},
+      "conflict": {"title": "Never reuse it across scopes", "description": "Using one requestId for another skill, version, or tool returns REQUEST_ID_CONFLICT instead of charging ambiguously."}
+    },
+    "creditTitle": "Credit rule", "creditDescription": "Each successful new get_skill_md or get_skill_reference call costs 1 credit. OceanSkill reserves one credit before reading, finalizes the debit only after success, and releases the reservation after failure. Search, listing, collection, toggle, and usage-summary tools remain free.",
+    "toolsEyebrow": "Reference", "toolsTitle": "Available MCP tools", "toolsDescription": "These are the tools exposed by the current OceanSkill MCP server.",
     "tools": {
-      "search": {"name": "search_skills", "description": "Search active public catalog metadata by a user query."},
-      "list": {"name": "list_purchased_skills", "description": "List skills available to the authenticated account."},
-      "content": {"name": "get_skill_content", "description": "Request protected content for a specific active skill version."}
+      "list": {"name": "list_purchased_skills", "description": "List enabled public and owned private skills available to the account."},
+      "search": {"name": "search_skills", "description": "Search available metadata without exposing protected SKILL.md content."},
+      "content": {"name": "get_skill_md", "description": "Return the scanned current SKILL.md and available reference keys for an enabled skill; accepts an optional requestId."},
+      "reference": {"name": "get_skill_reference", "description": "Return one mapped file from the current skill version. Text uses UTF-8 and binary content uses base64."},
+      "collections": {"name": "list_collections", "description": "List public collections and collections owned by the authenticated user."},
+      "addCollection": {"name": "add_collection_to_library", "description": "Add an accessible collection to the user library and enable its skills."},
+      "toggle": {"name": "toggle_skill", "description": "Enable or disable one library skill without fetching paid content."},
+      "usage": {"name": "get_usage_summary", "description": "Return the current credit balance and month-to-date MCP usage."}
     },
-    "securityTitle": "Why content stays behind MCP", "securityDescription": "Public pages help people evaluate a skill. Authentication, RLS, key checks, credits, and usage records protect the instructions delivered to an agent.",
-    "securityPoints": {"public": "Public: title, description, domain, compatibility, release, and license.", "private": "Protected: full SKILL.md instructions and private artifacts.", "owner": "Owner-scoped: API keys, credits, orders, and usage events."},
-    "troubleshootingTitle": "Troubleshooting", "troubleshooting": {"auth": "401 or invalid key: confirm the key is active and belongs to the current account.", "empty": "No skills returned: remove filters and confirm the catalog contains active releases.", "credits": "Insufficient credits: open the dashboard and review balance and recent MCP usage."},
-    "ctaTitle": "Ready to connect?", "ctaDescription": "Create your account, review the marketplace, then use OceanGuide if you get stuck.", "openDashboard": "Open dashboard", "askChatbot": "Ask OceanGuide"
+    "errorsEyebrow": "Troubleshooting", "errorsTitle": "Understand errors before retrying",
+    "errors": {
+      "auth": {"code": "401 · INVALID_KEY", "description": "Confirm the Authorization header uses Bearer and an active nsk_ key from the same account."},
+      "credits": {"code": "402 · INSUFFICIENT_CREDITS", "description": "Open Billing to top up. The response is clear and no content credit is charged."},
+      "access": {"code": "403 · NOT AVAILABLE", "description": "Add or enable the skill in your library and confirm that its current version is active."},
+      "conflict": {"code": "409 · REQUEST/VERSION CONFLICT", "description": "Follow the returned retryable flag. Use a new requestId after failure or version change."},
+      "server": {"code": "500 · INTERNAL_ERROR", "description": "The response includes a stable errorCode and may include requestId. Keep those values when reporting the issue; do not include your key."}
+    },
+    "ctaTitle": "Ready to connect your agent?", "ctaDescription": "Create an MCP key, add your first collection, and check usage from the dashboard.", "openKeys": "Create MCP key", "openCollections": "Open collections"
   }
 }

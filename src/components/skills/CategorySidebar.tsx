@@ -1,28 +1,52 @@
-import {Link} from "@/i18n/navigation";
+"use client";
+
+import {Link, usePathname} from "@/i18n/navigation";
 import type {SkillSummary} from "@/lib/catalog/skills";
 import type {CatalogCategory} from "@/lib/catalog/categories";
 
-export interface MarketplaceSidebarProps {
+export type CategorySidebarLabels = Readonly<{
+  categories: string;
+  allCategories: string;
+  catalogRank: string;
+  trending: string;
+}>;
+
+export interface CategorySidebarProps {
   readonly skills: SkillSummary[];
   readonly categories: CatalogCategory[];
-  readonly activeCategory: string;
-  readonly labels: Readonly<{
-    categories: string;
-    allCategories: string;
-    catalogRank: string;
-    trending: string;
-  }>;
+  readonly labels: CategorySidebarLabels;
 }
 
-export default function MarketplaceSidebar({skills, categories, activeCategory, labels}: MarketplaceSidebarProps) {
+export default function CategorySidebar({skills, categories, labels}: CategorySidebarProps) {
+  const pathname = usePathname();
+  const activeCategory = pathname.match(/^\/skills\/category\/([^/]+)\/?$/)?.[1] ?? "all";
+
   return (
     <aside className="space-y-10 lg:sticky lg:top-28 lg:h-fit">
       <section>
         <h2 className="font-geist text-xl font-semibold">{labels.categories}</h2>
-        <div className="mt-4 flex flex-wrap gap-2 lg:flex-col">
-          <Link href="/skills" className={`rounded-lg px-3 py-2 text-sm transition ${activeCategory === "all" ? "bg-primary/15 text-primary" : "text-on-surface-variant hover:bg-surface-container"}`}>{labels.allCategories}</Link>
-          {categories.map((category) => <Link key={category.slug} href={`/skills/category/${category.slug}`} className={`rounded-lg px-3 py-2 text-sm transition ${activeCategory === category.slug ? "bg-primary/15 text-primary" : "text-on-surface-variant hover:bg-surface-container"}`}>{category.name}</Link>)}
-        </div>
+        <nav aria-label={labels.categories} className="mt-4 flex flex-wrap gap-2 lg:flex-col">
+          <Link
+            href="/skills"
+            aria-current={activeCategory === "all" ? "page" : undefined}
+            className={`rounded-lg px-3 py-2 text-sm transition ${activeCategory === "all" ? "bg-primary/15 font-semibold text-primary" : "text-on-surface-variant hover:bg-surface-container"}`}
+          >
+            {labels.allCategories}
+          </Link>
+          {categories.map((category) => {
+            const active = activeCategory === category.slug;
+            return (
+              <Link
+                key={category.slug}
+                href={`/skills/category/${category.slug}`}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-lg px-3 py-2 text-sm transition ${active ? "bg-primary/15 font-semibold text-primary" : "text-on-surface-variant hover:bg-surface-container"}`}
+              >
+                {category.name}
+              </Link>
+            );
+          })}
+        </nav>
       </section>
       <section className="hidden lg:block">
         <h2 className="font-geist text-xl font-semibold">{labels.catalogRank}</h2>

@@ -50,7 +50,7 @@
     "scanChecks": "Latest scan checks",
     "passed": "Passed",
     "failed": "Needs review",
-    "mcpHint": "Use list_purchased_skills in your MCP client to see private skills, then call get_skill_content with the skill ID.",
+    "mcpHint": "Use list_purchased_skills in your MCP client to see private skills, then call get_skill_md with the skill ID.",
     "searchPlaceholder": "Search your skills...",
     "filterAll": "All"
   }

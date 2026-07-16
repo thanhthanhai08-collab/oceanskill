@@ -6,9 +6,10 @@
     "leaderboardTitle": "AI Agent Skill Readiness Rankings", "leaderboardDescription": "Compare active AI agent skills by verified metadata, client compatibility, licensing, and release readiness.",
     "loginTitle": "Sign in to OceanSkill", "dashboardTitle": "OceanSkill Dashboard", "organizationDescription": "OceanSkill curates and securely delivers production-ready skills for AI agents.",
     "blogTitle": "AI Agent Guides, MCP and Security", "blogDescription": "Practical OceanSkill articles about MCP, AI agent workflows, Supabase security, and choosing production-ready skills.",
-    "docsTitle": "OceanSkill MCP Documentation", "docsDescription": "Connect OceanSkill MCP, review tool references, troubleshoot access, and understand the protected skill delivery model.",
+    "documentTitle": "OceanSkill Documentation — MCP, Skills and Collections", "documentDescription": "Connect OceanSkill MCP, manage skills and collections, understand requestId and credits, and troubleshoot every supported tool.",
+    "pricingTitle": "OceanSkill Pricing — Free Trial and Credit Packs", "pricingDescription": "Start with 50 free trial credits, then buy non-expiring OceanSkill credit packs for secure MCP skill delivery.",
     "chatbotTitle": "OceanGuide — OceanSkill Assistant", "chatbotDescription": "Ask a grounded assistant about OceanSkill, MCP configuration, agent skills, credits, usage, and security.",
     "faqTitle": "OceanSkill FAQ — Skills, MCP and Security", "faqDescription": "Get clear answers about OceanSkill skills, MCP configuration and usage, credits, supported clients, and Supabase-backed security.",
-    "homeBreadcrumb": "Home", "marketplaceBreadcrumb": "Marketplace", "leaderboardBreadcrumb": "Leaderboard", "blogBreadcrumb": "Blog", "docsBreadcrumb": "Documentation", "chatbotBreadcrumb": "OceanGuide", "faqBreadcrumb": "FAQ", "skillCategory": "AI agent skill"
+    "homeBreadcrumb": "Home", "marketplaceBreadcrumb": "Marketplace", "leaderboardBreadcrumb": "Leaderboard", "blogBreadcrumb": "Blog", "documentBreadcrumb": "Documentation", "pricingBreadcrumb": "Pricing", "chatbotBreadcrumb": "OceanGuide", "faqBreadcrumb": "FAQ", "skillCategory": "AI agent skill"
   }
 }

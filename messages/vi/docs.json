@@ -1,23 +1,74 @@
 {
   "Docs": {
-    "eyebrow": "Tài liệu OceanSkill", "title": "Kết nối kỹ năng đầu tiên trong vài phút", "description": "Nắm luồng cốt lõi, sao chép cấu hình MCP an toàn, hiểu các công cụ hiện có và lý do nội dung được bảo vệ chỉ giao sau xác thực.",
-    "tutorial": "Hướng dẫn nhập môn", "howTo": "Cách thực hiện", "reference": "Tham chiếu", "explanation": "Giải thích", "onThisPage": "Trong trang này",
-    "quickstartTitle": "Bắt đầu nhanh: kết nối OceanSkill MCP", "quickstartDescription": "Từ tài khoản đến kỹ năng có thể khám phá trong ba bước nhìn thấy được.",
+    "eyebrow": "Tài liệu OceanSkill",
+    "title": "Từ kho skill đến MCP trong một luồng rõ ràng",
+    "description": "Kết nối agent client, quản lý skill và bộ sưu tập, hiểu credit và requestId, đồng thời xử lý lỗi MCP mà không làm lộ khóa.",
+    "onThisPage": "Trong trang này",
+    "nav": {"start": "Bắt đầu", "connect": "Kết nối MCP", "workflow": "Sử dụng skill", "collections": "Bộ sưu tập", "requestId": "requestId và credit", "tools": "Tham chiếu công cụ", "errors": "Xử lý lỗi"},
+    "startEyebrow": "Bắt đầu nhanh",
+    "startTitle": "Kết nối OceanSkill trong bốn bước",
+    "startDescription": "Dashboard là nơi quản lý; MCP client là nơi agent sử dụng skill.",
     "steps": {
-      "account": {"title": "Tạo tài khoản và khóa API", "description": "Đăng nhập dashboard và tạo khóa riêng cho client bạn muốn kết nối."},
-      "configure": {"title": "Thêm MCP server", "description": "Mở phần cài đặt MCP của agent client rồi thêm endpoint OceanSkill cùng khóa xác thực."},
-      "verify": {"title": "Kiểm tra khám phá kỹ năng", "description": "Yêu cầu client liệt kê skill OceanSkill, sau đó mở trang chi tiết công khai để đối chiếu phiên bản."}
+      "account": {"title": "Tạo tài khoản", "description": "Đăng ký để nhận 50 credit dùng thử và mở dashboard OceanSkill."},
+      "key": {"title": "Tạo khóa MCP", "description": "Tạo khóa riêng tại Dashboard → Khóa MCP. Hãy sao chép ngay vì khóa đầy đủ chỉ hiển thị một lần."},
+      "client": {"title": "Cấu hình client", "description": "Thêm endpoint Supabase Edge Function và gửi khóa trong Authorization header."},
+      "verify": {"title": "Kiểm tra kết nối", "description": "Yêu cầu agent liệt kê OceanSkill tools, tìm trong catalog hoặc hiển thị các skill khả dụng."}
     },
-    "configTitle": "Ví dụ cấu hình", "configDescription": "Chỉ dùng placeholder trong tài liệu. Không commit khóa API thật vào Git.", "copyHint": "Thay endpoint và khóa bằng giá trị trong dashboard của bạn.",
-    "toolsTitle": "Tham chiếu công cụ MCP", "toolsDescription": "OceanSkill hiện công bố các công cụ cấp quy trình sau.",
+    "connectEyebrow": "Cấu hình",
+    "connectTitle": "Thêm MCP server vào client",
+    "connectDescription": "Dùng cấu trúc JSON này cho Codex, Claude Code, Cursor hoặc MCP client khác. Thay hai placeholder bằng endpoint dự án và khóa MCP của bạn.",
+    "copy": "Sao chép cấu hình", "copied": "Đã sao chép", "configWarning": "Chỉ lưu khóa ở máy cá nhân. Không commit khóa nsk_, đưa vào frontend hoặc chia sẻ trong ảnh chụp màn hình.",
+    "clientNoteTitle": "Ý nghĩa từng giá trị",
+    "clientNotes": {
+      "url": "serverUrl trỏ tới Supabase Edge Function đã deploy: /functions/v1/mcp.",
+      "key": "Authorization dùng Bearer theo sau bởi khóa nsk_ được tạo trong dashboard.",
+      "reload": "Sau khi lưu, hãy khởi động lại hoặc reload MCP client để nhận danh sách tool mới nhất."
+    },
+    "workflowEyebrow": "Luồng sử dụng",
+    "workflowTitle": "Khám phá, bật rồi mới gọi",
+    "workflowDescription": "Trang công khai giúp bạn đánh giá skill. Thư viện và bộ sưu tập quyết định agent được phép sử dụng gì.",
+    "workflow": {
+      "discover": {"title": "Khám phá", "description": "Xem danh mục, tác giả, client tương thích, phiên bản, tag và mô tả công khai."},
+      "enable": {"title": "Kích hoạt", "description": "Thêm skill hoặc bộ sưu tập vào thư viện, sau đó chỉ bật những skill muốn cung cấp cho agent."},
+      "invoke": {"title": "Gọi skill", "description": "Yêu cầu agent dùng một skill cụ thể. OceanSkill trả về đúng bản hiện tại đã quét thông qua MCP được xác thực."}
+    },
+    "collectionsEyebrow": "Bộ sưu tập",
+    "collectionsTitle": "Nhóm skill thành bộ sưu tập tái sử dụng",
+    "collectionsDescription": "Bộ sưu tập giữ các skill liên quan cho một dự án, đội nhóm hoặc quy trình. Bạn có thể tạo và chỉnh sửa bộ sưu tập riêng trong dashboard hoặc thêm bộ sưu tập khả dụng qua MCP.",
+    "collectionSteps": {
+      "create": {"title": "Tạo", "description": "Mở Dashboard → Bộ sưu tập, đặt tên, chọn skill rồi lưu."},
+      "open": {"title": "Mở lại", "description": "Mỗi bộ sưu tập có URL song ngữ riêng để bạn quay lại và chỉnh sửa danh sách skill."},
+      "agent": {"title": "Dùng từ agent", "description": "Gọi list_collections rồi add_collection_to_library. Các skill sẽ vào thư viện và có thể bật/tắt riêng."}
+    },
+    "requestEyebrow": "An toàn usage",
+    "requestTitle": "requestId ngăn trừ credit trùng như thế nào",
+    "requestDescription": "requestId là khóa idempotency của get_skill_md và get_skill_reference. Phần lớn trường hợp bạn có thể để OceanSkill tự tạo.",
+    "requestRules": {
+      "new": {"title": "Việc mới, ID mới", "description": "Dùng requestId mới cho một lần lấy nội dung skill mới. Giá trị dài từ 1–120 ký tự."},
+      "retry": {"title": "Gọi lại đúng request đã thành công", "description": "Chỉ dùng lại requestId cho đúng tool, skill và phiên bản hiện tại. OceanSkill đánh dấu replay và không trừ thêm credit."},
+      "failed": {"title": "Lần thất bại cần ID mới", "description": "Lệnh thất bại sẽ hoàn credit đã giữ và cho biết có thể retry hay không. Lần thử mới phải dùng requestId mới."},
+      "conflict": {"title": "Không dùng lại khác phạm vi", "description": "Dùng cùng requestId cho skill, phiên bản hoặc tool khác sẽ trả REQUEST_ID_CONFLICT thay vì trừ credit không rõ ràng."}
+    },
+    "creditTitle": "Quy tắc credit", "creditDescription": "Mỗi lần gọi mới get_skill_md hoặc get_skill_reference thành công tốn 1 credit. OceanSkill reserve một credit trước khi đọc, chỉ finalize debit sau khi thành công và release reservation nếu thất bại. Các tool tìm kiếm, liệt kê, bộ sưu tập, bật/tắt và xem usage vẫn miễn phí.",
+    "toolsEyebrow": "Tham chiếu", "toolsTitle": "Các MCP tool hiện có", "toolsDescription": "Đây là các tool được MCP server OceanSkill hiện tại cung cấp.",
     "tools": {
-      "search": {"name": "search_skills", "description": "Tìm metadata của skill active theo truy vấn người dùng."},
-      "list": {"name": "list_purchased_skills", "description": "Liệt kê skill khả dụng cho tài khoản đã xác thực."},
-      "content": {"name": "get_skill_content", "description": "Yêu cầu nội dung được bảo vệ của một phiên bản skill active."}
+      "list": {"name": "list_purchased_skills", "description": "Liệt kê skill công khai đã bật và skill riêng thuộc tài khoản."},
+      "search": {"name": "search_skills", "description": "Tìm metadata khả dụng mà không lộ nội dung SKILL.md được bảo vệ."},
+      "content": {"name": "get_skill_md", "description": "Trả về SKILL.md phiên bản hiện tại cùng các reference key khả dụng; nhận requestId tùy chọn."},
+      "reference": {"name": "get_skill_reference", "description": "Trả về một file được mapping của phiên bản skill hiện tại. File text dùng UTF-8, file nhị phân dùng base64."},
+      "collections": {"name": "list_collections", "description": "Liệt kê bộ sưu tập công khai và bộ sưu tập do người dùng sở hữu."},
+      "addCollection": {"name": "add_collection_to_library", "description": "Thêm bộ sưu tập khả dụng vào thư viện và bật các skill trong đó."},
+      "toggle": {"name": "toggle_skill", "description": "Bật hoặc tắt một skill trong thư viện mà không lấy nội dung trả phí."},
+      "usage": {"name": "get_usage_summary", "description": "Trả về số credit hiện tại và tổng usage MCP từ đầu tháng."}
     },
-    "securityTitle": "Vì sao nội dung nằm sau MCP", "securityDescription": "Trang công khai giúp người dùng đánh giá skill. Xác thực, RLS, kiểm tra khóa, credit và usage bảo vệ hướng dẫn được giao cho agent.",
-    "securityPoints": {"public": "Công khai: tên, mô tả, domain, tương thích, phiên bản và giấy phép.", "private": "Được bảo vệ: toàn bộ hướng dẫn SKILL.md và artifact riêng.", "owner": "Theo chủ sở hữu: khóa API, credit, đơn hàng và usage event."},
-    "troubleshootingTitle": "Xử lý sự cố", "troubleshooting": {"auth": "401 hoặc khóa không hợp lệ: kiểm tra khóa còn hoạt động và thuộc đúng tài khoản.", "empty": "Không có skill: bỏ bộ lọc và kiểm tra catalog có bản phát hành active.", "credits": "Không đủ credit: mở dashboard để xem số dư và lượt gọi MCP gần đây."},
-    "ctaTitle": "Sẵn sàng kết nối?", "ctaDescription": "Tạo tài khoản, xem marketplace rồi hỏi OceanGuide nếu bạn gặp vướng mắc.", "openDashboard": "Mở dashboard", "askChatbot": "Hỏi OceanGuide"
+    "errorsEyebrow": "Xử lý lỗi", "errorsTitle": "Hiểu lỗi trước khi thử lại",
+    "errors": {
+      "auth": {"code": "401 · INVALID_KEY", "description": "Kiểm tra Authorization dùng Bearer và khóa nsk_ còn hoạt động của đúng tài khoản."},
+      "credits": {"code": "402 · INSUFFICIENT_CREDITS", "description": "Mở Thanh toán để nạp thêm. Phản hồi ghi rõ lỗi và không trừ content credit."},
+      "access": {"code": "403 · NOT AVAILABLE", "description": "Thêm hoặc bật skill trong thư viện và kiểm tra phiên bản hiện tại đang active."},
+      "conflict": {"code": "409 · REQUEST/VERSION CONFLICT", "description": "Làm theo cờ retryable trả về. Dùng requestId mới sau khi lỗi hoặc phiên bản thay đổi."},
+      "server": {"code": "500 · INTERNAL_ERROR", "description": "Phản hồi có errorCode ổn định và có thể kèm requestId. Giữ các giá trị này khi báo lỗi, nhưng không gửi khóa."}
+    },
+    "ctaTitle": "Sẵn sàng kết nối agent?", "ctaDescription": "Tạo khóa MCP, thêm bộ sưu tập đầu tiên và theo dõi usage từ dashboard.", "openKeys": "Tạo khóa MCP", "openCollections": "Mở bộ sưu tập"
   }
 }

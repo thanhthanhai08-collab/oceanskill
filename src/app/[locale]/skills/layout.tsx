@@ -1,16 +1,40 @@
-import type {Metadata} from "next";
 import {getTranslations} from "next-intl/server";
-import type {Locale} from "@/i18n/locales";
-import {createPageMetadata} from "@/lib/seo/site";
+import SiteShell from "@/components/layout/SiteShell";
+import SkillsCatalogLayout from "@/components/skills/SkillsCatalogLayout";
+import {listPublicCategories} from "@/lib/catalog/categories";
+import {listPublicSkills} from "@/lib/catalog/skills";
 
-export interface SkillsLayoutProps { readonly children: React.ReactNode; readonly params: Promise<{locale: string}>; }
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata({params}: SkillsLayoutProps): Promise<Metadata> {
+type SkillsLayoutProps = Readonly<{
+  children: React.ReactNode;
+  params: Promise<{locale: string}>;
+}>;
+
+export default async function SkillsLayout({children, params}: SkillsLayoutProps) {
   const {locale} = await params;
-  const t = await getTranslations({locale, namespace: "SEO"});
-  return createPageMetadata({locale: locale as Locale, path: "skills", title: t("marketplaceTitle"), description: t("marketplaceDescription")});
-}
+  const [skills, allCategories, t] = await Promise.all([
+    listPublicSkills(locale),
+    listPublicCategories(locale),
+    getTranslations({locale, namespace: "Marketplace"}),
+  ]);
+  const availableCategorySlugs = new Set(skills.map((skill) => skill.category));
+  const categories = allCategories.filter((category) => availableCategorySlugs.has(category.slug));
 
-export default function SkillsLayout({children}: SkillsLayoutProps) {
-  return children;
+  return (
+    <SiteShell>
+      <SkillsCatalogLayout
+        skills={skills}
+        categories={categories}
+        labels={{
+          categories: t("categories"),
+          allCategories: t("allCategories"),
+          catalogRank: t("catalogRank"),
+          trending: t("trending"),
+        }}
+      >
+        {children}
+      </SkillsCatalogLayout>
+    </SiteShell>
+  );
 }

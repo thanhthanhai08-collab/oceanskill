@@ -12,7 +12,8 @@ const publicRoutes = [
   {path: "skills", changeFrequency: "daily" as const, priority: 0.9},
   {path: "leaderboard", changeFrequency: "daily" as const, priority: 0.8},
   {path: "blog", changeFrequency: "weekly" as const, priority: 0.8},
-  {path: "docs", changeFrequency: "monthly" as const, priority: 0.8},
+  {path: "document", changeFrequency: "monthly" as const, priority: 0.85},
+  {path: "pricing", changeFrequency: "monthly" as const, priority: 0.85},
   {path: "faq", changeFrequency: "monthly" as const, priority: 0.8},
 ];
 
