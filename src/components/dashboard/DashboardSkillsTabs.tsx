@@ -19,7 +19,7 @@ type TabsLabels = Readonly<{
   platformBadge: string; uploadedBadge: string;
   allSkillsDescription: string; platformSkillsDescription: string; uploadedSkillsDescription: string;
   emptyAll: string; emptyPlatform: string;
-  addSkill: string; addSkillHint: string; limitTitle: string; limitDescription: string; upgradePlan: string; close: string;
+  addSkill: string; addSkillHint: string; limitTitle: string; limitDescription: string; noSlotsTitle: string; noSlotsDescription: string; upgradePlan: string; close: string;
   securityDescription: string; removeSkill: string; removeFailed: string;
 }>;
 
@@ -184,7 +184,7 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
         <div className="mt-8">
           <CreatorSkillList skills={uploaded} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} labels={cardLabels} ownerName={ownerName} ownerAvatarUrl={ownerAvatarUrl}/>
           <div className="mt-6">
-            <CreatorSkillAddCard atLimit={atLimit} count={uploaded.length} limit={limit} formLabels={formLabels} labels={{add: labels.addSkill, addHint: labels.addSkillHint, limitTitle: labels.limitTitle, limitDescription: labels.limitDescription, upgrade: labels.upgradePlan, close: labels.close}}/>
+            <CreatorSkillAddCard atLimit={atLimit} hasPurchasedSlots={limit > 5} showFreePlanHint={limit <= 5} count={uploaded.length} limit={limit} formLabels={formLabels} labels={{add: labels.addSkill, addHint: labels.addSkillHint, limitTitle: labels.limitTitle, limitDescription: labels.limitDescription, noSlotsTitle: labels.noSlotsTitle, noSlotsDescription: labels.noSlotsDescription, upgrade: labels.upgradePlan, close: labels.close}}/>
           </div>
           <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-on-surface-variant"><span className="material-symbols-outlined text-[17px] text-secondary">verified_user</span>{labels.securityDescription}</p>
         </div>

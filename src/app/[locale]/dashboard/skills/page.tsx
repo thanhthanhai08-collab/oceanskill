@@ -20,7 +20,7 @@ export default async function DashboardSkillsPage({params}: {readonly params: Pr
     platformBadge: t("platformBadge"), uploadedBadge: t("uploadedBadge"),
     allSkillsDescription: t("allSkillsDescription"), platformSkillsDescription: t("platformSkillsDescription"), uploadedSkillsDescription: t("uploadedSkillsDescription", {limit}),
     emptyAll: t("emptyAll"), emptyPlatform: t("emptyPlatform"),
-    addSkill: t("addSkill"), addSkillHint: t("addSkillHint"), limitTitle: t("limitTitle"), limitDescription: t("limitDescription", {limit}), upgradePlan: t("upgradePlan"), close: t("close"),
+    addSkill: t("addSkill"), addSkillHint: t("addSkillHint"), limitTitle: t("limitTitle"), limitDescription: t("limitDescription", {limit}), noSlotsTitle: t("noSlotsTitle"), noSlotsDescription: t("noSlotsDescription"), upgradePlan: t("upgradePlan"), close: t("close"),
     securityDescription: t("securityDescription"),
     removeSkill: t("removeSkill"), removeFailed: t("removeFailed"),
   };

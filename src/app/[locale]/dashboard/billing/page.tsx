@@ -29,6 +29,7 @@ const billingLabels = {
     autoOrder: "Tạo QR thanh toán SePay tự động", emptyPacks: "Chưa có gói credit nào đang hoạt động", creditLabel: "Credit",
     scrollTopUp: "Nạp credit", transactionHistory: "Lịch sử giao dịch", colDate: "Ngày tạo lệnh", colType: "Loại giao dịch",
     colUnits: "Số lượng", colAmount: "Số tiền", colStatus: "Trạng thái", topUpType: "Nạp tiền", slotType: "Mua slot skill",
+    buySkillSlots: "Mua thêm slot đăng skill", slotDescription: "Mỗi 5.000₫ mở thêm 1 slot skill tự đăng. Có thể mua nhiều slot trong cùng một lần thanh toán.", slotPrice: "5.000₫ / slot",
   },
   en: {
     title: "Billing", description: "Manage your credits and transaction history", buyCredits: "Buy credits", promo: "Today's offer", popular: "Most popular", choose: "Choose plan", creating: "Creating order",
@@ -36,6 +37,7 @@ const billingLabels = {
     autoOrder: "Automatic SePay payment QR", emptyPacks: "No active credit plans are available", creditLabel: "Credits",
     scrollTopUp: "Top up credits", transactionHistory: "Transaction history", colDate: "Created at", colType: "Transaction type",
     colUnits: "Credits / slots", colAmount: "Amount", colStatus: "Status", topUpType: "Top-up", slotType: "Skill slots",
+    buySkillSlots: "Buy more skill publishing slots", slotDescription: "Each 5,000 VND payment adds one private-skill slot. You can purchase multiple slots in one payment.", slotPrice: "5,000 VND / slot",
   },
 } as const;
 
@@ -188,6 +190,23 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
             <p className="rounded-xl border border-dashed border-outline-variant/40 p-8 text-sm text-on-surface-variant lg:col-span-3">{labels.emptyPacks}</p>
           )}
         </div>
+      </section>
+
+      <section className="mt-8 flex flex-col gap-6 rounded-2xl border border-outline-variant/45 bg-surface-container-low/55 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div className="flex items-start gap-4">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary/12 text-secondary">
+            <span className="material-symbols-outlined">add_box</span>
+          </span>
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-secondary">{labels.slotPrice}</p>
+            <h2 className="mt-2 font-geist text-2xl font-bold">{labels.buySkillSlots}</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">{labels.slotDescription}</p>
+          </div>
+        </div>
+        <Link href="/dashboard/billing/topup?purpose=creator-slots&amount=5000" className="btn-payment inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold hover:-translate-y-0.5 hover:brightness-105">
+          <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+          {labels.buySkillSlots}
+        </Link>
       </section>
 
       <section className="mt-12 rounded-2xl border border-white/10 bg-surface-container-low/55">

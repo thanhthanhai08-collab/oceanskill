@@ -1,10 +1,8 @@
 {
   "Dashboard": {
-    "eyebrow": "Không gian riêng",
     "hello": "Xin chào, {name}",
     "overviewTitle": "Tổng quan",
     "description": "Theo dõi skill, credit, MCP key, lượt sử dụng gần đây và lệnh thanh toán tại một nơi.",
-    "roleLabel": "Nskill Pro Member",
     "overview": "Tổng quan",
     "skills": "Skills của tôi",
     "collections": "Bộ sưu tập",

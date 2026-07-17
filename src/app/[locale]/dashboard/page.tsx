@@ -27,15 +27,15 @@ export default async function DashboardPage({params}: DashboardPageProps) {
   const formatDate = (value: string) => new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(value));
   return (
     <>
-      <header className="grid gap-6 lg:grid-cols-12 lg:items-end">
-        <p className="border-l-2 border-primary pl-3 font-mono text-[11px] uppercase tracking-[0.18em] text-primary lg:col-span-3">{t("eyebrow")}</p>
-        <div className="lg:col-span-7"><h1 className="text-balance font-geist text-5xl font-semibold tracking-[-0.045em] sm:text-6xl">{t("overviewTitle")}</h1><p className="mt-4 max-w-2xl text-pretty leading-7 text-on-surface-variant">{t("description")}</p></div>
+      <header>
+        <h1 className="text-balance font-geist text-5xl font-semibold tracking-[-0.045em] sm:text-6xl">{t("overviewTitle")}</h1>
+        <p className="mt-4 max-w-2xl text-pretty leading-7 text-on-surface-variant">{t("description")}</p>
       </header>
 
-      <section className="relative mt-10 overflow-hidden border-y border-primary/35 bg-primary/[.055] px-6 py-9 sm:px-8 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8 lg:py-10">
-        <div className="pointer-events-none absolute inset-0 home-grid opacity-35" />
-        <div className="relative lg:col-span-8"><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">{t("availableCredits")}</p><p className="mt-3 flex flex-wrap items-end gap-3 font-geist text-6xl font-semibold leading-none tabular-nums tracking-[-0.05em] sm:text-7xl">{data.balance.toLocaleString(locale)}<span className="mb-1 text-base font-medium tracking-normal text-on-surface-variant">{t("creditUnit")}</span></p><p className="mt-5 max-w-2xl text-sm leading-6 text-on-surface-variant">{t("mcpCallsDescription")}</p></div>
-        <div className="relative mt-7 lg:col-span-4 lg:mt-0 lg:text-right"><a href={`/${locale}/dashboard/billing/topup`} className="btn-payment inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:brightness-105"><span className="material-symbols-outlined text-[18px]">add</span>{t("topUp")}</a></div>
+      <section className="payment-gradient relative mt-10 overflow-hidden rounded-2xl border border-white/20 px-6 py-9 shadow-[0_0_34px_rgba(129,123,190,0.32),0_18px_70px_rgba(76,132,177,0.18)] sm:px-8 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8 lg:py-10">
+        <div className="pointer-events-none absolute inset-0 home-grid opacity-20" />
+        <div className="relative lg:col-span-8"><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#25213a]/75 dark:text-white/75">{t("availableCredits")}</p><p className="mt-3 flex flex-wrap items-end gap-3 font-geist text-6xl font-semibold leading-none tabular-nums tracking-[-0.05em] sm:text-7xl">{data.balance.toLocaleString(locale)}<span className="mb-1 text-base font-medium tracking-normal text-[#25213a]/70 dark:text-white/65">{t("creditUnit")}</span></p><p className="mt-5 max-w-2xl text-sm leading-6 text-[#25213a]/75 dark:text-white/70">{t("mcpCallsDescription")}</p></div>
+        <div className="relative mt-7 lg:col-span-4 lg:mt-0 lg:text-right"><a href={`/${locale}/dashboard/billing/topup`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-white px-6 py-3 text-sm font-semibold text-[#18181b] shadow-lg shadow-[#525c90]/20 transition hover:-translate-y-0.5 hover:bg-white/90"><span className="material-symbols-outlined text-[18px]">add</span>{t("topUp")}</a></div>
       </section>
 
       <section className="mt-7 grid border-y border-outline-variant/50 sm:grid-cols-2 sm:divide-x sm:divide-outline-variant/50 xl:grid-cols-4">

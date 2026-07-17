@@ -25,6 +25,38 @@ test("uploaded skill cards hide hashes and use the signed-in profile identity", 
   assert.match(creatorData, /select\("creator_skill_limit,display_name,avatar_url,email"\)/);
 });
 
+test("dashboard navigation stays within its layout and creator slot UX follows the purchased allowance", async () => {
+  const [sidebar, layout, dashboard, addCard, tabs, billing, viMessages, enMessages, viDashboard, enDashboard] = await Promise.all([
+    readFile(new URL("../src/components/dashboard/DashboardSidebar.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/dashboard/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/dashboard/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/dashboard/CreatorSkillAddCard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/dashboard/DashboardSkillsTabs.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/dashboard/billing/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../messages/vi/creator-skills.json", import.meta.url), "utf8"),
+    readFile(new URL("../messages/en/creator-skills.json", import.meta.url), "utf8"),
+    readFile(new URL("../messages/vi/dashboard.json", import.meta.url), "utf8"),
+    readFile(new URL("../messages/en/dashboard.json", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(sidebar, /roleLabel/);
+  assert.doesNotMatch(layout, /roleLabel/);
+  assert.match(sidebar, /fixed inset-y-0 left-0/);
+  assert.match(sidebar, /lg:max-h-\[calc\(100dvh-6rem\)\]/);
+  assert.match(sidebar, /lg:overflow-y-auto/);
+  assert.match(sidebar, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(dashboard, /payment-gradient/);
+  assert.match(dashboard, /bg-white[^\n]+text-\[#18181b\]/);
+  assert.doesNotMatch(viDashboard, /Không gian riêng/);
+  assert.doesNotMatch(enDashboard, /Private workspace/);
+  assert.match(addCard, /showFreePlanHint &&/);
+  assert.match(addCard, /hasPurchasedSlots \? labels\.limitTitle : labels\.noSlotsTitle/);
+  assert.match(tabs, /showFreePlanHint=\{limit <= 5\}/);
+  assert.match(tabs, /hasPurchasedSlots=\{limit > 5\}/);
+  assert.match(billing, /topup\?purpose=creator-slots&amount=5000/);
+  assert.match(viMessages, /Gói miễn phí chỉ cho phép đăng 5 skill/);
+  assert.match(enMessages, /The free plan allows up to 5 uploaded skills/);
+});
+
 test("platform collections are public in the marketplace but dashboard reads only the user's library", async () => {
   const [sql, marketplace, dashboard] = await Promise.all([
     readFile(migrationUrl, "utf8"),

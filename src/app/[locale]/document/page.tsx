@@ -115,7 +115,7 @@ export default async function DocumentPage() {
 
           <section className="mt-16 rounded-3xl bg-gradient-to-r from-primary-container/80 to-secondary-container/80 p-8 text-white">
             <h2 className="font-geist text-3xl font-semibold">{t("ctaTitle")}</h2><p className="mt-3 max-w-2xl text-white/80">{t("ctaDescription")}</p>
-            <div className="mt-6 flex flex-wrap gap-3"><Link href="/dashboard/mcp-keys" className="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-on-primary">{t("openKeys")}</Link><Link href="/dashboard/collections" className="rounded-lg border border-white/30 px-5 py-3 text-sm font-semibold text-white">{t("openCollections")}</Link></div>
+            <div className="mt-6 flex flex-wrap gap-3"><Link href="/dashboard/mcp-keys" className="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-[#18181b] transition hover:bg-white/90">{t("openKeys")}</Link><Link href="/dashboard/collections" className="rounded-lg border border-white/30 px-5 py-3 text-sm font-semibold text-white">{t("openCollections")}</Link></div>
           </section>
         </main>
       </div>

@@ -1,10 +1,8 @@
 {
   "Dashboard": {
-    "eyebrow": "Private workspace",
     "hello": "Hello, {name}",
     "overviewTitle": "Dashboard",
     "description": "Monitor your skills, credits, MCP keys, recent usage, and payment orders from one place.",
-    "roleLabel": "Nskill Pro Member",
     "overview": "Overview",
     "skills": "My skills",
     "collections": "Collections",

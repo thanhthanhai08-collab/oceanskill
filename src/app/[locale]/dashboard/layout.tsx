@@ -55,7 +55,6 @@ export default async function DashboardLayout({children, params}: DashboardLayou
       sidebar={{
         displayName,
         avatarUrl: data.profile?.avatar_url ?? null,
-        roleLabel: t("roleLabel"),
         balance: data.balance,
         locale,
         labels: sidebarLabels,
