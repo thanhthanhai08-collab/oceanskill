@@ -28,6 +28,7 @@ type Labels = Readonly<{
   save: string;
   saving: string;
   saveFailed: string;
+  readOnly?: string;
 }>;
 
 export default function DashboardCollectionDetail({collection, library, uploaded, labels}: {
@@ -78,6 +79,15 @@ export default function DashboardCollectionDetail({collection, library, uploaded
     if (slug !== collection.slug) router.replace(`/dashboard/collections/${slug}` as "/dashboard/collections");
     router.refresh();
   };
+
+  if (!collection.owned) {
+    const selectedSkills = collection.skillIds.map((id) => skills.find((skill) => skill.id === id)).filter(Boolean) as SkillItem[];
+    return <section className="mt-10 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-surface-container-low p-6">
+      <div className="flex items-center justify-between gap-4"><div><p className="font-mono text-[11px] uppercase tracking-wider text-primary">OceanSkill</p><h2 className="mt-2 font-geist text-3xl font-bold">{collection.name}</h2></div><span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{labels.readOnly ?? "Read only"}</span></div>
+      <p className="mt-4 max-w-3xl text-sm leading-6 text-on-surface-variant">{collection.description}</p>
+      <div className="mt-8 grid gap-3 md:grid-cols-2">{selectedSkills.map((skill, index) => <article key={skill.id} className="flex items-center gap-4 rounded-xl border border-white/10 bg-surface-container-low/70 p-4"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 font-mono text-sm text-primary">{index + 1}</span><div className="min-w-0"><p className="truncate font-semibold">{skill.title}</p><p className="mt-1 text-xs text-on-surface-variant">{skill.category}</p></div></article>)}</div>
+    </section>;
+  }
 
   return (
     <section className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">

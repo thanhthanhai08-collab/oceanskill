@@ -43,6 +43,7 @@ export default async function DashboardCollectionDetailPage({params}: {readonly 
           save: t("collectionSave"),
           saving: t("collectionSaving"),
           saveFailed: t("collectionSaveFailed"),
+          readOnly: t("collectionReadOnly"),
         }}
       />
     </>

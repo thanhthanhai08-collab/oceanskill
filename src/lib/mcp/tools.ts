@@ -15,6 +15,10 @@ export type McpToolName =
   | "get_skill_reference"
   | "list_collections"
   | "add_collection_to_library"
+  | "create_skill_collection"
+  | "update_skill_collection"
+  | "delete_skill_collection"
+  | "execute_skill_collection"
   | "toggle_skill"
   | "get_usage_summary";
 
@@ -155,17 +159,22 @@ export async function listCollections(auth: AuthenticatedMcpKey) {
   const admin = createAdminClient();
   const {data, error} = await admin
     .from("skill_collections")
-    .select("id,name,description,visibility,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,category,current_version,compatible_clients,license_spdx,visibility,updated_at))")
-    .or(`visibility.eq.public,user_id.eq.${auth.userId}`)
+    .select("id,slug,name,description,visibility,collection_type,accent,updated_at,user_id,skill_collection_items(skill_id,position,skills!inner(id,slug,title,description,category,current_version,compatible_clients,license_spdx,visibility,updated_at))")
+    .or(`collection_type.eq.platform,and(collection_type.eq.user,user_id.eq.${auth.userId})`)
     .order("updated_at", {ascending: false})
     .limit(100);
   if (error) throw new Error(`Could not list collections: ${error.message}`);
   return (data ?? []).map((collection) => ({
     id: collection.id,
+    slug: collection.slug,
     name: collection.name,
     description: collection.description,
     visibility: collection.visibility,
     owned: collection.user_id === auth.userId,
+    collectionType: collection.collection_type,
+    permissions: collection.collection_type === "platform"
+      ? {canView: true, canAddToLibrary: true, canEdit: false, canDelete: false, canExecute: false}
+      : {canView: true, canAddToLibrary: true, canEdit: true, canDelete: true, canExecute: true},
     accent: collection.accent,
     updated_at: collection.updated_at,
     skills: [...(collection.skill_collection_items ?? [])]
@@ -176,24 +185,88 @@ export async function listCollections(auth: AuthenticatedMcpKey) {
 
 export async function addCollectionToLibrary(auth: AuthenticatedMcpKey, collectionId: string) {
   const admin = createAdminClient();
-  const {data: collection, error} = await admin
-    .from("skill_collections")
-    .select("id,user_id,visibility,skill_collection_items(skill_id,position)")
-    .eq("id", collectionId)
-    .maybeSingle();
-  if (error) throw new Error(`Could not load collection: ${error.message}`);
-  if (!collection || (collection.visibility !== "public" && collection.user_id !== auth.userId)) throw new Error("collection_not_available");
+  const {data, error} = await admin.rpc("mcp_add_skill_collection_to_library", {p_user_id: auth.userId, p_collection_id: collectionId});
+  if (error) throw new Error(`Could not add collection: ${error.message}`);
+  if (data !== true) throw new Error("collection_not_available");
+  return {collectionId, added: true, enabled: true};
+}
 
-  await admin.from("user_collection_library").upsert({user_id: auth.userId, collection_id: collectionId}, {onConflict: "user_id,collection_id"});
-  const skillIds = (collection.skill_collection_items ?? []).map((item) => item.skill_id).filter(Boolean);
-  if (skillIds.length) {
-    const {error: upsertError} = await admin.from("user_skill_library").upsert(
-      skillIds.map((skillId) => ({user_id: auth.userId, skill_id: skillId, enabled: true})),
-      {onConflict: "user_id,skill_id"},
-    );
-    if (upsertError) throw new Error(`Could not add collection skills: ${upsertError.message}`);
+type CollectionInput = Readonly<{name: string; slug: string; description?: string; accent?: string; skillIds: string[]}>;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function cleanCollectionInput(input: CollectionInput) {
+  const name = input.name.trim();
+  const slug = input.slug.trim().toLowerCase();
+  const description = (input.description ?? "").trim();
+  const accent = input.accent ?? "primary";
+  const skillIds = [...new Set(input.skillIds)];
+  if (!name || name.length > 120) throw new Error("invalid_collection_name");
+  if (!/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(slug) || slug.length < 3 || slug.length > 80) throw new Error("invalid_collection_slug");
+  if (description.length > 500) throw new Error("invalid_collection_description");
+  if (!["primary", "secondary", "tertiary"].includes(accent)) throw new Error("invalid_collection_accent");
+  if (!skillIds.length || skillIds.length > 100 || skillIds.some((id) => !uuidPattern.test(id))) throw new Error("invalid_collection_skills");
+  return {name, slug, description, accent, skillIds};
+}
+
+export async function createSkillCollection(auth: AuthenticatedMcpKey, input: CollectionInput) {
+  const value = cleanCollectionInput(input);
+  const {data, error} = await createAdminClient().rpc("mcp_create_skill_collection", {
+    p_user_id: auth.userId, p_name: value.name, p_slug: value.slug, p_description: value.description,
+    p_accent: value.accent, p_skill_ids: value.skillIds,
+  });
+  if (error) throw new Error(error.code === "23505" ? "collection_duplicate" : error.message);
+  return {collectionId: data, created: true};
+}
+
+export async function updateSkillCollection(auth: AuthenticatedMcpKey, collectionId: string, input: CollectionInput) {
+  if (!uuidPattern.test(collectionId)) throw new Error("invalid_collection_id");
+  const value = cleanCollectionInput(input);
+  const {data, error} = await createAdminClient().rpc("mcp_replace_skill_collection", {
+    p_user_id: auth.userId, p_collection_id: collectionId, p_name: value.name, p_slug: value.slug,
+    p_description: value.description, p_skill_ids: value.skillIds,
+  });
+  if (error) throw new Error(error.code === "23505" ? "collection_duplicate" : error.message);
+  if (data !== true) throw new Error("collection_not_editable");
+  return {collectionId, updated: true};
+}
+
+export async function deleteSkillCollection(auth: AuthenticatedMcpKey, collectionId: string) {
+  if (!uuidPattern.test(collectionId)) throw new Error("invalid_collection_id");
+  const {data, error} = await createAdminClient().rpc("mcp_delete_skill_collection", {p_user_id: auth.userId, p_collection_id: collectionId});
+  if (error) throw new Error(error.message);
+  if (data !== true) throw new Error("collection_not_deletable");
+  return {collectionId, deleted: true};
+}
+
+export async function executeSkillCollection(auth: AuthenticatedMcpKey, collectionId: string, requestId: string = randomUUID()) {
+  if (!uuidPattern.test(collectionId)) throw new Error("invalid_collection_id");
+  if (!requestId.trim() || requestId.length > 120) throw new Error("invalid_request_id");
+  const admin = createAdminClient();
+  const [{data: collection, error: collectionError}, {data: libraryEntry, error: libraryError}] = await Promise.all([
+    admin.from("skill_collections").select("id,slug,name,user_id,collection_type,skill_collection_items(skill_id,position)").eq("id", collectionId).maybeSingle(),
+    admin.from("user_collection_library").select("collection_id").eq("user_id", auth.userId).eq("collection_id", collectionId).maybeSingle(),
+  ]);
+  if (collectionError || libraryError) throw new Error(`Could not load collection: ${(collectionError ?? libraryError)?.message}`);
+  if (!collection || !libraryEntry) throw new Error("collection_not_available");
+  if (collection.collection_type !== "user" || collection.user_id !== auth.userId) throw new Error("collection_not_executable");
+  const items = [...(collection.skill_collection_items ?? [])].sort((a, b) => Number(a.position) - Number(b.position));
+  if (!items.length) throw new Error("collection_empty");
+  if (items.length > 10) throw new Error("collection_execution_limit");
+
+  const completed: unknown[] = [];
+  for (const item of items) {
+    const childRequestId = `collection:${createHash("sha256").update(`${requestId}:${collectionId}:${item.position}:${item.skill_id}`).digest("hex")}`;
+    try {
+      completed.push(await getSkillMd(auth, item.skill_id, childRequestId));
+    } catch (error) {
+      return {
+        status: "stopped", collectionId, requestId, completed,
+        failed: {position: item.position, skillId: item.skill_id, error: error instanceof Error ? error.message : "skill_execution_failed"},
+        creditsCharged: completed.reduce<number>((sum, value) => sum + Number((value as {creditsCharged?: number}).creditsCharged ?? 0), 0),
+      };
+    }
   }
-  return {collectionId, addedSkills: skillIds.length, enabled: true};
+  return {status: "completed", collectionId, requestId, completed, creditsCharged: completed.reduce<number>((sum, value) => sum + Number((value as {creditsCharged?: number}).creditsCharged ?? 0), 0)};
 }
 
 export async function toggleSkill(auth: AuthenticatedMcpKey, skillId: string, enabled: boolean) {

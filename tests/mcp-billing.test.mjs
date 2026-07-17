@@ -8,6 +8,7 @@ const storageHashMigrationUrl = new URL("../supabase/migrations/20260716082210_v
 const hardeningMigrationUrl = new URL("../supabase/migrations/20260716090509_harden_mcp_storage_pinning.sql", import.meta.url);
 const publishedHashBackfillUrl = new URL("../supabase/migrations/20260716103000_backfill_published_skill_md_hash.sql", import.meta.url);
 const tasteV2MigrationUrl = new URL("../supabase/migrations/20260716122256_publish_taste_skill_v2.sql", import.meta.url);
+const gptTasteMigrationUrl = new URL("../supabase/migrations/20260716161046_publish_taste_skill_gpt_tasteskill.sql", import.meta.url);
 const edgeUrl = new URL("../supabase/functions/mcp/index.ts", import.meta.url);
 const publishActionUrl = new URL("../src/app/[locale]/dashboard/actions.ts", import.meta.url);
 
@@ -74,7 +75,8 @@ test("SKILL.md cannot bypass get_skill_md through references and every file is p
   assert.match(publishAction, /upload\(skillMdPath, skillMdBytes,[\s\S]+upsert: false/);
   assert.match(publishAction, /skill_md_hash: scan\.skillMdHash/);
   assert.match(publishAction, /skill_md_verified_at: new Date\(\)\.toISOString\(\)/);
-  assert.doesNotMatch(publishAction, /content_hash:/);
+  assert.match(publishAction, /content_hash: reference\.contentHash/);
+  assert.match(publishAction, /verified_at: verifiedAt/);
 });
 
 test("identical reviewed bytes can be published under a new semantic version", async () => {
@@ -83,4 +85,14 @@ test("identical reviewed bytes can be published under a new semantic version", a
   assert.match(sql, /'2\.0\.0'/);
   assert.match(sql, /taste-skill-redesign-skill\/v2\.0\.0\/SKILL\.md/);
   assert.match(sql, /set current_version = '2\.0\.0'/i);
+});
+
+test("GPT Taste is published from hash-pinned Storage with bilingual catalog content", async () => {
+  const sql = await readFile(gptTasteMigrationUrl, "utf8");
+  assert.match(sql, /'taste-skill-gpt-tasteskill'/);
+  assert.match(sql, /'taste-skill-gpt-tasteskill\/v2\.0\.0\/SKILL\.md'/);
+  assert.match(sql, /'2e64c269953f2656c21bf5a0fa6b4568e82fe0c72b36e8f84758e090349966a5'/);
+  assert.match(sql, /'taste-skill-gpt-tasteskill\/v2\.0\.0\/LICENSE'/);
+  assert.match(sql, /insert into public\.skill_translations[\s\S]+select id, 'en'[\s\S]+select id, 'vi'/i);
+  assert.match(sql, /set status = 'active', current_version = '2\.0\.0'/i);
 });

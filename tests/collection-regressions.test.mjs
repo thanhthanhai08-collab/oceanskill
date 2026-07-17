@@ -36,3 +36,28 @@ test("new collections are atomically connected to the user collection library", 
   const collectionData = await readFile(new URL("../src/lib/skills/collections.ts", import.meta.url), "utf8");
   assert.match(collectionData, /from\("user_collection_library"\)[\s\S]+skill_collections!inner/);
 });
+
+test("platform collections are bilingual, read-only, and seeded with the taste skills", async () => {
+  const sql = await readFile(new URL("../supabase/migrations/20260717022010_platform_collections_and_mcp_crud.sql", import.meta.url), "utf8");
+  assert.match(sql, /collection_type in \('user', 'platform'\)/i);
+  assert.match(sql, /collection_type = 'platform' and user_id is null and visibility = 'public'/i);
+  assert.match(sql, /create table public\.skill_collection_translations/i);
+  assert.match(sql, /'taste-skill-gpt-tasteskill'[\s\S]+'taste-skill-redesign-skill'/i);
+  assert.match(sql, /l\.skill_id = skill_collection_items\.skill_id/i);
+  assert.doesNotMatch(sql, /l\.skill_id = l\.skill_id/i);
+});
+
+test("MCP collection execution is sequential, capped at ten, and bills through getSkillMd", async () => {
+  const [edge, route] = await Promise.all([
+    readFile(new URL("../supabase/functions/mcp/index.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/api/mcp/route.ts", import.meta.url), "utf8"),
+  ]);
+  for (const source of [edge, route]) {
+    assert.match(source, /name: "execute_skill_collection"/);
+    assert.match(source, /Each successful skill retrieval costs 1 credit/i);
+  }
+  assert.match(edge, /if \(items\.length > 10\) throw new Error\("collection_execution_limit"\)/);
+  assert.match(edge, /for \(const item of items\)[\s\S]+await getSkillMd\(auth, item\.skill_id/i);
+  assert.match(edge, /collection\.collection_type !== "user" \|\| collection\.user_id !== auth\.userId/i);
+  assert.match(edge, /canAddToLibrary: true, canEdit: false, canDelete: false, canExecute: false/i);
+});

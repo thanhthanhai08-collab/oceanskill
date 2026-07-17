@@ -32,6 +32,14 @@
     "collectionKeyWarning": "Collection key được dùng trong MCP workflow. Thay đổi key có thể làm hỏng cấu hình agent hoặc workflow đang gọi key cũ.",
     "collectionSave": "Lưu thay đổi",
     "collectionSaving": "Đang lưu...",
-    "collectionSaveFailed": "Không thể lưu bộ sưu tập. Kiểm tra key có bị trùng hoặc sai định dạng không."
+    "collectionSaveFailed": "Không thể lưu bộ sưu tập. Kiểm tra key có bị trùng hoặc sai định dạng không.",
+    "collectionPlatformBadge": "OceanSkill tuyển chọn",
+    "collectionPlatformTitle": "Bộ sưu tập nền tảng",
+    "collectionPlatformDescription": "Workflow có sẵn, chỉ đọc và có thể thêm vào thư viện của bạn.",
+    "collectionPlatformAdd": "Thêm vào thư viện",
+    "collectionPlatformAdded": "Đã thêm vào thư viện",
+    "collectionReadOnly": "Chỉ đọc",
+    "collectionPersonalTitle": "Bộ sưu tập của tôi",
+    "collectionPersonalDescription": "Các bộ sưu tập bạn sở hữu và có thể tạo, sửa, sắp xếp hoặc xóa."
   }
 }

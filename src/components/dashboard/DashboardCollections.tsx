@@ -38,6 +38,14 @@ type Labels = Readonly<{
   starterDevelopment: string;
   starterSet: string;
   close: string;
+  platformBadge?: string;
+  platformTitle?: string;
+  platformDescription?: string;
+  platformAdd?: string;
+  platformAdded?: string;
+  readOnly?: string;
+  personalTitle?: string;
+  personalDescription?: string;
 }>;
 
 const ACCENTS: SkillCollection["accent"][] = ["primary", "secondary", "tertiary"];
@@ -55,6 +63,7 @@ function buildStarterCollections(skills: SkillItem[], labels: Labels): SkillColl
     accent: ACCENTS[index % ACCENTS.length],
     updatedAt: new Date().toISOString(),
     owned: false,
+    collectionType: "user",
   }));
 }
 
@@ -69,12 +78,14 @@ export default function DashboardCollections({
   uploaded,
   locale,
   initialCollections,
+  platformCollections,
   labels,
 }: {
   readonly library: LibrarySkill[];
   readonly uploaded: CreatorSkill[];
   readonly locale: string;
   readonly initialCollections: SkillCollection[];
+  readonly platformCollections: SkillCollection[];
   readonly labels: Labels;
 }) {
   const skills = useMemo<SkillItem[]>(() => [
@@ -83,6 +94,7 @@ export default function DashboardCollections({
   ], [library, uploaded]);
 
   const [collections, setCollections] = useState<SkillCollection[]>(initialCollections);
+  const [platform, setPlatform] = useState<SkillCollection[]>(platformCollections);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -163,6 +175,12 @@ export default function DashboardCollections({
     setCollections(payload.collections ?? []);
   };
 
+  const addPlatformCollection = async (id: string) => {
+    const response = await fetch(`/api/dashboard/collections/${id}/library`, {method: "POST"});
+    if (!response.ok) return;
+    setPlatform((current) => current.map((collection) => collection.id === id ? {...collection, added: true} : collection));
+  };
+
   const createFromStarter = (collection: SkillCollection) => {
     setName(collection.name);
     setDescription(collection.description);
@@ -176,6 +194,24 @@ export default function DashboardCollections({
 
   return (
     <section className="mt-12 space-y-8 pb-12">
+      {platform.length > 0 && <div>
+        <div className="mb-5">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-primary">{labels.platformBadge ?? "OceanSkill"}</p>
+          <h2 className="mt-2 font-geist text-2xl font-bold">{labels.platformTitle ?? "Platform collections"}</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">{labels.platformDescription ?? "Curated, read-only collections from OceanSkill."}</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{platform.map((collection) => {
+          const classes = accentClasses(collection.accent);
+          return <article key={collection.id} className={`rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-surface-container-low p-6 ${classes.border}`}>
+            <div className="flex items-start justify-between gap-4"><span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${classes.bg} ${classes.text}`}><span className="material-symbols-outlined text-3xl">stacks</span></span><span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">{labels.readOnly ?? "Read only"}</span></div>
+            <h3 className="mt-6 font-geist text-2xl font-bold">{collection.name}</h3>
+            <p className="mt-2 min-h-12 text-sm leading-6 text-on-surface-variant">{collection.description}</p>
+            <p className="mt-4 font-mono text-[11px] text-on-surface-variant">{labels.skillCount.replace("{count}", String(collection.skillIds.length))}</p>
+            <button type="button" disabled={collection.added} onClick={() => addPlatformCollection(collection.id)} className="mt-6 w-full rounded-xl bg-primary-container px-4 py-3 text-sm font-bold text-on-primary-container disabled:opacity-60">{collection.added ? (labels.platformAdded ?? "Added to library") : (labels.platformAdd ?? "Add to my library")}</button>
+          </article>;
+        })}</div>
+      </div>}
+      <div><h2 className="font-geist text-2xl font-bold">{labels.personalTitle ?? "My collections"}</h2><p className="mt-2 text-sm text-on-surface-variant">{labels.personalDescription ?? "Collections you can create, edit and delete."}</p></div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {displayedCollections.map((collection) => {
           const classes = accentClasses(collection.accent);

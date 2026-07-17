@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {authenticateMcpRequest} from "@/lib/mcp/authentication";
-import {addCollectionToLibrary, getSkillMd, getSkillReference, getUsageSummary, listAvailableSkills, listCollections, recordMcpCall, searchAvailableSkills, toggleSkill, type McpToolName} from "@/lib/mcp/tools";
+import {addCollectionToLibrary, createSkillCollection, deleteSkillCollection, executeSkillCollection, getSkillMd, getSkillReference, getUsageSummary, listAvailableSkills, listCollections, recordMcpCall, searchAvailableSkills, toggleSkill, updateSkillCollection, type McpToolName} from "@/lib/mcp/tools";
 
 type RpcRequest = Readonly<{jsonrpc?: string; id?: string | number | null; method?: string; params?: Record<string, unknown>}>;
 const windows = new Map<string, {count: number; resetAt: number}>();
@@ -30,6 +30,10 @@ export async function POST(request: Request) {
     {name: "get_skill_reference", description: "Download one publish-time hash-pinned reference file for a permitted skill's current version. SKILL.md is reserved for get_skill_md. A successful new request costs 1 credit; an exact replay is free for 10 minutes.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, referenceKey: {type: "string", minLength: 1, maxLength: 240}, requestId: {type: "string", maxLength: 120}}, required: ["skillId", "referenceKey"], additionalProperties: false}},
     {name: "list_collections", description: "List public collections and the caller's own collections.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
     {name: "add_collection_to_library", description: "Add a public or owned collection to the caller's library and enable its skills.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}}, required: ["collectionId"], additionalProperties: false}},
+    {name: "create_skill_collection", description: "Create a private user collection. Names and slugs must be unique for this user.", inputSchema: {type: "object", properties: {name: {type: "string", minLength: 1, maxLength: 120}, slug: {type: "string", minLength: 3, maxLength: 80}, description: {type: "string", maxLength: 500}, accent: {type: "string", enum: ["primary", "secondary", "tertiary"]}, skillIds: {type: "array", minItems: 1, maxItems: 100, uniqueItems: true, items: {type: "string", format: "uuid"}}}, required: ["name", "slug", "skillIds"], additionalProperties: false}},
+    {name: "update_skill_collection", description: "Rename a caller-owned collection and replace its ordered skill list. Platform collections are read-only.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}, name: {type: "string", minLength: 1, maxLength: 120}, slug: {type: "string", minLength: 3, maxLength: 80}, description: {type: "string", maxLength: 500}, skillIds: {type: "array", minItems: 1, maxItems: 100, uniqueItems: true, items: {type: "string", format: "uuid"}}}, required: ["collectionId", "name", "slug", "skillIds"], additionalProperties: false}},
+    {name: "delete_skill_collection", description: "Delete a caller-owned collection. Platform collections cannot be deleted.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}}, required: ["collectionId"], additionalProperties: false}},
+    {name: "execute_skill_collection", description: "Retrieve SKILL.md sequentially for up to 10 skills in a caller-owned collection. Each successful skill retrieval costs 1 credit; execution stops on the first failure. Platform collections are read-only and cannot be executed directly.", inputSchema: {type: "object", properties: {collectionId: {type: "string", format: "uuid"}, requestId: {type: "string", minLength: 1, maxLength: 120}}, required: ["collectionId"], additionalProperties: false}},
     {name: "toggle_skill", description: "Enable or disable a skill in the caller's library without fetching paid content.", inputSchema: {type: "object", properties: {skillId: {type: "string", format: "uuid"}, enabled: {type: "boolean"}}, required: ["skillId", "enabled"], additionalProperties: false}},
     {name: "get_usage_summary", description: "Return current credits and month-to-date MCP usage summary.", inputSchema: {type: "object", properties: {}, additionalProperties: false}},
   ]});
@@ -45,6 +49,10 @@ export async function POST(request: Request) {
     else if (name === "get_skill_reference" && typeof args.skillId === "string" && typeof args.referenceKey === "string") { toolName = "get_skill_reference"; value = await getSkillReference(auth, args.skillId, args.referenceKey, typeof args.requestId === "string" ? args.requestId : undefined); }
     else if (name === "list_collections") { toolName = "list_collections"; value = await listCollections(auth); }
     else if (name === "add_collection_to_library" && typeof args.collectionId === "string") { toolName = "add_collection_to_library"; value = await addCollectionToLibrary(auth, args.collectionId); }
+    else if (name === "create_skill_collection" && typeof args.name === "string" && typeof args.slug === "string" && Array.isArray(args.skillIds)) { toolName = "create_skill_collection"; value = await createSkillCollection(auth, {name: args.name, slug: args.slug, description: typeof args.description === "string" ? args.description : undefined, accent: typeof args.accent === "string" ? args.accent : undefined, skillIds: args.skillIds.filter((id): id is string => typeof id === "string")}); }
+    else if (name === "update_skill_collection" && typeof args.collectionId === "string" && typeof args.name === "string" && typeof args.slug === "string" && Array.isArray(args.skillIds)) { toolName = "update_skill_collection"; value = await updateSkillCollection(auth, args.collectionId, {name: args.name, slug: args.slug, description: typeof args.description === "string" ? args.description : undefined, skillIds: args.skillIds.filter((id): id is string => typeof id === "string")}); }
+    else if (name === "delete_skill_collection" && typeof args.collectionId === "string") { toolName = "delete_skill_collection"; value = await deleteSkillCollection(auth, args.collectionId); }
+    else if (name === "execute_skill_collection" && typeof args.collectionId === "string") { toolName = "execute_skill_collection"; value = await executeSkillCollection(auth, args.collectionId, typeof args.requestId === "string" ? args.requestId : undefined); }
     else if (name === "toggle_skill" && typeof args.skillId === "string" && typeof args.enabled === "boolean") { toolName = "toggle_skill"; value = await toggleSkill(auth, args.skillId, args.enabled); }
     else if (name === "get_usage_summary") { toolName = "get_usage_summary"; value = await getUsageSummary(auth); }
     else return rpcError(body.id, -32602, "Invalid tool name or arguments");
@@ -52,9 +60,10 @@ export async function POST(request: Request) {
     return rpc(body.id, {content: [{type: "text", text: JSON.stringify(value)}], structuredContent: value});
   } catch (error) {
     const message = error instanceof Error ? error.message : "tool_failed";
-    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" ? 403
+    const status = message === "skill_not_available" || message === "skill_not_in_user_library" || message === "collection_not_available" || message === "collection_not_editable" || message === "collection_not_deletable" || message === "collection_not_executable" ? 403
       : message === "insufficient_credits" ? 402
-      : message === "reference_key_reserved" ? 400
+      : message === "reference_key_reserved" || message.startsWith("invalid_") || message === "collection_execution_limit" || message === "collection_empty" ? 400
+      : message === "collection_duplicate" ? 409
       : ["skill_md_not_available", "skill_md_not_verified", "skill_md_hash_mismatch", "reference_not_verified", "reference_hash_mismatch"].includes(message) ? 409
       : message === "reference_not_available" ? 404
       : 500;

@@ -6,6 +6,7 @@ import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {createAdminClient} from "@/lib/supabase/admin";
 import {parsePrivateSkillForm, scanSkillContent} from "@/lib/skills/validation";
+import {parsePrivateSkillPackage} from "@/lib/skills/package";
 
 export type CreateSkillState = Readonly<{status: "idle" | "success" | "error"; message?: string; checks?: Array<{id: string; passed: boolean; message: string}>}>;
 export type AvatarUploadState = Readonly<{status: "idle" | "success" | "error"; message?: string; avatarUrl?: string}>;
@@ -67,8 +68,11 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
     if (countError || profileError) throw countError ?? profileError;
     if ((count ?? 0) >= Number(profile?.creator_skill_limit ?? 5)) return {status: "error", message: "skill_limit_reached"};
     const input = parsePrivateSkillForm(formData);
-    const scan = scanSkillContent(input.content);
-    if (!scan.passed) return {status: "error", message: "scan_failed", checks: scan.checks};
+    const bundle = await parsePrivateSkillPackage(formData.get("bundle"));
+    const content = bundle?.skillMd ?? input.content;
+    const scan = scanSkillContent(content);
+    const checks = [...scan.checks, ...(bundle?.checks ?? [])];
+    if (!scan.passed) return {status: "error", message: "scan_failed", checks};
     const {data: skill, error: skillError} = await supabase.from("skills").insert({
       owner_id: String(userId), visibility: "private", status: "draft", slug: input.slug,
       title: input.title, description: input.description, category: input.category,
@@ -78,7 +82,8 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
     const admin = createAdminClient();
     const skillMdBucket = "skill-artifacts";
     const skillMdPath = `skills/${skill.id}/${input.version}/SKILL.md`;
-    const skillMdBytes = Buffer.from(input.content, "utf8");
+    const skillMdBytes = Buffer.from(content, "utf8");
+    const uploadedPaths: string[] = [];
     const {error: uploadError} = await admin.storage.from(skillMdBucket).upload(skillMdPath, skillMdBytes, {
       contentType: "text/markdown; charset=utf-8",
       cacheControl: "31536000",
@@ -88,26 +93,61 @@ export async function createPrivateSkill(_previous: CreateSkillState, formData: 
       await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
       throw uploadError;
     }
-    const {error: versionError} = await admin.from("skill_versions").insert({
-      skill_id: skill.id, version: input.version, content_md: input.content,
+    uploadedPaths.push(skillMdPath);
+    for (const reference of bundle?.references ?? []) {
+      const path = `skills/${skill.id}/${input.version}/${reference.referenceKey}`;
+      const {error} = await admin.storage.from(skillMdBucket).upload(path, reference.bytes, {
+        contentType: reference.mimeType,
+        cacheControl: "31536000",
+        upsert: false,
+      });
+      if (error) {
+        await admin.storage.from(skillMdBucket).remove(uploadedPaths);
+        await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
+        throw error;
+      }
+      uploadedPaths.push(path);
+    }
+    const {data: versionRow, error: versionError} = await admin.from("skill_versions").insert({
+      skill_id: skill.id, version: input.version, content_md: "",
       skill_md_bucket: skillMdBucket, skill_md_path: skillMdPath, skill_md_size_bytes: skillMdBytes.byteLength,
       skill_md_hash: scan.skillMdHash, skill_md_verified_at: new Date().toISOString(),
-      scan_status: "passed", scan_summary: {pipeline: "creator-private-v1", checks: scan.checks},
-    });
+      scan_status: "passed", scan_summary: {pipeline: "creator-private-package-v2", referenceCount: bundle?.references.length ?? 0, checks},
+    }).select("id").single();
     if (versionError) {
-      await admin.storage.from(skillMdBucket).remove([skillMdPath]);
+      await admin.storage.from(skillMdBucket).remove(uploadedPaths);
       await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
       throw versionError;
+    }
+    if (bundle?.references.length) {
+      const verifiedAt = new Date().toISOString();
+      const {error: referenceError} = await admin.from("skill_reference_files").insert(bundle.references.map((reference) => ({
+        skill_version_id: versionRow.id,
+        reference_key: reference.referenceKey,
+        storage_bucket: skillMdBucket,
+        storage_path: `skills/${skill.id}/${input.version}/${reference.referenceKey}`,
+        display_name: reference.referenceKey.split("/").at(-1) ?? reference.referenceKey,
+        mime_type: reference.mimeType,
+        size_bytes: reference.bytes.byteLength,
+        content_hash: reference.contentHash,
+        verified_at: verifiedAt,
+      })));
+      if (referenceError) {
+        await admin.from("skill_versions").delete().eq("id", versionRow.id);
+        await admin.storage.from(skillMdBucket).remove(uploadedPaths);
+        await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
+        throw referenceError;
+      }
     }
     const {error: activateError} = await supabase.from("skills").update({status: "active", current_version: input.version}).eq("id", skill.id);
     if (activateError) {
       await admin.from("skill_versions").delete().eq("skill_id", skill.id).eq("version", input.version);
-      await admin.storage.from(skillMdBucket).remove([skillMdPath]);
+      await admin.storage.from(skillMdBucket).remove(uploadedPaths);
       await supabase.from("skills").update({status: "archived"}).eq("id", skill.id);
       throw activateError;
     }
     revalidatePath(`/${locale}/dashboard/skills`);
-    return {status: "success", message: "created", checks: scan.checks};
+    return {status: "success", message: "created", checks};
   } catch (error) {
     const code = error instanceof Error && error.message.startsWith("invalid_") ? error.message : error instanceof Error && error.message === "missing_client" ? error.message : "create_failed";
     return {status: "error", message: code};

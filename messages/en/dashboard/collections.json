@@ -32,6 +32,14 @@
     "collectionKeyWarning": "The collection key is used by MCP workflows. Changing it can break agents or workflows that still call the old key.",
     "collectionSave": "Save changes",
     "collectionSaving": "Saving...",
-    "collectionSaveFailed": "Could not save the collection. Check whether the key is duplicated or invalid."
+    "collectionSaveFailed": "Could not save the collection. Check whether the key is duplicated or invalid.",
+    "collectionPlatformBadge": "Curated by OceanSkill",
+    "collectionPlatformTitle": "Platform collections",
+    "collectionPlatformDescription": "Ready-made, read-only workflows you can add to your library.",
+    "collectionPlatformAdd": "Add to my library",
+    "collectionPlatformAdded": "Added to library",
+    "collectionReadOnly": "Read only",
+    "collectionPersonalTitle": "My collections",
+    "collectionPersonalDescription": "Collections you own and can create, edit, reorder, or delete."
   }
 }
