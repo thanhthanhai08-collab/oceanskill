@@ -6,6 +6,8 @@ import type {SkillCollection} from "@/lib/skills/collections";
 import {getCategoryVisual} from "@/data/mockData";
 import {getCollectionDetailHref, isStarterCollectionId, isValidCollectionSlug, slugifyCollectionName} from "@/lib/skills/collectionSlug";
 
+type CollectionTab = "all" | "platform" | "personal";
+
 type SkillItem = Readonly<{
   id: string;
   title: string;
@@ -46,6 +48,11 @@ type Labels = Readonly<{
   readOnly?: string;
   personalTitle?: string;
   personalDescription?: string;
+  tabAll: string;
+  tabPlatform: string;
+  tabPersonal: string;
+  emptyPlatform: string;
+  emptyPersonal: string;
 }>;
 
 const ACCENTS: SkillCollection["accent"][] = ["primary", "secondary", "tertiary"];
@@ -78,14 +85,12 @@ export default function DashboardCollections({
   uploaded,
   locale,
   initialCollections,
-  platformCollections,
   labels,
 }: {
   readonly library: LibrarySkill[];
   readonly uploaded: CreatorSkill[];
   readonly locale: string;
   readonly initialCollections: SkillCollection[];
-  readonly platformCollections: SkillCollection[];
   readonly labels: Labels;
 }) {
   const skills = useMemo<SkillItem[]>(() => [
@@ -94,7 +99,7 @@ export default function DashboardCollections({
   ], [library, uploaded]);
 
   const [collections, setCollections] = useState<SkillCollection[]>(initialCollections);
-  const [platform, setPlatform] = useState<SkillCollection[]>(platformCollections);
+  const [tab, setTab] = useState<CollectionTab>("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -107,7 +112,10 @@ export default function DashboardCollections({
 
   const skillMap = useMemo(() => new Map(skills.map((skill) => [skill.id, skill])), [skills]);
   const date = new Intl.RelativeTimeFormat(locale, {numeric: "auto"});
-  const displayedCollections = collections.length ? collections : buildStarterCollections(skills, labels);
+  const personalCollections = collections.filter((collection) => collection.collectionType === "user");
+  const platformCollections = collections.filter((collection) => collection.collectionType === "platform");
+  const selectedCollections = tab === "platform" ? platformCollections : tab === "personal" ? personalCollections : collections;
+  const displayedCollections = selectedCollections.length ? selectedCollections : (tab !== "platform" && personalCollections.length === 0 ? buildStarterCollections(skills, labels) : []);
   const filteredSkills = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return skills;
@@ -175,12 +183,6 @@ export default function DashboardCollections({
     setCollections(payload.collections ?? []);
   };
 
-  const addPlatformCollection = async (id: string) => {
-    const response = await fetch(`/api/dashboard/collections/${id}/library`, {method: "POST"});
-    if (!response.ok) return;
-    setPlatform((current) => current.map((collection) => collection.id === id ? {...collection, added: true} : collection));
-  };
-
   const createFromStarter = (collection: SkillCollection) => {
     setName(collection.name);
     setDescription(collection.description);
@@ -194,24 +196,14 @@ export default function DashboardCollections({
 
   return (
     <section className="mt-12 space-y-8 pb-12">
-      {platform.length > 0 && <div>
-        <div className="mb-5">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-primary">{labels.platformBadge ?? "OceanSkill"}</p>
-          <h2 className="mt-2 font-geist text-2xl font-bold">{labels.platformTitle ?? "Platform collections"}</h2>
-          <p className="mt-2 text-sm text-on-surface-variant">{labels.platformDescription ?? "Curated, read-only collections from OceanSkill."}</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{platform.map((collection) => {
-          const classes = accentClasses(collection.accent);
-          return <article key={collection.id} className={`rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-surface-container-low p-6 ${classes.border}`}>
-            <div className="flex items-start justify-between gap-4"><span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${classes.bg} ${classes.text}`}><span className="material-symbols-outlined text-3xl">stacks</span></span><span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">{labels.readOnly ?? "Read only"}</span></div>
-            <h3 className="mt-6 font-geist text-2xl font-bold">{collection.name}</h3>
-            <p className="mt-2 min-h-12 text-sm leading-6 text-on-surface-variant">{collection.description}</p>
-            <p className="mt-4 font-mono text-[11px] text-on-surface-variant">{labels.skillCount.replace("{count}", String(collection.skillIds.length))}</p>
-            <button type="button" disabled={collection.added} onClick={() => addPlatformCollection(collection.id)} className="mt-6 w-full rounded-xl bg-primary-container px-4 py-3 text-sm font-bold text-on-primary-container disabled:opacity-60">{collection.added ? (labels.platformAdded ?? "Added to library") : (labels.platformAdd ?? "Add to my library")}</button>
-          </article>;
-        })}</div>
-      </div>}
-      <div><h2 className="font-geist text-2xl font-bold">{labels.personalTitle ?? "My collections"}</h2><p className="mt-2 text-sm text-on-surface-variant">{labels.personalDescription ?? "Collections you can create, edit and delete."}</p></div>
+      <div role="tablist" className="flex items-center gap-8 overflow-x-auto border-b border-white/5">
+        {([
+          ["all", labels.tabAll, collections.length],
+          ["platform", labels.tabPlatform, platformCollections.length],
+          ["personal", labels.tabPersonal, personalCollections.length],
+        ] as const).map(([key, label, count]) => <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`-mb-px flex whitespace-nowrap border-b-2 px-2 pb-4 text-sm font-bold transition ${tab === key ? "border-primary text-primary" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}><span>{label}</span><span className={`ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-2 font-mono text-[10px] ${tab === key ? "bg-primary/15 text-primary" : "bg-white/10"}`}>{count}</span></button>)}
+      </div>
+      {displayedCollections.length === 0 && <p className="rounded-2xl border border-dashed border-white/10 p-10 text-center text-sm text-on-surface-variant">{tab === "platform" ? labels.emptyPlatform : labels.emptyPersonal}</p>}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {displayedCollections.map((collection) => {
           const classes = accentClasses(collection.accent);
@@ -231,7 +223,7 @@ export default function DashboardCollections({
                     );
                   })}
                 </div>
-                <button type="button" onClick={() => removeCollection(collection.id)} disabled={isStarter} className="rounded-lg p-1 text-on-surface-variant transition hover:bg-white/5 hover:text-error disabled:cursor-not-allowed disabled:opacity-40" aria-label={labels.delete}>
+                <button type="button" onClick={() => removeCollection(collection.id)} disabled={isStarter || !collection.owned} className="rounded-lg p-1 text-on-surface-variant transition hover:bg-white/5 hover:text-error disabled:cursor-not-allowed disabled:opacity-40" aria-label={labels.delete}>
                   <span className="material-symbols-outlined text-[20px]">more_vert</span>
                 </button>
               </div>
@@ -252,13 +244,13 @@ export default function DashboardCollections({
           );
         })}
 
-        <button type="button" onClick={() => setIsCreateOpen(true)} className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-surface-container-low/30 p-8 text-center transition hover:border-primary/45 hover:bg-white/[0.04]">
+        {tab !== "platform" && <button type="button" onClick={() => setIsCreateOpen(true)} className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-surface-container-low/30 p-8 text-center transition hover:border-primary/45 hover:bg-white/[0.04]">
           <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high text-on-surface">
             <span className="material-symbols-outlined text-3xl">add</span>
           </span>
           <span className="mt-6 font-geist text-2xl font-bold">{labels.addNew}</span>
           <span className="mt-3 max-w-56 text-sm leading-6 text-on-surface-variant">{labels.addHint}</span>
-        </button>
+        </button>}
       </div>
 
       {isCreateOpen && (
@@ -310,7 +302,7 @@ export default function DashboardCollections({
               </div>
             </div>
 
-            <button type="button" onClick={createCollection} disabled={isSaving || !canCreate} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-5 py-4 font-bold text-on-primary-container transition hover:scale-[1.01] disabled:scale-100 disabled:opacity-50">
+            <button type="button" onClick={createCollection} disabled={isSaving || !canCreate} className="btn-payment mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 font-bold transition hover:scale-[1.01] disabled:scale-100 disabled:opacity-50">
               <span className="material-symbols-outlined text-[20px]">add_circle</span>
               {isSaving ? labels.creating : labels.create}
             </button>

@@ -40,6 +40,11 @@
     "collectionPlatformAdded": "Added to library",
     "collectionReadOnly": "Read only",
     "collectionPersonalTitle": "My collections",
-    "collectionPersonalDescription": "Collections you own and can create, edit, reorder, or delete."
+    "collectionPersonalDescription": "Collections you own and can create, edit, reorder, or delete.",
+    "collectionTabAll": "All collections",
+    "collectionTabPlatform": "Platform collections",
+    "collectionTabPersonal": "My collections",
+    "collectionEmptyPlatform": "No platform collection has been added. Open the skill marketplace and add one to use it here.",
+    "collectionEmptyPersonal": "You have not created a personal collection yet."
   }
 }

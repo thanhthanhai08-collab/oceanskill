@@ -37,6 +37,10 @@
   
   --glass-bg: 0, 0, 0;
   --glass-border: 0, 0, 0;
+  --payment-gradient-start: #ad8bc1;
+  --payment-gradient-mid: #9b94c3;
+  --payment-gradient-end: #83a8c7;
+  --on-payment-gradient: #15182b;
 }
 
 .dark {
@@ -71,6 +75,10 @@
   
   --glass-bg: 255, 255, 255;
   --glass-border: 255, 255, 255;
+  --payment-gradient-start: #755687;
+  --payment-gradient-mid: #5f618d;
+  --payment-gradient-end: #456f91;
+  --on-payment-gradient: #ffffff;
 }
 
 @theme inline {
@@ -167,6 +175,43 @@ img, video, canvas, svg {
   background-color: var(--primary-container);
   color: #ffffff;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.payment-gradient,
+.btn-payment,
+a.bg-primary-container,
+form button.bg-primary-container {
+  background: linear-gradient(112deg, var(--payment-gradient-start), var(--payment-gradient-mid) 48%, var(--payment-gradient-end));
+  color: var(--on-payment-gradient);
+}
+
+.btn-payment,
+a.bg-primary-container,
+form button.bg-primary-container {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 0 1px rgba(171, 140, 214, 0.2),
+    0 0 20px rgba(157, 114, 212, 0.34),
+    0 0 38px rgba(92, 158, 210, 0.2);
+  transition-property: color, background-color, border-color, opacity, box-shadow, filter, transform;
+  transition-duration: 200ms;
+}
+
+.btn-payment:hover,
+a.bg-primary-container:hover,
+form button.bg-primary-container:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 0 0 1px rgba(185, 151, 225, 0.3),
+    0 0 26px rgba(165, 120, 220, 0.44),
+    0 0 48px rgba(89, 166, 222, 0.28);
+}
+
+.btn-payment:focus-visible,
+a.bg-primary-container:focus-visible,
+form button.bg-primary-container:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--payment-gradient-end) 72%, white);
+  outline-offset: 3px;
 }
 
 .glowing-border {

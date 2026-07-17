@@ -22,7 +22,7 @@ export default async function SignupPage({searchParams}: SignupPageProps) {
           <form className="mt-7 space-y-4">
             <label className="block text-sm font-medium">Email<input name="email" type="email" autoComplete="email" required className="mt-2 w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 outline-none transition focus:border-primary" placeholder="you@example.com" /></label>
             <label className="block text-sm font-medium">{t("password")}<input name="password" type="password" autoComplete="new-password" minLength={6} required className="mt-2 w-full rounded-xl border border-outline-variant/50 bg-surface-container-lowest px-4 py-3 outline-none transition focus:border-primary" placeholder={t("passwordPlaceholder")} /></label>
-            <button formAction={signup} className="w-full rounded-xl bg-primary-container px-4 py-3 font-semibold text-white transition hover:bg-inverse-primary">{t("signupSubmit")}</button>
+        <button formAction={signup} className="btn-payment w-full rounded-xl px-4 py-3 font-semibold hover:brightness-105">{t("signupSubmit")}</button>
           </form>
           <p className="mt-7 text-center text-sm text-on-surface-variant">
             {t("hasAccount")} <Link href="/login" className="font-bold text-primary transition hover:text-primary/70">{t("signinNow")}</Link>

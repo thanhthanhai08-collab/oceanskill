@@ -16,6 +16,7 @@ type CreatedOrder = Readonly<{
   order_code: string;
   amount_vnd: number;
   credit_units: number;
+  skill_slots?: number;
   qr_url: string;
   recipient: {
     accountNumber: string;
@@ -58,14 +59,18 @@ export interface TopupFlowProps {
   readonly initialPackId?: string;
   readonly locale: string;
   readonly labels: TopupLabels;
+  readonly purpose?: "credits" | "creator-slots";
+  readonly initialAmount?: number;
 }
 
 function formatVnd(locale: string, value: number) {
   return `${value.toLocaleString(locale)} VND`;
 }
 
-export default function TopupFlow({packs, initialPackId, locale, labels}: TopupFlowProps) {
+export default function TopupFlow({packs, initialPackId, locale, labels, purpose = "credits", initialAmount}: TopupFlowProps) {
+  const slotMode = purpose === "creator-slots";
   const [selectedId, setSelectedId] = useState(() => packs.some((pack) => pack.id === initialPackId) ? initialPackId! : packs[0]?.id ?? "");
+  const [slotAmount, setSlotAmount] = useState(() => Number.isSafeInteger(initialAmount) && initialAmount! >= 5000 && initialAmount! % 5000 === 0 ? initialAmount! : 5000);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [promoApplied, setPromoApplied] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -74,7 +79,9 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
   const [paymentResult, setPaymentResult] = useState<"success" | "failure" | null>(null);
   const selectedPack = useMemo(() => packs.find((pack) => pack.id === selectedId) ?? packs[0], [packs, selectedId]);
   const discount = 0;
-  const total = selectedPack ? Number(selectedPack.price_vnd) - discount : 0;
+  const normalizedSlotAmount = Math.max(5000, Math.min(5000000, Math.ceil(slotAmount / 5000) * 5000));
+  const total = slotMode ? normalizedSlotAmount : selectedPack ? Number(selectedPack.price_vnd) - discount : 0;
+  const slotCount = normalizedSlotAmount / 5000;
 
   useEffect(() => {
     if (!order || paymentResult) return;
@@ -100,14 +107,14 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
   }, [order, paymentResult]);
 
   const createOrder = async () => {
-    if (!selectedPack || !termsAccepted) return;
+    if ((!slotMode && !selectedPack) || !termsAccepted) return;
     setIsPending(true);
     setError(null);
     try {
       const response = await fetch("/api/billing/orders", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({packId: selectedPack.id}),
+        body: JSON.stringify(slotMode ? {purpose: "creator_slots", amountVnd: normalizedSlotAmount} : {packId: selectedPack!.id}),
       });
       const payload = await response.json();
       if (!response.ok || !payload?.order?.qr_url) throw new Error(payload?.error ?? "payment_order_create_failed");
@@ -120,7 +127,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
     }
   };
 
-  if (!selectedPack) {
+  if (!slotMode && !selectedPack) {
     return <p className="rounded-2xl border border-dashed border-outline-variant/50 p-8 text-sm text-on-surface-variant">{labels.choosePack}</p>;
   }
 
@@ -135,27 +142,33 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
             </div>
             <div className="relative mb-6">
               <input
-                readOnly
-                value={Number(selectedPack.price_vnd).toLocaleString(locale)}
+                readOnly={!slotMode}
+                type={slotMode ? "number" : "text"}
+                min={slotMode ? 5000 : undefined}
+                max={slotMode ? 5000000 : undefined}
+                step={slotMode ? 5000 : undefined}
+                value={slotMode ? slotAmount : Number(selectedPack!.price_vnd).toLocaleString(locale)}
+                onChange={slotMode ? (event) => setSlotAmount(Math.max(5000, Math.min(5000000, Number(event.target.value) || 5000))) : undefined}
+                onBlur={slotMode ? () => setSlotAmount(normalizedSlotAmount) : undefined}
                 className="w-full rounded-xl border border-outline-variant/30 bg-[#050608] p-6 pr-24 font-geist text-3xl font-bold text-primary outline-none transition focus:border-primary"
               />
               <span className="absolute right-6 top-1/2 -translate-y-1/2 font-geist text-xl text-on-surface-variant">VND</span>
             </div>
             <p className="mb-3 font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{labels.presetTitle}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {packs.map((pack) => (
+              {(slotMode ? [5000, 10000, 25000, 50000].map((amount) => ({id: String(amount), name: `${amount / 5000} slot`, price_vnd: amount, credit_units: 0})) : packs).map((pack) => (
                 <button
                   key={pack.id}
                   type="button"
-                  onClick={() => setSelectedId(pack.id)}
+                  onClick={() => slotMode ? setSlotAmount(Number(pack.price_vnd)) : setSelectedId(pack.id)}
                   className={`rounded-lg border p-3 text-left text-sm transition ${
-                    selectedId === pack.id
+                    (slotMode ? slotAmount === Number(pack.price_vnd) : selectedId === pack.id)
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-outline-variant/20 bg-surface-container-high text-on-surface hover:border-primary"
                   }`}
                 >
                   <span className="block font-bold">{formatVnd(locale, Number(pack.price_vnd))}</span>
-                  <span className="mt-1 block text-xs text-on-surface-variant">{Number(pack.credit_units).toLocaleString(locale)} Credits</span>
+                  <span className="mt-1 block text-xs text-on-surface-variant">{slotMode ? `${Number(pack.price_vnd) / 5000} ${Number(pack.price_vnd) === 5000 ? "slot" : "slots"}` : `${Number(pack.credit_units).toLocaleString(locale)} Credits`}</span>
                 </button>
               ))}
             </div>
@@ -184,7 +197,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
             type="button"
             onClick={createOrder}
             disabled={!termsAccepted || isPending}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary-container p-6 text-xl font-bold text-on-primary-container shadow-[0_0_32px_rgba(184,195,255,0.22)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-payment flex w-full items-center justify-center gap-3 rounded-2xl p-6 text-xl font-bold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <span>{isPending ? labels.submitting : labels.submit}</span>
             <span className="material-symbols-outlined">arrow_forward</span>
@@ -197,7 +210,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
             <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-primary/20 blur-3xl" />
             <h2 className="font-geist text-2xl font-bold">{labels.summaryTitle}</h2>
             <div className="mb-8 mt-8 space-y-4 border-b border-outline-variant/20 pb-8">
-              <div className="flex items-center justify-between text-on-surface-variant"><span>{labels.amount}</span><span className="font-semibold text-on-surface">{formatVnd(locale, Number(selectedPack.price_vnd))}</span></div>
+              <div className="flex items-center justify-between text-on-surface-variant"><span>{labels.amount}</span><span className="font-semibold text-on-surface">{formatVnd(locale, total)}</span></div>
               <div className="flex items-center justify-between text-on-surface-variant"><span>{labels.discount}</span><span className="font-semibold text-tertiary">{formatVnd(locale, discount)}</span></div>
               <div className="flex items-center justify-between text-on-surface-variant"><span>{labels.fee}</span><span className="font-semibold text-on-surface">{labels.free}</span></div>
             </div>
@@ -211,7 +224,7 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
             <div className="flex items-start gap-4 rounded-xl bg-surface-container p-4">
               <span className="material-symbols-outlined text-secondary">info</span>
               <p className="text-xs leading-relaxed text-on-surface-variant">
-                {labels.receive} <strong>{Number(selectedPack.credit_units).toLocaleString(locale)} Credits</strong>. {labels.rate}
+                {labels.receive} <strong>{slotMode ? `${slotCount} ${slotCount === 1 ? "slot" : "slots"}` : `${Number(selectedPack!.credit_units).toLocaleString(locale)} Credits`}</strong>. {slotMode ? (locale === "vi" ? "Slot được cộng sau khi thanh toán thành công." : "Slots are added after successful payment.") : labels.rate}
               </p>
             </div>
           </section>
@@ -261,8 +274,8 @@ export default function TopupFlow({packs, initialPackId, locale, labels}: TopupF
           <section className={`w-full max-w-sm rounded-3xl border p-8 text-center shadow-2xl ${paymentResult === "success" ? "border-tertiary/40 bg-tertiary-container/20" : "border-error/40 bg-error/10"}`}>
             <span className={`material-symbols-outlined text-6xl ${paymentResult === "success" ? "text-tertiary" : "text-error"}`}>{paymentResult === "success" ? "check_circle" : "cancel"}</span>
             <h3 className="mt-4 font-geist text-2xl font-bold">{paymentResult === "success" ? (locale === "vi" ? "Thanh toán thành công" : "Payment successful") : (locale === "vi" ? "Thanh toán thất bại" : "Payment failed")}</h3>
-            <p className="mt-2 text-sm text-on-surface-variant">{paymentResult === "success" ? (locale === "vi" ? "Credit đã được cộng vào tài khoản của bạn" : "Credits have been added to your account") : (locale === "vi" ? "Giao dịch chưa được xác nhận. Vui lòng kiểm tra lại" : "The transaction was not confirmed. Please try again")}</p>
-            <button type="button" onClick={() => { setPaymentResult(null); setOrder(null); }} className="mt-6 rounded-xl bg-primary px-6 py-3 font-bold text-on-primary">{labels.close}</button>
+            <p className="mt-2 text-sm text-on-surface-variant">{paymentResult === "success" ? (slotMode ? (locale === "vi" ? "Slot skill đã được cộng vào tài khoản của bạn" : "Skill slots have been added to your account") : (locale === "vi" ? "Credit đã được cộng vào tài khoản của bạn" : "Credits have been added to your account")) : (locale === "vi" ? "Giao dịch chưa được xác nhận. Vui lòng kiểm tra lại" : "The transaction was not confirmed. Please try again")}</p>
+          <button type="button" onClick={() => { setPaymentResult(null); setOrder(null); }} className="btn-payment mt-6 rounded-xl px-6 py-3 font-bold hover:brightness-105">{labels.close}</button>
           </section>
         </div>
       )}

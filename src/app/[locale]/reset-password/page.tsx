@@ -43,7 +43,7 @@ export default async function ResetPasswordPage({searchParams}: ResetPasswordPag
             </label>
             <button
               formAction={updatePassword}
-              className="w-full rounded-xl bg-primary-container px-4 py-3 font-semibold text-white transition hover:bg-inverse-primary"
+            className="btn-payment w-full rounded-xl px-4 py-3 font-semibold hover:brightness-105"
             >
               {t("resetSubmit")}
             </button>

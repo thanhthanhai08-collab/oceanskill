@@ -38,7 +38,7 @@ export default function CreatorSkillAddCard({atLimit, count, limit, labels, form
             <p className="mt-3 text-sm leading-6 text-on-surface-variant">{labels.limitDescription}</p>
             <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button type="button" onClick={() => setShowLimit(false)} className="min-h-11 rounded-xl border border-outline-variant/50 px-5 py-3 text-sm font-semibold">{labels.close}</button>
-              <Link href="/dashboard/billing" className="min-h-11 rounded-xl bg-primary-container px-5 py-3 text-center text-sm font-semibold text-white">{labels.upgrade}</Link>
+              <Link href="/dashboard/billing/topup?purpose=creator-slots&amount=5000" className="btn-payment min-h-11 rounded-xl px-5 py-3 text-center text-sm font-semibold">{labels.upgrade}</Link>
             </div>
           </div>
         </div>

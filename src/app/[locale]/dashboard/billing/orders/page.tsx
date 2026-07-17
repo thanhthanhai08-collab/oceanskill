@@ -17,7 +17,7 @@ export default async function BillingOrdersPage({params}: {readonly params: Prom
   if (!userId) redirect(`/${locale}/login`);
 
   const {data: orders} = await supabase.from("payment_orders")
-      .select("id,order_code,status,amount_vnd,credit_units,created_at")
+      .select("id,order_code,status,amount_vnd,credit_units,purpose,skill_slots,created_at")
       .eq("user_id", String(userId))
       .order("created_at", {ascending: false});
 
@@ -63,7 +63,7 @@ export default async function BillingOrdersPage({params}: {readonly params: Prom
                       <span className="font-mono text-xs">{order.order_code ?? order.id.slice(0, 8)}</span>
                     </td>
                     <td className="py-3 pr-4 font-semibold">{Number(order.amount_vnd).toLocaleString(locale)} ₫</td>
-                    <td className="py-3 pr-4 text-tertiary font-semibold">+{Number(order.credit_units).toLocaleString(locale)}</td>
+                    <td className="py-3 pr-4 text-tertiary font-semibold">+{order.purpose === "creator_slots" ? `${Number(order.skill_slots).toLocaleString(locale)} ${locale === "vi" ? "slot" : "slots"}` : Number(order.credit_units).toLocaleString(locale)}</td>
                     <td className="py-3 pr-4">
                       <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${statusColor(order.status)}`}>
                         {paymentStatusLabel(locale, order.status)}

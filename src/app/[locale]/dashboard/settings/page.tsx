@@ -167,7 +167,7 @@ export default async function SettingsAccountPage({params}: {readonly params: Pr
               </label>
             </div>
             <div className="flex justify-end">
-              <button type="submit" disabled className="rounded-xl bg-primary-container px-6 py-3 text-sm font-bold text-on-primary-container opacity-70 transition hover:opacity-90">
+            <button type="submit" disabled className="btn-payment rounded-xl px-6 py-3 text-sm font-bold opacity-70 transition hover:opacity-90">
                 {labels.save}
               </button>
             </div>

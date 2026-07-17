@@ -28,6 +28,6 @@ export default async function DashboardSkillsPage({params}: {readonly params: Pr
   return <>
     <header><p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t("eyebrow")}</p><h1 className="mt-3 font-geist text-5xl font-bold tracking-tight">{t("title")}</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{t("description")}</p></header>
 
-    <DashboardSkillsTabs library={library} uploaded={creatorData.skills} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} limit={limit} atLimit={atLimit} labels={tabsLabels} cardLabels={cardLabels} formLabels={formLabels}/>
+    <DashboardSkillsTabs library={library} uploaded={creatorData.skills} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} limit={limit} atLimit={atLimit} labels={tabsLabels} cardLabels={cardLabels} formLabels={formLabels} ownerName={creatorData.owner.name} ownerAvatarUrl={creatorData.owner.avatarUrl}/>
   </>;
 }

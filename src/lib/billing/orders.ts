@@ -2,13 +2,22 @@ import "server-only";
 import {createAdminClient} from "@/lib/supabase/admin";
 import {createVietQrDataUrl, getSepayRecipient} from "@/lib/sepay/qr";
 
-type PaymentOrder = {id: string; order_code: string; amount_vnd: number; credit_units: number; status: string; expires_at: string};
+type PaymentOrder = {id: string; order_code: string; amount_vnd: number; credit_units: number; skill_slots: number; purpose: "credits" | "creator_slots"; status: string; expires_at: string};
 
 export async function createPaymentOrder(userId: string, packId: string) {
   const {data, error} = await createAdminClient().rpc("create_sepay_payment_order", {p_user_id: userId, p_pack_id: packId});
   if (error) throw new Error(`Could not create payment order: ${error.message}`);
   const order = data as PaymentOrder | null;
   if (!order) throw new Error("Supabase returned no payment order");
+  const recipient = getSepayRecipient();
+  return {...order, qr_url: await createVietQrDataUrl(order.amount_vnd, order.order_code, recipient), recipient};
+}
+
+export async function createCreatorSlotOrder(userId: string, amountVnd: number) {
+  const {data, error} = await createAdminClient().rpc("create_creator_slot_payment_order", {p_user_id: userId, p_amount_vnd: amountVnd});
+  if (error) throw new Error(`Could not create creator slot order: ${error.message}`);
+  const order = data as PaymentOrder | null;
+  if (!order) throw new Error("Supabase returned no creator slot order");
   const recipient = getSepayRecipient();
   return {...order, qr_url: await createVietQrDataUrl(order.amount_vnd, order.order_code, recipient), recipient};
 }

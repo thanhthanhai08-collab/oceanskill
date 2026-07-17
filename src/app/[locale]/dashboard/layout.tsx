@@ -46,6 +46,8 @@ export default async function DashboardLayout({children, params}: DashboardLayou
     creditBalance: t("availableCredits"),
     topUp: t("topUp"),
     logout: common("logout"),
+    menuOpen: locale === "vi" ? "Mở menu Dashboard" : "Open Dashboard menu",
+    menuClose: locale === "vi" ? "Đóng menu Dashboard" : "Close Dashboard menu",
   };
 
   return (

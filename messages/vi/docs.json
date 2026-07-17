@@ -4,7 +4,7 @@
     "title": "Từ kho skill đến MCP trong một luồng rõ ràng",
     "description": "Kết nối agent client, quản lý skill và bộ sưu tập, hiểu credit và requestId, đồng thời xử lý lỗi MCP mà không làm lộ khóa.",
     "onThisPage": "Trong trang này",
-    "nav": {"start": "Bắt đầu", "connect": "Kết nối MCP", "workflow": "Sử dụng skill", "collections": "Bộ sưu tập", "requestId": "requestId và credit", "tools": "Tham chiếu công cụ", "errors": "Xử lý lỗi"},
+    "nav": {"start": "Bắt đầu", "connect": "Kết nối MCP", "workflow": "Sử dụng skill", "publishing": "Skill tự đăng", "collections": "Bộ sưu tập", "requestId": "requestId và credit", "tools": "Tham chiếu công cụ", "errors": "Xử lý lỗi"},
     "startEyebrow": "Bắt đầu nhanh",
     "startTitle": "Kết nối OceanSkill trong bốn bước",
     "startDescription": "Dashboard là nơi quản lý; MCP client là nơi agent sử dụng skill.",
@@ -32,13 +32,19 @@
       "enable": {"title": "Kích hoạt", "description": "Thêm skill hoặc bộ sưu tập vào thư viện, sau đó chỉ bật những skill muốn cung cấp cho agent."},
       "invoke": {"title": "Gọi skill", "description": "Yêu cầu agent dùng một skill cụ thể. OceanSkill trả về đúng bản hiện tại đã quét thông qua MCP được xác thực."}
     },
+    "publishingEyebrow": "Skill thuộc sở hữu của bạn", "publishingTitle": "Đăng skill riêng tư và mua thêm slot khi cần", "publishingDescription": "Mỗi tài khoản có 5 slot skill tự đăng. Dashboard hiển thị chính user là tác giả; nội dung và hash kiểm chứng vẫn được bảo vệ ở tầng Storage và MCP.", "publishingCta": "Mua thêm slot skill",
+    "publishingSteps": {
+      "upload": {"title": "Tải gói skill", "description": "Mở Dashboard → Skills của tôi → Skills tự đăng, nhập metadata rồi tải SKILL.md hoặc gói ZIP đã kiểm tra."},
+      "limit": {"title": "Dùng 5 slot miễn phí", "description": "Skill nền tảng đã thêm không tính vào quota này. Chỉ skill riêng do bạn đăng mới sử dụng slot."},
+      "payment": {"title": "5.000₫ cho mỗi slot thêm", "description": "Khi hết quota, trang nạp tiền mở sẵn mức 5.000₫. Chọn bội số lớn hơn để mua nhiều slot trong một giao dịch."}
+    },
     "collectionsEyebrow": "Bộ sưu tập",
     "collectionsTitle": "Nhóm skill thành bộ sưu tập tái sử dụng",
-    "collectionsDescription": "Bộ sưu tập giữ các skill liên quan cho một dự án, đội nhóm hoặc quy trình. Bạn có thể tạo và chỉnh sửa bộ sưu tập riêng trong dashboard hoặc thêm bộ sưu tập khả dụng qua MCP.",
+    "collectionsDescription": "Bộ sưu tập nền tảng được khám phá trong Kho skill và chỉ xuất hiện ở dashboard sau khi bạn nhấn thêm. Dashboard chia ba tab: tất cả, nền tảng đã thêm và bộ sưu tập của bạn.",
     "collectionSteps": {
-      "create": {"title": "Tạo", "description": "Mở Dashboard → Bộ sưu tập, đặt tên, chọn skill rồi lưu."},
-      "open": {"title": "Mở lại", "description": "Mỗi bộ sưu tập có URL song ngữ riêng để bạn quay lại và chỉnh sửa danh sách skill."},
-      "agent": {"title": "Dùng từ agent", "description": "Gọi list_collections rồi add_collection_to_library. Các skill sẽ vào thư viện và có thể bật/tắt riêng."}
+      "browse": {"title": "Khám phá ở Kho skill", "description": "Mở thẻ bộ sưu tập nền tảng để xem mô tả và toàn bộ skill bên trong trước khi thêm."},
+      "add": {"title": "Chủ động thêm", "description": "Nhấn Thêm vào bộ sưu tập của tôi. Trước thời điểm này, collection nền tảng không xuất hiện trong dashboard."},
+      "manage": {"title": "Quản lý bằng 3 tab", "description": "Dùng tab Tất cả, Nền tảng và Của tôi. Collection nền tảng chỉ đọc; collection riêng có thể tạo, sửa và xóa."}
     },
     "requestEyebrow": "An toàn usage",
     "requestTitle": "requestId ngăn trừ credit trùng như thế nào",
@@ -58,6 +64,10 @@
       "reference": {"name": "get_skill_reference", "description": "Trả về một file được mapping của phiên bản skill hiện tại. File text dùng UTF-8, file nhị phân dùng base64."},
       "collections": {"name": "list_collections", "description": "Liệt kê bộ sưu tập công khai và bộ sưu tập do người dùng sở hữu."},
       "addCollection": {"name": "add_collection_to_library", "description": "Thêm bộ sưu tập khả dụng vào thư viện và bật các skill trong đó."},
+      "createCollection": {"name": "create_skill_collection", "description": "Tạo bộ sưu tập riêng với tên, collection key và danh sách skill có thứ tự."},
+      "updateCollection": {"name": "update_skill_collection", "description": "Đổi tên, mô tả, collection key hoặc thay danh sách skill của bộ sưu tập do user sở hữu."},
+      "deleteCollection": {"name": "delete_skill_collection", "description": "Xóa bộ sưu tập do user sở hữu. Bộ sưu tập nền tảng không thể bị xóa."},
+      "executeCollection": {"name": "execute_skill_collection", "description": "Lấy SKILL.md tuần tự cho tối đa 10 skill trong collection của user; mỗi lần lấy thành công tốn 1 credit."},
       "toggle": {"name": "toggle_skill", "description": "Bật hoặc tắt một skill trong thư viện mà không lấy nội dung trả phí."},
       "usage": {"name": "get_usage_summary", "description": "Trả về số credit hiện tại và tổng usage MCP từ đầu tháng."}
     },

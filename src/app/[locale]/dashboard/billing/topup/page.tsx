@@ -89,7 +89,7 @@ const copy = {
 
 void copy;
 
-export default async function TopupPage({params, searchParams}: {readonly params: Promise<{locale: string}>; readonly searchParams: Promise<{pack?: string | string[]}>}) {
+export default async function TopupPage({params, searchParams}: {readonly params: Promise<{locale: string}>; readonly searchParams: Promise<{pack?: string | string[]; purpose?: string | string[]; amount?: string | string[]}>}) {
   const {locale} = await params;
   const query = await searchParams;
   const profileData = await getDashboardProfile();
@@ -102,7 +102,16 @@ export default async function TopupPage({params, searchParams}: {readonly params
     .eq("active", true)
     .order("price_vnd", {ascending: true});
 
-  const labels = locale === "vi" ? topupLabels.vi : topupLabels.en;
+  const isSlotPurchase = query.purpose === "creator-slots";
+  const baseLabels = locale === "vi" ? topupLabels.vi : topupLabels.en;
+  const labels = isSlotPurchase ? {
+    ...baseLabels,
+    title: locale === "vi" ? "Mua thêm slot skill" : "Buy more skill slots",
+    description: locale === "vi" ? "Mỗi 5.000₫ mở thêm 1 slot skill tự đăng. Bạn có thể chọn số tiền lớn hơn theo bội số 5.000₫." : "Every 5,000 VND adds one private-skill slot. Choose any larger multiple of 5,000 VND.",
+    amountTitle: locale === "vi" ? "Số tiền mua slot" : "Slot purchase amount",
+    presetTitle: locale === "vi" ? "Chọn số slot" : "Choose slot count",
+    rate: locale === "vi" ? "Slot được cộng sau khi thanh toán thành công" : "Slots are added after successful payment",
+  } : baseLabels;
 
   return (
     <>
@@ -116,6 +125,8 @@ export default async function TopupPage({params, searchParams}: {readonly params
         initialPackId={typeof query.pack === "string" ? query.pack : undefined}
         locale={locale}
         labels={labels}
+        purpose={isSlotPurchase ? "creator-slots" : "credits"}
+        initialAmount={typeof query.amount === "string" ? Number(query.amount) : undefined}
       />
     </>
   );

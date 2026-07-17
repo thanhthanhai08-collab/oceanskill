@@ -14,12 +14,13 @@ const config = `{
   }
 }`;
 
-const sectionLinks = ["start", "connect", "workflow", "collections", "requestId", "tools", "errors"] as const;
+const sectionLinks = ["start", "connect", "workflow", "publishing", "collections", "requestId", "tools", "errors"] as const;
 const steps = ["account", "key", "client", "verify"] as const;
 const workflow = ["discover", "enable", "invoke"] as const;
-const collectionSteps = ["create", "open", "agent"] as const;
+const publishingSteps = ["upload", "limit", "payment"] as const;
+const collectionSteps = ["browse", "add", "manage"] as const;
 const requestRules = ["new", "retry", "failed", "conflict"] as const;
-const tools = ["list", "search", "content", "reference", "collections", "addCollection", "toggle", "usage"] as const;
+const tools = ["list", "search", "content", "reference", "collections", "addCollection", "createCollection", "updateCollection", "deleteCollection", "executeCollection", "toggle", "usage"] as const;
 const errors = ["auth", "credits", "access", "conflict", "server"] as const;
 
 export default async function DocumentPage() {
@@ -69,11 +70,23 @@ export default async function DocumentPage() {
             </div>
           </section>
 
+          <section id="publishing" className="scroll-mt-28 pt-16">
+            <div className="payment-gradient rounded-3xl p-6 sm:p-8">
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-65">{t("publishingEyebrow")}</p>
+              <h2 className="mt-4 font-geist text-3xl font-semibold">{t("publishingTitle")}</h2>
+              <p className="mt-3 max-w-3xl leading-7 opacity-75">{t("publishingDescription")}</p>
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                {publishingSteps.map((item, index) => <article key={item} className="rounded-2xl border border-black/10 bg-white/20 p-5 dark:border-white/10 dark:bg-black/10"><span className="font-mono text-xs opacity-60">{String(index + 1).padStart(2, "0")}</span><h3 className="mt-4 font-geist text-lg font-semibold">{t(`publishingSteps.${item}.title`)}</h3><p className="mt-3 text-sm leading-6 opacity-75">{t(`publishingSteps.${item}.description`)}</p></article>)}
+              </div>
+              <Link href="/dashboard/billing/topup?purpose=creator-slots&amount=5000" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl bg-white/75 px-5 py-3 text-sm font-bold text-[#25213a] transition hover:bg-white">{t("publishingCta")}</Link>
+            </div>
+          </section>
+
           <section id="collections" className="scroll-mt-28 pt-16">
             <div className="overflow-hidden rounded-3xl border border-secondary/25 bg-gradient-to-br from-secondary/10 via-surface-container-low/70 to-primary/10 p-6 sm:p-8">
               <SectionHeading eyebrow={t("collectionsEyebrow")} title={t("collectionsTitle")} description={t("collectionsDescription")} accent="secondary" />
               <div className="mt-8 grid gap-4 md:grid-cols-3">
-                {collectionSteps.map((item, index) => <InfoCard key={item} icon={["create_new_folder", "folder_open", "smart_toy"][index]} title={t(`collectionSteps.${item}.title`)} description={t(`collectionSteps.${item}.description`)} />)}
+                {collectionSteps.map((item, index) => <InfoCard key={item} icon={["storefront", "library_add", "tab"][index]} title={t(`collectionSteps.${item}.title`)} description={t(`collectionSteps.${item}.description`)} />)}
               </div>
             </div>
           </section>

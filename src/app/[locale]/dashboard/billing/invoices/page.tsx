@@ -16,7 +16,7 @@ export default async function BillingInvoicesPage({params}: {readonly params: Pr
   const [t, {data: orders}] = await Promise.all([
     getTranslations("Dashboard"),
     supabase.from("payment_orders")
-      .select("id,order_code,status,amount_vnd,credit_units,created_at")
+      .select("id,order_code,status,amount_vnd,credit_units,purpose,skill_slots,created_at")
       .eq("user_id", String(userId))
       .eq("status", "paid")
       .order("created_at", {ascending: false}),
@@ -44,7 +44,7 @@ export default async function BillingInvoicesPage({params}: {readonly params: Pr
                 <div>
                   <p className="font-semibold">{t("invoiceFor")} {Number(order.amount_vnd).toLocaleString(locale)} ₫</p>
                   <p className="mt-0.5 font-mono text-xs text-on-surface-variant">{order.order_code ?? order.id.slice(0, 8)}</p>
-                  <p className="mt-1 text-xs text-on-surface-variant">{formatDate(order.created_at)} · {Number(order.credit_units).toLocaleString(locale)} credits</p>
+                  <p className="mt-1 text-xs text-on-surface-variant">{formatDate(order.created_at)} · {order.purpose === "creator_slots" ? `${Number(order.skill_slots).toLocaleString(locale)} ${locale === "vi" ? "slot skill" : "skill slots"}` : `${Number(order.credit_units).toLocaleString(locale)} credits`}</p>
                 </div>
                 <Link
                   href={`/dashboard/billing/invoices/${order.id}` as "/dashboard"}

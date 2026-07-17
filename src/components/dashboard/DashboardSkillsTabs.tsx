@@ -30,9 +30,11 @@ interface PlatformCardProps {
   readonly removable?: boolean;
   readonly removeLabel?: string;
   readonly onRemove?: (id: string) => void;
+  readonly ownerName?: string;
+  readonly ownerAvatarUrl?: string | null;
 }
 
-function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeLabel, onRemove}: PlatformCardProps) {
+function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeLabel, onRemove, ownerName, ownerAvatarUrl}: PlatformCardProps) {
   const visual = getCategoryVisual(skill.category);
   const author = skill.authors;
   const rating = reviewStats?.count ? reviewStats.average.toFixed(1) : "0.0";
@@ -67,9 +69,9 @@ function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeL
         <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-3">
           <div className="flex items-center gap-2 text-xs text-on-surface-variant">
             <span className={`relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br ${author?.glow_class ?? visual.glowClass}`}>
-              {author?.avatar_url ? <Image src={author.avatar_url} alt="" fill unoptimized sizes="24px" className="object-cover" /> : <span className="material-symbols-outlined text-[14px] text-white">{author?.icon ?? "person"}</span>}
+              {(ownerAvatarUrl ?? author?.avatar_url) ? <Image src={(ownerAvatarUrl ?? author?.avatar_url)!} alt="" fill unoptimized sizes="24px" className="object-cover" /> : <span className="material-symbols-outlined text-[14px] text-white">{author?.icon ?? "person"}</span>}
             </span>
-            <span className="truncate">{author?.name ?? "OceanSkill Creator"}</span>
+            <span className="truncate">{ownerName ?? author?.name ?? "OceanSkill Creator"}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-on-surface-variant">
             <span className="material-symbols-outlined text-[15px] text-primary" style={{fontVariationSettings: reviewStats?.count ? "'FILL' 1" : "'FILL' 0"}}>star</span>
@@ -81,7 +83,7 @@ function PlatformCard({skill, reviewStats, typeLabel, removable = false, removeL
   );
 }
 
-export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySkillId, locale, limit, atLimit, labels, cardLabels, formLabels}: {
+export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySkillId, locale, limit, atLimit, labels, cardLabels, formLabels, ownerName, ownerAvatarUrl}: {
   readonly library: LibrarySkill[];
   readonly uploaded: CreatorSkill[];
   readonly reviewStatsBySkillId: Record<string, SkillReviewStats>;
@@ -91,6 +93,8 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
   readonly labels: TabsLabels;
   readonly cardLabels: CardLabels;
   readonly formLabels: CreatorSkillFormLabels;
+  readonly ownerName: string;
+  readonly ownerAvatarUrl: string | null;
 }) {
   const [tab, setTab] = useState<TabKey>("all");
   const [librarySkills, setLibrarySkills] = useState(library);
@@ -155,7 +159,7 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
               {allSkills.map((skill) => skill.source === "library" ? (
                 <PlatformCard key={`library-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} removable removeLabel={labels.removeSkill} onRemove={handleRemove} />
               ) : (
-                <PlatformCard key={`uploaded-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} typeLabel={labels.uploadedBadge} />
+                <PlatformCard key={`uploaded-${skill.id}`} skill={skill} reviewStats={reviewStatsBySkillId[skill.id]} typeLabel={labels.uploadedBadge} ownerName={ownerName} ownerAvatarUrl={ownerAvatarUrl} />
               ))}
             </div>
           ) : (
@@ -178,7 +182,7 @@ export default function DashboardSkillsTabs({library, uploaded, reviewStatsBySki
 
       {tab === "uploaded" && (
         <div className="mt-8">
-          <CreatorSkillList skills={uploaded} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} labels={cardLabels}/>
+          <CreatorSkillList skills={uploaded} reviewStatsBySkillId={reviewStatsBySkillId} locale={locale} labels={cardLabels} ownerName={ownerName} ownerAvatarUrl={ownerAvatarUrl}/>
           <div className="mt-6">
             <CreatorSkillAddCard atLimit={atLimit} count={uploaded.length} limit={limit} formLabels={formLabels} labels={{add: labels.addSkill, addHint: labels.addSkillHint, limitTitle: labels.limitTitle, limitDescription: labels.limitDescription, upgrade: labels.upgradePlan, close: labels.close}}/>
           </div>

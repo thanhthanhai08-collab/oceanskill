@@ -133,7 +133,7 @@ export default function SkillReviews({skillId, locale, initialReviews, initialSt
         />
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-on-surface-variant">{message}</p>
-          <button type="button" onClick={submit} disabled={isPending} className="rounded-full bg-primary px-8 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 transition hover:bg-primary-container disabled:opacity-70">
+          <button type="button" onClick={submit} disabled={isPending} className="btn-payment rounded-full px-8 py-3 font-bold hover:brightness-105 disabled:opacity-70">
             {isPending ? "..." : ownReview ? labels.update : labels.submit}
           </button>
         </div>

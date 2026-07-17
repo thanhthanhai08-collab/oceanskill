@@ -41,7 +41,7 @@ export default function AddSkillToLibraryButton({skillId, labels}: {
         type="button"
         onClick={addSkill}
         disabled={isPending}
-        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-on-primary transition hover:brightness-110 disabled:opacity-70"
+      className="btn-payment flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold hover:brightness-110 disabled:opacity-70"
       >
         {isPending ? <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> : <span className="material-symbols-outlined text-[18px]">add_circle</span>}
         {labels.add}

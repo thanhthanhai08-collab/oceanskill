@@ -25,7 +25,7 @@ export default function SkillFilterBar({query, sort, labels}: SkillFilterBarProp
         <option value="category">{labels.sortCategory}</option>
         <option value="version">{labels.sortVersion}</option>
       </select>
-      <button className="rounded-lg bg-primary-container px-6 py-3 font-semibold text-white transition hover:bg-inverse-primary">{labels.filter}</button>
+      <button className="btn-payment rounded-lg px-6 py-3 font-semibold hover:brightness-105">{labels.filter}</button>
     </form>
   );
 }

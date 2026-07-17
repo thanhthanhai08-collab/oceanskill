@@ -31,7 +31,7 @@ export default async function SecurityPage() {
               className="w-full cursor-not-allowed rounded-xl border border-outline-variant/30 bg-surface-container/50 px-4 py-3 text-sm text-on-surface-variant" />
           </div>
           <div className="flex justify-end pt-1">
-            <button type="submit" disabled className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-on-primary opacity-50">
+        <button type="submit" disabled className="btn-payment rounded-xl px-6 py-3 text-sm font-semibold opacity-50">
               {t("updatePassword")} <span className="ml-1 text-[10px] opacity-70">(coming soon)</span>
             </button>
           </div>

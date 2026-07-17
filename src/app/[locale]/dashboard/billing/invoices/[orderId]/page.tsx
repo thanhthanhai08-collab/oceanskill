@@ -15,7 +15,7 @@ export default async function InvoiceDetailPage({params}: {readonly params: Prom
   const [t, {data: order}] = await Promise.all([
     getTranslations("Dashboard"),
     supabase.from("payment_orders")
-      .select("id,order_code,status,amount_vnd,credit_units,created_at")
+      .select("id,order_code,status,amount_vnd,credit_units,purpose,skill_slots,created_at")
       .eq("id", orderId)
       .eq("user_id", String(userId))
       .single(),
@@ -64,8 +64,8 @@ export default async function InvoiceDetailPage({params}: {readonly params: Prom
         <div className="mt-6">
           <div className="flex items-center justify-between rounded-xl bg-surface-container p-4">
             <div>
-              <p className="font-semibold">{t("creditPurchase")}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">{Number(order.credit_units).toLocaleString(locale)} × 1 credit pack</p>
+              <p className="font-semibold">{order.purpose === "creator_slots" ? (locale === "vi" ? "Mua thêm slot skill" : "Skill slot purchase") : t("creditPurchase")}</p>
+              <p className="mt-1 text-sm text-on-surface-variant">{order.purpose === "creator_slots" ? `${Number(order.skill_slots).toLocaleString(locale)} × ${locale === "vi" ? "slot skill" : "skill slot"}` : `${Number(order.credit_units).toLocaleString(locale)} × 1 credit pack`}</p>
             </div>
             <p className="font-geist text-xl font-bold">{Number(order.amount_vnd).toLocaleString(locale)} ₫</p>
           </div>

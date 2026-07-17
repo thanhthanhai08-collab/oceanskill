@@ -2,21 +2,20 @@ import {getTranslations} from "next-intl/server";
 import {redirect} from "next/navigation";
 import DashboardCollections from "@/components/dashboard/DashboardCollections";
 import {getCreatorSkills, getUserSkillLibrary} from "@/lib/skills/creator";
-import {getPlatformSkillCollections, getUserSkillCollections} from "@/lib/skills/collections";
+import {getUserSkillCollections} from "@/lib/skills/collections";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardCollectionsPage({params}: {readonly params: Promise<{locale: string}>}) {
   const {locale} = await params;
-  const [t, creatorData, library, collections, platformCollections] = await Promise.all([
+  const [t, creatorData, library, collections] = await Promise.all([
     getTranslations("Dashboard"),
     getCreatorSkills(),
     getUserSkillLibrary(locale),
     getUserSkillCollections(),
-    getPlatformSkillCollections(locale),
   ]);
 
-  if (!creatorData || !library || !collections || !platformCollections) redirect(`/${locale}/login`);
+  if (!creatorData || !library || !collections) redirect(`/${locale}/login`);
 
   return (
     <>
@@ -32,8 +31,7 @@ export default async function DashboardCollectionsPage({params}: {readonly param
         library={library}
         uploaded={creatorData.skills}
         locale={locale}
-        initialCollections={collections.filter((collection) => collection.collectionType === "user")}
-        platformCollections={platformCollections}
+        initialCollections={collections}
         labels={{
           addNew: t("collectionAddNew"),
           addHint: t("collectionAddHint"),
@@ -66,6 +64,11 @@ export default async function DashboardCollectionsPage({params}: {readonly param
           readOnly: t("collectionReadOnly"),
           personalTitle: t("collectionPersonalTitle"),
           personalDescription: t("collectionPersonalDescription"),
+          tabAll: t("collectionTabAll"),
+          tabPlatform: t("collectionTabPlatform"),
+          tabPersonal: t("collectionTabPersonal"),
+          emptyPlatform: t("collectionEmptyPlatform"),
+          emptyPersonal: t("collectionEmptyPersonal"),
         }}
       />
     </>

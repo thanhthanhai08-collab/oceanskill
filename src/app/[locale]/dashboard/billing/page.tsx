@@ -28,14 +28,14 @@ const billingLabels = {
     error: "Không thể tạo lệnh thanh toán. Hãy thử lại", noExpiry: "Credit không hết hạn", mcpReady: "Dùng ngay cho MCP và kho skill",
     autoOrder: "Tạo QR thanh toán SePay tự động", emptyPacks: "Chưa có gói credit nào đang hoạt động", creditLabel: "Credit",
     scrollTopUp: "Nạp credit", transactionHistory: "Lịch sử giao dịch", colDate: "Ngày tạo lệnh", colType: "Loại giao dịch",
-    colUnits: "Số lượng", colAmount: "Số tiền", colStatus: "Trạng thái", topUpType: "Nạp tiền",
+    colUnits: "Số lượng", colAmount: "Số tiền", colStatus: "Trạng thái", topUpType: "Nạp tiền", slotType: "Mua slot skill",
   },
   en: {
     title: "Billing", description: "Manage your credits and transaction history", buyCredits: "Buy credits", promo: "Today's offer", popular: "Most popular", choose: "Choose plan", creating: "Creating order",
     error: "Unable to create payment order. Please try again", noExpiry: "Credits never expire", mcpReady: "Ready for MCP and the skill library",
     autoOrder: "Automatic SePay payment QR", emptyPacks: "No active credit plans are available", creditLabel: "Credits",
     scrollTopUp: "Top up credits", transactionHistory: "Transaction history", colDate: "Created at", colType: "Transaction type",
-    colUnits: "Credits", colAmount: "Amount", colStatus: "Status", topUpType: "Top-up",
+    colUnits: "Credits / slots", colAmount: "Amount", colStatus: "Status", topUpType: "Top-up", slotType: "Skill slots",
   },
 } as const;
 
@@ -99,7 +99,7 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
   const [{data: recentOrders}, {data: creditPacks}] = await Promise.all([
     supabase
       .from("payment_orders")
-      .select("id,status,amount_vnd,credit_units,created_at")
+      .select("id,status,amount_vnd,credit_units,purpose,skill_slots,created_at")
       .eq("user_id", String(profileData.claims?.sub))
       .order("created_at", {ascending: false})
       .limit(5),
@@ -122,7 +122,7 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
         <p className="mt-3 max-w-2xl text-on-surface-variant">{labels.description}</p>
       </header>
 
-      <div className="mt-10 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/80 via-secondary/80 to-tertiary/90 p-8 text-on-primary shadow-[0_0_48px_rgba(147,51,234,0.22)] sm:p-10">
+      <div className="payment-gradient mt-10 overflow-hidden rounded-2xl p-8 sm:p-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-white/55">{t("availableCredits")}</p>
@@ -213,8 +213,8 @@ export default async function BillingOverviewPage({params}: {readonly params: Pr
               {(recentOrders ?? []).length ? (recentOrders ?? []).map((order) => (
                 <tr key={order.id} className="transition hover:bg-white/[0.03]">
                   <td className="px-6 py-5 text-sm font-semibold">{formatDate(order.created_at)}</td>
-                  <td className="px-6 py-5 text-sm text-on-surface-variant">{labels.topUpType}</td>
-                  <td className="px-6 py-5 text-sm font-semibold text-primary">+{Number(order.credit_units).toLocaleString(locale)} {labels.creditLabel}</td>
+                  <td className="px-6 py-5 text-sm text-on-surface-variant">{order.purpose === "creator_slots" ? labels.slotType : labels.topUpType}</td>
+                  <td className="px-6 py-5 text-sm font-semibold text-primary">+{order.purpose === "creator_slots" ? `${Number(order.skill_slots).toLocaleString(locale)} ${locale === "vi" ? "slot" : "slots"}` : `${Number(order.credit_units).toLocaleString(locale)} ${labels.creditLabel}`}</td>
                   <td className="px-6 py-5 text-sm font-semibold">{formatVnd(Number(order.amount_vnd))}</td>
                   <td className="px-6 py-5"><span className="rounded-full bg-primary/10 px-3 py-1 font-mono text-[10px] font-bold uppercase text-primary">{paymentStatusLabel(locale, order.status)}</span></td>
                 </tr>

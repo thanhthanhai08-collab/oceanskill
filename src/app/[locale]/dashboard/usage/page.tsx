@@ -234,7 +234,7 @@ export default async function UsagePage({params, searchParams}: UsagePageProps) 
                 <span className="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">{labels[code].to}</span>
                 <input type="date" name="to" defaultValue={formatDateInput(range.to)} className="h-10 rounded-lg border border-outline-variant/40 bg-surface-container-lowest px-3 text-sm outline-none focus:border-primary" />
               </label>
-              <button className="self-end rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-on-primary">{labels[code].apply}</button>
+              <button className="btn-payment self-end rounded-lg px-4 py-2.5 text-sm font-bold hover:brightness-105">{labels[code].apply}</button>
             </form>
           </div>
         </div>

@@ -138,7 +138,7 @@ export default function DashboardCollectionDetail({collection, library, uploaded
           )}
         </div>
         {error && <p className="mt-3 text-sm text-error">{error}</p>}
-        <button type="button" onClick={save} disabled={isSaving || !canSave} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-5 py-4 font-bold text-on-primary-container transition disabled:opacity-50">
+        <button type="button" onClick={save} disabled={isSaving || !canSave} className="btn-payment mt-5 flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 font-bold transition disabled:opacity-50">
           <span className="material-symbols-outlined text-[20px]">save</span>
           {isSaving ? labels.saving : labels.save}
         </button>

@@ -69,13 +69,14 @@ export async function getPlatformSkillCollections(locale: string) {
   const supabase = await createClient();
   const {data: claimsData} = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
-  if (!userId) return null;
-  const [{data, error}, {data: library, error: libraryError}] = await Promise.all([
-    supabase.from("skill_collections")
-      .select("id,user_id,collection_type,slug,name,description,accent,updated_at,skill_collection_items(skill_id,position),skill_collection_translations(locale,name,description)")
-      .eq("collection_type", "platform").eq("skill_collection_translations.locale", locale).order("updated_at", {ascending: false}),
-    supabase.from("user_collection_library").select("collection_id").eq("user_id", String(userId)),
+  const platformQuery = supabase.from("skill_collections")
+    .select("id,user_id,collection_type,slug,name,description,accent,updated_at,skill_collection_items(skill_id,position),skill_collection_translations(locale,name,description)")
+    .eq("collection_type", "platform").eq("skill_collection_translations.locale", locale).order("updated_at", {ascending: false});
+  const [{data, error}, libraryResult] = await Promise.all([
+    platformQuery,
+    userId ? supabase.from("user_collection_library").select("collection_id").eq("user_id", String(userId)) : Promise.resolve({data: [], error: null}),
   ]);
+  const {data: library, error: libraryError} = libraryResult;
   if (error || libraryError) throw new Error(`Could not load platform collections: ${(error ?? libraryError)?.message}`);
   const addedIds = new Set((library ?? []).map((row) => row.collection_id));
   return (data ?? []).map((row) => {
@@ -87,6 +88,11 @@ export async function getPlatformSkillCollections(locale: string) {
       skillIds: [...(row.skill_collection_items ?? [])].sort((a, b) => a.position - b.position).map((item) => item.skill_id),
     };
   }) as SkillCollection[];
+}
+
+export async function getPlatformSkillCollectionBySlug(locale: string, slug: string) {
+  const collections = await getPlatformSkillCollections(locale);
+  return collections.find((collection) => collection.slug === slug) ?? null;
 }
 
 export async function getUserSkillCollectionBySlug(slug: string) {

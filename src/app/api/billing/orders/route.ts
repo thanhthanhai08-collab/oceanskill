@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import {createPaymentOrder} from "@/lib/billing/orders";
+import {createCreatorSlotOrder, createPaymentOrder} from "@/lib/billing/orders";
 import {createClient} from "@/lib/supabase/server";
 import {isPaymentConfigured} from "@/lib/sepay/qr";
 
@@ -13,8 +13,14 @@ export async function POST(request: Request) {
 
   let body: unknown;
   try { body = await request.json(); } catch { return NextResponse.json({error: "invalid_json"}, {status: 400}); }
-  const packId = typeof body === "object" && body !== null && "packId" in body ? String(body.packId) : "";
-  if (!UUID.test(packId)) return NextResponse.json({error: "invalid_pack_id"}, {status: 400});
+  const input = typeof body === "object" && body !== null ? body as Record<string, unknown> : {};
+  const purpose = input.purpose === "creator_slots" ? "creator_slots" : "credits";
+  const packId = String(input.packId ?? "");
+  const amountVnd = Number(input.amountVnd ?? 0);
+  if (purpose === "credits" && !UUID.test(packId)) return NextResponse.json({error: "invalid_pack_id"}, {status: 400});
+  if (purpose === "creator_slots" && (!Number.isSafeInteger(amountVnd) || amountVnd < 5000 || amountVnd > 5_000_000 || amountVnd % 5000 !== 0)) {
+    return NextResponse.json({error: "invalid_slot_amount"}, {status: 400});
+  }
   if (!isPaymentConfigured()) {
     return NextResponse.json({
       error: "payment_not_configured",
@@ -23,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const order = await createPaymentOrder(userId, packId);
+    const order = purpose === "creator_slots" ? await createCreatorSlotOrder(userId, amountVnd) : await createPaymentOrder(userId, packId);
     return NextResponse.json({order}, {status: 201});
   } catch (error) {
     const message = error instanceof Error ? error.message : "unknown";

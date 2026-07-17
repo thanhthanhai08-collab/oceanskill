@@ -15,7 +15,7 @@ const clients = ["codex", "claude-code", "cursor", "generic-mcp"];
 
 function SubmitButton({labels}: {labels: CreatorSkillFormLabels}) {
   const {pending} = useFormStatus();
-  return <button disabled={pending} className="min-h-11 rounded-xl bg-primary-container px-6 py-3 text-sm font-semibold text-white transition hover:bg-inverse-primary disabled:cursor-wait disabled:opacity-60">{pending ? labels.submitting : labels.submit}</button>;
+  return <button disabled={pending} className="btn-payment min-h-11 rounded-xl px-6 py-3 text-sm font-semibold transition hover:brightness-105 disabled:cursor-wait disabled:opacity-60">{pending ? labels.submitting : labels.submit}</button>;
 }
 
 export default function CreatorSkillForm({labels}: {readonly labels: CreatorSkillFormLabels}) {

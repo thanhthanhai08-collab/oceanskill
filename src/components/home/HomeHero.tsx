@@ -24,11 +24,11 @@ export default async function HomeHero() {
                 <span className="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-[21px] text-primary">search</span>
                 <input name="q" type="search" enterKeyHint="search" placeholder={t("heroSearchPlaceholder")} className="w-full border-0 border-b border-outline-variant/70 bg-transparent py-3 pl-8 pr-3 text-base outline-none transition placeholder:text-on-surface-variant/65 focus:border-primary" />
               </label>
-              <button className="rounded-md bg-primary-container px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{t("heroSearchButton")}</button>
+              <button className="btn-payment rounded-md px-6 py-3 text-sm font-semibold hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0">{t("heroSearchButton")}</button>
             </div>
           </form>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link href="/skills" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary-container px-6 py-3.5 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <Link href="/skills" className="btn-payment inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5 text-sm font-semibold hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0">
               {t("heroExplore")}<span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
             <Link href="/leaderboard" className="inline-flex items-center justify-center px-3 py-3.5 text-sm font-semibold text-on-surface-variant underline decoration-outline-variant underline-offset-4 transition hover:text-primary hover:decoration-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{t("heroCreators")}</Link>

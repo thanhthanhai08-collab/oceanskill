@@ -8,8 +8,9 @@ export type CreatorSkill = Readonly<{
   id: string; slug: string; title: string; description: string; category: string; status: string;
   visibility: string; current_version: string | null; compatible_clients: string[]; updated_at: string;
   author_id: string | null; authors: SkillAuthor | null;
-  skill_versions: Array<{version: string; scan_status: string; skill_md_hash: string | null; scan_summary: Record<string, unknown>; created_at: string}>;
 }>;
+
+export type CreatorIdentity = Readonly<{name: string; avatarUrl: string | null}>;
 
 export type FoundationSkill = Readonly<{
   id: string; slug: string; title: string; description: string; category: string;
@@ -55,13 +56,18 @@ export async function getCreatorSkills() {
   if (!userId) return null;
   const [skillsResult, profileResult] = await Promise.all([
     supabase.from("skills")
-    .select(`id,slug,title,description,category,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields}),skill_versions!skill_versions_skill_id_fkey(version,scan_status,skill_md_hash,scan_summary,created_at)`)
+    .select(`id,slug,title,description,category,status,visibility,current_version,compatible_clients,updated_at,author_id,authors(${authorFields})`)
     .eq("owner_id", String(userId)).order("updated_at", {ascending: false}),
-    supabase.from("profiles").select("creator_skill_limit").eq("id", String(userId)).maybeSingle(),
+    supabase.from("profiles").select("creator_skill_limit,display_name,avatar_url,email").eq("id", String(userId)).maybeSingle(),
   ]);
   if (skillsResult.error) throw new Error(`Could not load creator skills: ${skillsResult.error.message}`);
   if (profileResult.error) throw new Error(`Could not load creator limit: ${profileResult.error.message}`);
-  return {claims: claimsData.claims, skills: ((skillsResult.data ?? []) as unknown as Array<WithAuthorArray<CreatorSkill>>).map(normalizeAuthor), limit: Number(profileResult.data?.creator_skill_limit ?? 5)};
+  const fallbackEmail = String(profileResult.data?.email ?? claimsData.claims.email ?? "");
+  const owner: CreatorIdentity = {
+    name: profileResult.data?.display_name?.trim() || fallbackEmail.split("@")[0] || "OceanSkill user",
+    avatarUrl: profileResult.data?.avatar_url ?? null,
+  };
+  return {claims: claimsData.claims, skills: ((skillsResult.data ?? []) as unknown as Array<WithAuthorArray<CreatorSkill>>).map(normalizeAuthor), limit: Number(profileResult.data?.creator_skill_limit ?? 5), owner};
 }
 
 /** Count how many skills the current user has uploaded (for free-plan limit enforcement). */

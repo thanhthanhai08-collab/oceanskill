@@ -3,7 +3,7 @@ import {createClient} from "@/lib/supabase/server";
 
 export type DashboardMcpKey = Readonly<{id: string; name: string; key_prefix: string; last_used_at: string | null; revoked_at: string | null; created_at: string}>;
 export type DashboardUsage = Readonly<{id: string; tool_name: string; units: number; status: string; created_at: string}>;
-export type DashboardOrder = Readonly<{id: string; status: string; amount_vnd: number; credit_units: number; created_at: string}>;
+export type DashboardOrder = Readonly<{id: string; status: string; amount_vnd: number; credit_units: number; purpose: "credits" | "creator_slots"; skill_slots: number; created_at: string}>;
 
 export async function getDashboardOverview() {
   const supabase = await createClient();
@@ -16,7 +16,7 @@ export async function getDashboardOverview() {
     supabase.from("api_keys").select("id,revoked_at").eq("user_id", userId),
     supabase.from("usage_events").select("id,tool_name,units,status,created_at").eq("user_id", userId).order("created_at", {ascending: false}).limit(8),
     supabase.from("mcp_call_events").select("id", {count: "exact", head: true}).eq("user_id", userId),
-    supabase.from("payment_orders").select("id,status,amount_vnd,credit_units,created_at").eq("user_id", userId).order("created_at", {ascending: false}).limit(3),
+    supabase.from("payment_orders").select("id,status,amount_vnd,credit_units,purpose,skill_slots,created_at").eq("user_id", userId).order("created_at", {ascending: false}).limit(3),
     supabase.from("skills").select("id", {count: "exact", head: true}).eq("owner_id", userId),
     supabase.from("user_credit_balances").select("available_units").eq("user_id", userId).maybeSingle(),
   ]);

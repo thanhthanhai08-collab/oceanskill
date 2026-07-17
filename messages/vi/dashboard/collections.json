@@ -40,6 +40,11 @@
     "collectionPlatformAdded": "Đã thêm vào thư viện",
     "collectionReadOnly": "Chỉ đọc",
     "collectionPersonalTitle": "Bộ sưu tập của tôi",
-    "collectionPersonalDescription": "Các bộ sưu tập bạn sở hữu và có thể tạo, sửa, sắp xếp hoặc xóa."
+    "collectionPersonalDescription": "Các bộ sưu tập bạn sở hữu và có thể tạo, sửa, sắp xếp hoặc xóa.",
+    "collectionTabAll": "Tất cả bộ sưu tập",
+    "collectionTabPlatform": "Bộ sưu tập nền tảng",
+    "collectionTabPersonal": "Bộ sưu tập của tôi",
+    "collectionEmptyPlatform": "Chưa có bộ sưu tập nền tảng nào. Hãy mở Kho skill và thêm bộ sưu tập bạn muốn dùng.",
+    "collectionEmptyPersonal": "Bạn chưa tạo bộ sưu tập riêng nào."
   }
 }

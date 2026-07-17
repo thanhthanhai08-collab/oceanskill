@@ -24,7 +24,7 @@ export default async function LoginPage({searchParams}: LoginPageProps) {
                 <button formAction={resetPassword} formNoValidate className="text-sm font-semibold text-primary transition hover:text-primary/70">{t("forgotPassword")}</button>
               </div>
             </div>
-            <button formAction={login} className="w-full rounded-xl bg-primary-container px-4 py-3 font-semibold text-white transition hover:bg-inverse-primary">{t("submit")}</button>
+          <button formAction={login} className="btn-payment w-full rounded-xl px-4 py-3 font-semibold hover:brightness-105">{t("submit")}</button>
           </form>
           <div className="relative mt-7 flex items-center justify-center">
             <span className="absolute inset-x-0 h-px bg-outline-variant/40" />

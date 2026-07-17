@@ -4,7 +4,7 @@
     "title": "From marketplace to MCP in one clear workflow",
     "description": "Connect an agent client, manage skills and collections, understand credits and requestId, and troubleshoot MCP calls without exposing your key.",
     "onThisPage": "On this page",
-    "nav": {"start": "Get started", "connect": "Connect MCP", "workflow": "Use skills", "collections": "Collections", "requestId": "requestId & credits", "tools": "Tool reference", "errors": "Troubleshooting"},
+    "nav": {"start": "Get started", "connect": "Connect MCP", "workflow": "Use skills", "publishing": "Private skills", "collections": "Collections", "requestId": "requestId & credits", "tools": "Tool reference", "errors": "Troubleshooting"},
     "startEyebrow": "Quickstart",
     "startTitle": "Connect OceanSkill in four steps",
     "startDescription": "Your dashboard is the control plane; your MCP-compatible client is where skills are used.",
@@ -32,13 +32,19 @@
       "enable": {"title": "Enable", "description": "Add a skill or collection to your library, then enable only the skills you want exposed to your agent."},
       "invoke": {"title": "Invoke", "description": "Ask the agent to use a named skill. OceanSkill returns the scanned current version through authenticated MCP."}
     },
+    "publishingEyebrow": "Skills you own", "publishingTitle": "Publish private skills and add slots when needed", "publishingDescription": "Every account includes 5 private-skill slots. The dashboard identifies the signed-in user as the author, while verified content and hashes remain protected behind Storage and MCP.", "publishingCta": "Buy more skill slots",
+    "publishingSteps": {
+      "upload": {"title": "Upload a skill package", "description": "Open Dashboard → My skills → Uploaded skills, enter metadata, then provide SKILL.md or a reviewed ZIP package."},
+      "limit": {"title": "Use 5 included slots", "description": "Platform skills added to your library do not count. Only private skills you publish consume these slots."},
+      "payment": {"title": "5,000 VND per extra slot", "description": "When the allowance is full, Billing opens at 5,000 VND. Choose a larger multiple to buy several slots in one payment."}
+    },
     "collectionsEyebrow": "Collections",
     "collectionsTitle": "Group skills into reusable collections",
-    "collectionsDescription": "Collections keep related skills together for a project, team, or workflow. Create and edit your own collections in the dashboard, or add an available collection through MCP.",
+    "collectionsDescription": "Discover platform collections in the skill marketplace. They appear in the dashboard only after you add them, where three tabs separate all, platform, and user-owned collections.",
     "collectionSteps": {
-      "create": {"title": "Create", "description": "Open Dashboard → Collections, name the collection, choose its skills, and save."},
-      "open": {"title": "Open", "description": "Each collection receives its own localized URL so you can return to it and edit the selected skills."},
-      "agent": {"title": "Use from your agent", "description": "Call list_collections, then add_collection_to_library. Its skills become available in your library and can be toggled individually."}
+      "browse": {"title": "Browse in the marketplace", "description": "Open a platform collection card to review its description and every included skill before adding it."},
+      "add": {"title": "Add it explicitly", "description": "Choose Add to my collections. Until then, the platform collection remains outside your dashboard."},
+      "manage": {"title": "Use three dashboard tabs", "description": "Switch between All, Platform, and Mine. Platform collections are read-only; owned collections can be created, edited, and deleted."}
     },
     "requestEyebrow": "Usage safety",
     "requestTitle": "How requestId prevents duplicate charges",
@@ -58,6 +64,10 @@
       "reference": {"name": "get_skill_reference", "description": "Return one mapped file from the current skill version. Text uses UTF-8 and binary content uses base64."},
       "collections": {"name": "list_collections", "description": "List public collections and collections owned by the authenticated user."},
       "addCollection": {"name": "add_collection_to_library", "description": "Add an accessible collection to the user library and enable its skills."},
+      "createCollection": {"name": "create_skill_collection", "description": "Create a private collection with a name, collection key, and ordered skill list."},
+      "updateCollection": {"name": "update_skill_collection", "description": "Rename, describe, re-key, or replace the skills in a user-owned collection."},
+      "deleteCollection": {"name": "delete_skill_collection", "description": "Delete a user-owned collection. Platform collections cannot be deleted."},
+      "executeCollection": {"name": "execute_skill_collection", "description": "Fetch SKILL.md sequentially for up to 10 skills in an owned collection; each successful fetch costs 1 credit."},
       "toggle": {"name": "toggle_skill", "description": "Enable or disable one library skill without fetching paid content."},
       "usage": {"name": "get_usage_summary", "description": "Return the current credit balance and month-to-date MCP usage."}
     },
