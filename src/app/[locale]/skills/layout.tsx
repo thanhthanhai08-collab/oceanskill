@@ -3,6 +3,7 @@ import SiteShell from "@/components/layout/SiteShell";
 import SkillsCatalogLayout from "@/components/skills/SkillsCatalogLayout";
 import {listPublicCategories} from "@/lib/catalog/categories";
 import {listPublicSkills} from "@/lib/catalog/skills";
+import {getPlatformSkillCollections} from "@/lib/skills/collections";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +14,10 @@ type SkillsLayoutProps = Readonly<{
 
 export default async function SkillsLayout({children, params}: SkillsLayoutProps) {
   const {locale} = await params;
-  const [skills, allCategories, t] = await Promise.all([
+  const [skills, allCategories, platformCollections, t] = await Promise.all([
     listPublicSkills(locale),
     listPublicCategories(locale),
+    getPlatformSkillCollections(locale),
     getTranslations({locale, namespace: "Marketplace"}),
   ]);
   const availableCategorySlugs = new Set(skills.map((skill) => skill.category));
@@ -24,12 +26,12 @@ export default async function SkillsLayout({children, params}: SkillsLayoutProps
   return (
     <SiteShell>
       <SkillsCatalogLayout
-        skills={skills}
         categories={categories}
+        platformCollections={platformCollections}
         labels={{
           categories: t("categories"),
           allCategories: t("allCategories"),
-          catalogRank: t("catalogRank"),
+          platformCollections: t("collectionEyebrow"),
           trending: t("trending"),
         }}
       >

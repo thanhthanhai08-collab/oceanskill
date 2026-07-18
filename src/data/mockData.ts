@@ -54,12 +54,6 @@ export function getFeaturedCreator(id: string): FeaturedCreator | undefined {
   return featuredCreators.find((creator) => creator.id === id);
 }
 
-export const hotCollections = [
-  {id: "agent-starter", icon: "rocket_launch", glowClass: "from-primary-container/70 via-secondary-container/35 to-background"},
-  {id: "growth-engine", icon: "campaign", glowClass: "from-secondary-container/70 via-primary-container/35 to-background"},
-  {id: "revenue-ops", icon: "payments", glowClass: "from-tertiary-container/70 via-primary-container/35 to-background"},
-] as const;
-
 export function getCategoryVisual(category: string): CategoryVisual {
   return categoryVisuals[category] ?? fallbackCategoryVisual;
 }

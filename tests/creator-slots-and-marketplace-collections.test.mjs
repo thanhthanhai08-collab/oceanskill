@@ -58,14 +58,27 @@ test("dashboard navigation stays within its layout and creator slot UX follows t
 });
 
 test("platform collections are public in the marketplace but dashboard reads only the user's library", async () => {
-  const [sql, marketplace, dashboard] = await Promise.all([
+  const [sql, marketplaceLayout, marketplace, sidebar, collectionPage, homePage, hotCollections, dashboard] = await Promise.all([
     readFile(migrationUrl, "utf8"),
+    readFile(new URL("../src/app/[locale]/skills/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/app/[locale]/skills/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/skills/CategorySidebar.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/skills/collections/[slug]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/home/HotCollections.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/app/[locale]/dashboard/collections/page.tsx", import.meta.url), "utf8"),
   ]);
   assert.match(sql, /for select to anon, authenticated[\s\S]+collection_type = 'platform'/i);
-  assert.match(marketplace, /getPlatformSkillCollections/);
-  assert.match(marketplace, /\/skills\/collections\/\$\{collection\.slug\}/);
+  assert.match(marketplaceLayout, /getPlatformSkillCollections/);
+  assert.match(marketplaceLayout, /platformCollections=\{platformCollections\}/);
+  assert.doesNotMatch(marketplace, /getPlatformSkillCollections|collectionsTitle/);
+  assert.match(sidebar, /\/skills\/collections\/\$\{collection\.slug\}/);
+  assert.match(sidebar, /activeCollection === collection\.slug/);
+  assert.match(collectionPage, /AddPlatformCollectionButton/);
+  assert.match(homePage, /getPlatformSkillCollections/);
+  assert.match(hotCollections, /collections\.slice\(0, 3\)/);
+  assert.match(hotCollections, /collection\.name/);
+  assert.doesNotMatch(hotCollections, /mockData|collections\.\$\{collection\.id\}/);
   assert.doesNotMatch(dashboard, /getPlatformSkillCollections/);
   assert.match(dashboard, /initialCollections=\{collections\}/);
 });

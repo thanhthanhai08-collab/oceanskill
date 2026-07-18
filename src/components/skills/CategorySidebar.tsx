@@ -1,25 +1,26 @@
 "use client";
 
 import {Link, usePathname} from "@/i18n/navigation";
-import type {SkillSummary} from "@/lib/catalog/skills";
 import type {CatalogCategory} from "@/lib/catalog/categories";
+import type {SkillCollection} from "@/lib/skills/collections";
 
 export type CategorySidebarLabels = Readonly<{
   categories: string;
   allCategories: string;
-  catalogRank: string;
+  platformCollections: string;
   trending: string;
 }>;
 
 export interface CategorySidebarProps {
-  readonly skills: SkillSummary[];
   readonly categories: CatalogCategory[];
+  readonly platformCollections: SkillCollection[];
   readonly labels: CategorySidebarLabels;
 }
 
-export default function CategorySidebar({skills, categories, labels}: CategorySidebarProps) {
+export default function CategorySidebar({categories, platformCollections, labels}: CategorySidebarProps) {
   const pathname = usePathname();
-  const activeCategory = pathname.match(/^\/skills\/category\/([^/]+)\/?$/)?.[1] ?? "all";
+  const activeCategory = pathname === "/skills" ? "all" : pathname.match(/^\/skills\/category\/([^/]+)\/?$/)?.[1];
+  const activeCollection = pathname.match(/^\/skills\/collections\/([^/]+)\/?$/)?.[1];
 
   return (
     <aside className="space-y-10 lg:sticky lg:top-28 lg:h-fit">
@@ -48,17 +49,22 @@ export default function CategorySidebar({skills, categories, labels}: CategorySi
           })}
         </nav>
       </section>
-      <section className="hidden lg:block">
-        <h2 className="font-geist text-xl font-semibold">{labels.catalogRank}</h2>
-        <div className="mt-4 space-y-3">
-          {skills.slice(0, 3).map((skill, index) => (
-            <Link key={skill.id} href={`/skills/${skill.slug}`} className="flex items-center gap-4 rounded-xl border border-outline-variant/35 bg-surface-container-low/60 p-4 transition hover:border-primary/50">
-              <span className={`font-geist text-2xl font-bold ${index === 0 ? "text-tertiary" : "text-on-surface-variant"}`}>{index + 1}</span>
-              <span className="min-w-0"><span className="block truncate font-semibold">{skill.title}</span><span className="mt-1 block font-mono text-[10px] uppercase text-on-surface-variant">{skill.compatible_clients.length} integrations</span></span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {platformCollections.length > 0 && <section>
+        <h2 className="font-geist text-xl font-semibold">{labels.platformCollections}</h2>
+        <nav aria-label={labels.platformCollections} className="mt-4 flex flex-wrap gap-2 lg:flex-col">
+          {platformCollections.map((collection) => {
+            const active = activeCollection === collection.slug;
+            return <Link
+              key={collection.id}
+              href={`/skills/collections/${collection.slug}` as "/skills"}
+              aria-current={active ? "page" : undefined}
+              className={`rounded-lg px-3 py-2 text-sm transition ${active ? "bg-primary/15 font-semibold text-primary" : "text-on-surface-variant hover:bg-surface-container"}`}
+            >
+              {collection.name}
+            </Link>;
+          })}
+        </nav>
+      </section>}
       <section className="hidden lg:block">
         <h2 className="flex items-center gap-2 font-geist text-xl font-semibold"><span className="material-symbols-outlined text-secondary">local_fire_department</span>{labels.trending}</h2>
         <div className="mt-4 space-y-3 text-sm text-on-surface-variant">

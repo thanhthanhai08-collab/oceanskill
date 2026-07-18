@@ -19,7 +19,7 @@ export default async function PlatformCollectionPage({params}: {readonly params:
   const byId = new Map(skills.map((skill) => [skill.id, skill]));
   const collectionSkills = collection.skillIds.map((id) => byId.get(id)).filter((skill): skill is SkillSummary => Boolean(skill));
 
-  return <main className="mx-auto max-w-6xl px-6 py-12 lg:px-8">
+  return <div className="min-w-0">
     <section className="overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-surface-container-low to-background p-7 sm:p-10">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
         <div>
@@ -37,5 +37,5 @@ export default async function PlatformCollectionPage({params}: {readonly params:
         {collectionSkills.map((skill) => <SkillCard key={skill.id} skill={skill} actionLabel={t("viewSkill")} />)}
       </div>
     </section>
-  </main>;
+  </div>;
 }
