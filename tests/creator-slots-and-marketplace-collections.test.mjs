@@ -43,6 +43,7 @@ test("dashboard navigation stays within its layout and creator slot UX follows t
   assert.match(sidebar, /fixed inset-y-0 left-0/);
   assert.match(sidebar, /lg:max-h-\[calc\(100dvh-6rem\)\]/);
   assert.match(sidebar, /lg:overflow-y-auto/);
+  assert.match(sidebar, /scrollbar-hidden/);
   assert.match(sidebar, /document\.body\.style\.overflow = "hidden"/);
   assert.match(dashboard, /payment-gradient/);
   assert.match(dashboard, /bg-white[^\n]+text-\[#18181b\]/);

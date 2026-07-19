@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {Link} from "@/i18n/navigation";
 import DashboardStat from "@/components/dashboard/DashboardStat";
 import {getDashboardOverview} from "@/lib/dashboard/data";
+import {getPlatformAdmin} from "@/lib/admin/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -21,15 +22,16 @@ function formatUsageStatus(status: string, locale: string) {
 
 export default async function DashboardPage({params}: DashboardPageProps) {
   const {locale} = await params;
-  const [t, data] = await Promise.all([getTranslations("Dashboard"), getDashboardOverview()]);
+  const [t, data, platformAdmin] = await Promise.all([getTranslations("Dashboard"), getDashboardOverview(), getPlatformAdmin()]);
   if (!data) redirect(`/${locale}/login`);
 
   const formatDate = (value: string) => new Intl.DateTimeFormat(locale, {dateStyle: "medium", timeStyle: "short"}).format(new Date(value));
   return (
     <>
-      <header>
-        <h1 className="text-balance font-geist text-5xl font-semibold tracking-[-0.045em] sm:text-6xl">{t("overviewTitle")}</h1>
-        <p className="mt-4 max-w-2xl text-pretty leading-7 text-on-surface-variant">{t("description")}</p>
+      <header className="flex flex-wrap items-start justify-between gap-5">
+        <div><h1 className="text-balance font-geist text-5xl font-semibold tracking-[-0.045em] sm:text-6xl">{t("overviewTitle")}</h1>
+        <p className="mt-4 max-w-2xl text-pretty leading-7 text-on-surface-variant">{t("description")}</p></div>
+        {platformAdmin && <Link href="/admin/skills" className="btn-payment inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold"><span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>{t("adminSkills")}</Link>}
       </header>
 
       <section className="payment-gradient relative mt-10 overflow-hidden rounded-2xl border border-white/20 px-6 py-9 shadow-[0_0_34px_rgba(129,123,190,0.32),0_18px_70px_rgba(76,132,177,0.18)] sm:px-8 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8 lg:py-10">

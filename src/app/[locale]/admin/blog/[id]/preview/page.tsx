@@ -1,0 +1,8 @@
+import type {Metadata} from "next";
+import Link from "next/link";
+import {notFound} from "next/navigation";
+import MarkdownArticle from "@/components/blog/MarkdownArticle";
+import {getPlatformAdmin} from "@/lib/admin/auth";
+import {getBlogDraft} from "@/lib/admin/content";
+export const dynamic="force-dynamic";export const metadata:Metadata={robots:{index:false,follow:false}};
+export default async function BlogPreview({params}:{params:Promise<{locale:string;id:string}>}){const{locale,id}=await params;if(!await getPlatformAdmin())notFound();const d=await getBlogDraft(id);if(!d||d.status!=="review")notFound();const vi=locale==="vi";return <main><header className="border-b border-outline-variant/25"><div className="mx-auto max-w-5xl px-6 py-12"><div className="flex justify-between gap-4"><Link href={`/${locale}/admin/blog`} className="text-sm font-semibold text-primary">← {vi?"Quay lại quản trị":"Back to admin"}</Link><span className="rounded-full bg-secondary/15 px-3 py-1 text-xs text-secondary">PREVIEW · NOINDEX</span></div><div className="mt-8 flex gap-3 font-mono text-xs text-on-surface-variant"><span className="rounded-full bg-tertiary/10 px-3 py-1 text-tertiary">{d.category}</span><span>{d.reading_minutes} min</span></div><h1 className="mt-5 font-geist text-4xl font-bold leading-tight sm:text-6xl">{vi?d.title_vi:d.title_en}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">{vi?d.excerpt_vi:d.excerpt_en}</p><p className="mt-6 text-sm text-on-surface-variant">{d.author_name}</p></div></header><article className="mx-auto max-w-4xl px-6 py-12"><MarkdownArticle content={vi?d.content_vi:d.content_en}/></article></main>}

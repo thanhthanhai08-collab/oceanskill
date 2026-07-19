@@ -1,6 +1,7 @@
 import "server-only";
 import {createHash} from "node:crypto";
 import {Unzip, UnzipInflate} from "fflate";
+import {preflightSkillZip} from "@/lib/skills/zip-preflight";
 
 const maxArchiveBytes = 5 * 1024 * 1024;
 const maxReferenceBytes = 1024 * 1024;
@@ -78,6 +79,8 @@ async function unzipWithLimits(file: File) {
   if (file.size <= 0 || file.size > maxArchiveBytes) throw new Error("invalid_bundle_size");
   if (!file.name.toLowerCase().endsWith(".zip")) throw new Error("invalid_bundle_type");
 
+  const archiveBytes = new Uint8Array(await file.arrayBuffer());
+  preflightSkillZip(archiveBytes);
   const entries = new Map<string, Uint8Array>();
   const names = new Set<string>();
   let expandedBytes = 0;
@@ -134,7 +137,7 @@ async function unzipWithLimits(file: File) {
   unzipper.register(UnzipInflate);
 
   try {
-    unzipper.push(new Uint8Array(await file.arrayBuffer()), true);
+    unzipper.push(archiveBytes, true);
   } catch {
     throw new Error("invalid_bundle_zip");
   }
@@ -185,6 +188,7 @@ export async function parsePrivateSkillPackage(value: FormDataEntryValue | null)
     checks: [
       {id: "bundlePaths", passed: true, message: "Safe relative package paths"},
       {id: "bundleSize", passed: true, message: `Expanded package within 5 MiB (${expandedBytesLabel(entries)})`},
+      {id: "bundleBomb", passed: true, message: "ZIP structure and compression ratio preflight passed"},
       {id: "bundleSecrets", passed: true, message: "No recognizable secrets or credential files"},
       {id: "bundleExecution", passed: true, message: "Scripts stored as references and never executed by OceanSkill"},
       {id: "bundleFiles", passed: true, message: `${references.length} verified reference files`},

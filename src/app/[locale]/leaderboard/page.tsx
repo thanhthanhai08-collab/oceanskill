@@ -6,7 +6,6 @@ import JsonLd from "@/components/seo/JsonLd";
 import type {Locale} from "@/i18n/locales";
 import {itemListSchema} from "@/lib/seo/schema";
 import {localizedUrl} from "@/lib/seo/site";
-import AdSlot from "@/components/ads/AdSlot";
 import {Link} from "@/i18n/navigation";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +44,7 @@ export default async function LeaderboardPage({params, searchParams}: Leaderboar
         <nav className="flex flex-wrap gap-x-1 border-b border-outline-variant/50" aria-label={t("periodLabel")}>
           {leaderboardPeriods.map((item) => <Link key={item} href={`/leaderboard?period=${item}`} aria-current={period === item ? "page" : undefined} className={`relative px-5 py-3 text-sm font-semibold transition ${period === item ? "text-primary after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:bg-primary" : "text-on-surface-variant hover:text-on-surface"}`}>{t(`periods.${item}`)}</Link>)}
         </nav>
-        <AdSlot label={t("advertisement")} className="mt-10" />
-        <div className="mt-12"><LeaderboardList skills={skills} locale={locale} labels={{calls: t("callsLabel"), rating: t("ratingLabel"), reviews: t("reviewsLabel"), noRating: t("noRating"), empty: t("empty")}} /></div>
+        <div className="mt-10"><LeaderboardList skills={skills} locale={locale} labels={{calls: t("callsLabel"), rating: t("ratingLabel"), reviews: t("reviewsLabel"), noRating: t("noRating"), empty: t("empty")}} /></div>
         <p className="mt-8 max-w-3xl border-l border-outline-variant/70 pl-4 text-xs leading-5 text-on-surface-variant">{t("methodology")}</p>
       </section>
     </SiteShell>

@@ -145,6 +145,15 @@ html {
   text-size-adjust: 100%;
 }
 
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 img, video, canvas, svg {
   max-width: 100%;
 }
@@ -234,6 +243,24 @@ form button.bg-primary-container:focus-visible {
   background: var(--primary-container);
   color: #ffffff;
 }
+
+.blog-prose { color: var(--on-surface-variant); font-size: 1rem; line-height: 1.9; }
+.blog-prose h2, .blog-prose h3, .blog-prose h4 { color: var(--on-surface); font-family: var(--font-geist); font-weight: 700; letter-spacing: -0.025em; scroll-margin-top: 7rem; }
+.blog-prose h2 { margin: 2.5rem 0 1rem; font-size: clamp(1.65rem, 4vw, 2.15rem); }
+.blog-prose h3 { margin: 2rem 0 0.8rem; font-size: 1.45rem; }
+.blog-prose h4 { margin: 1.6rem 0 0.65rem; font-size: 1.15rem; }
+.blog-prose p { margin: 1rem 0; }
+.blog-prose br { content: ""; display: block; margin-top: 0.35rem; }
+.blog-prose a { color: var(--primary); font-weight: 650; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+.blog-prose a:hover { color: var(--tertiary); }
+.blog-prose ul { margin: 1.25rem 0; list-style: disc; border: 1px solid color-mix(in srgb, var(--outline-variant) 40%, transparent); border-radius: 1rem; background: color-mix(in srgb, var(--surface-container-low) 65%, transparent); padding: 1.25rem 1.25rem 1.25rem 2.5rem; }
+.blog-prose li + li { margin-top: 0.55rem; }
+.blog-prose code { border-radius: 0.35rem; background: var(--surface-container-high); padding: 0.15rem 0.35rem; font-family: var(--font-mono); font-size: 0.9em; }
+.blog-table-wrap { margin: 1.5rem 0; overflow-x: auto; border: 1px solid color-mix(in srgb, var(--outline-variant) 50%, transparent); border-radius: 1rem; }
+.blog-prose table { width: 100%; min-width: 34rem; border-collapse: collapse; text-align: left; }
+.blog-prose th { background: var(--surface-container-high); color: var(--on-surface); font-weight: 700; }
+.blog-prose th, .blog-prose td { border-bottom: 1px solid color-mix(in srgb, var(--outline-variant) 40%, transparent); padding: 0.85rem 1rem; vertical-align: top; }
+.blog-prose tbody tr:last-child td { border-bottom: 0; }
 
 .water-tilt {
   --water-x: 50%;

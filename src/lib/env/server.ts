@@ -11,5 +11,6 @@ export const serverEnv = {
   get supabaseServiceRoleKey() { return required("SUPABASE_SERVICE_ROLE_KEY"); },
   get sepayWebhookSecret() { return required("SEPAY_WEBHOOK_SECRET"); },
   get sepayBankAccountNumber() { return required("SEPAY_BANK_ACCOUNT_NUMBER"); },
-  get sepayBankName() { return required("SEPAY_BANK_NAME"); }
+  get sepayBankName() { return required("SEPAY_BANK_NAME"); },
+  get geminiApiKey() { return required("GEMINI_API_KEY"); }
 };

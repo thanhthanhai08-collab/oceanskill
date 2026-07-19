@@ -14,6 +14,7 @@ type BlogPostRow = {
   glow_class: string | null;
   reading_minutes: number | null;
   sections: unknown;
+  content_markdown: string | null;
   published_at: string | null;
   updated_at: string | null;
 };
@@ -38,6 +39,7 @@ function mapRow(row: BlogPostRow): BlogPost {
     title: row.title,
     excerpt: row.excerpt ?? "",
     sections,
+    contentMarkdown: row.content_markdown ?? "",
   };
 }
 
@@ -45,14 +47,14 @@ export async function getBlogPosts(locale: Locale): Promise<BlogPost[]> {
   const supabase = await createClient();
   const {data, error} = await supabase
     .from("blog_posts")
-    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,published_at,updated_at")
+    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,published_at,updated_at")
     .eq("locale", locale)
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
     .order("published_at", {ascending: false});
 
   if (error || !data?.length) return getLocalBlogPosts(locale);
-  const posts = (data as BlogPostRow[]).map(mapRow).filter((post) => post.sections.length > 0);
+  const posts = (data as BlogPostRow[]).map(mapRow).filter((post) => post.sections.length > 0 || Boolean(post.contentMarkdown));
   return posts.length ? posts : getLocalBlogPosts(locale);
 }
 
@@ -60,7 +62,7 @@ export async function getBlogPost(slug: string, locale: Locale): Promise<BlogPos
   const supabase = await createClient();
   const {data, error} = await supabase
     .from("blog_posts")
-    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,published_at,updated_at")
+    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,published_at,updated_at")
     .eq("slug", slug)
     .eq("locale", locale)
     .eq("status", "published")
@@ -69,7 +71,7 @@ export async function getBlogPost(slug: string, locale: Locale): Promise<BlogPos
 
   if (!error && data) {
     const post = mapRow(data as BlogPostRow);
-    if (post.sections.length > 0) return post;
+    if (post.sections.length > 0 || post.contentMarkdown) return post;
   }
 
   return getLocalBlogPost(slug, locale);

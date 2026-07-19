@@ -1,5 +1,6 @@
 {
   "Dashboard": {
+    "adminSkills": "Quản trị skill nền tảng",
     "hello": "Xin chào, {name}",
     "overviewTitle": "Tổng quan",
     "description": "Theo dõi skill, credit, MCP key, lượt sử dụng gần đây và lệnh thanh toán tại một nơi.",

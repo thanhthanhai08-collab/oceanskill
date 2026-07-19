@@ -18,19 +18,19 @@ function mergeMessages(...sources: Messages[]) {
 }
 
 async function loadEnglishMessages() {
-  const [common, home, marketplace, skillDetail, leaderboard, dashboard, dashboardCollections, creatorSkills, auth, blog, docs, pricing, chatbot, faq, seo] = await Promise.all([
+  const [common, home, marketplace, skillDetail, leaderboard, dashboard, dashboardCollections, creatorSkills, auth, blog, docs, pricing, chatbot, faq, seo, admin] = await Promise.all([
     import("../../messages/en/common.json"), import("../../messages/en/home.json"), import("../../messages/en/marketplace.json"), import("../../messages/en/skill-detail.json"),
-    import("../../messages/en/leaderboard.json"), import("../../messages/en/dashboard.json"), import("../../messages/en/dashboard/collections.json"), import("../../messages/en/creator-skills.json"), import("../../messages/en/auth.json"), import("../../messages/en/blog.json"), import("../../messages/en/docs.json"), import("../../messages/en/pricing.json"), import("../../messages/en/chatbot.json"), import("../../messages/en/faq.json"), import("../../messages/en/seo.json"),
+    import("../../messages/en/leaderboard.json"), import("../../messages/en/dashboard.json"), import("../../messages/en/dashboard/collections.json"), import("../../messages/en/creator-skills.json"), import("../../messages/en/auth.json"), import("../../messages/en/blog.json"), import("../../messages/en/docs.json"), import("../../messages/en/pricing.json"), import("../../messages/en/chatbot.json"), import("../../messages/en/faq.json"), import("../../messages/en/seo.json"), import("../../messages/en/admin.json"),
   ]);
-  return mergeMessages(common.default, home.default, marketplace.default, skillDetail.default, leaderboard.default, dashboard.default, dashboardCollections.default, creatorSkills.default, auth.default, blog.default, docs.default, pricing.default, chatbot.default, faq.default, seo.default);
+  return mergeMessages(common.default, home.default, marketplace.default, skillDetail.default, leaderboard.default, dashboard.default, dashboardCollections.default, creatorSkills.default, auth.default, blog.default, docs.default, pricing.default, chatbot.default, faq.default, seo.default, admin.default);
 }
 
 async function loadVietnameseMessages() {
-  const [common, home, marketplace, skillDetail, leaderboard, dashboard, dashboardCollections, creatorSkills, auth, blog, docs, pricing, chatbot, faq, seo] = await Promise.all([
+  const [common, home, marketplace, skillDetail, leaderboard, dashboard, dashboardCollections, creatorSkills, auth, blog, docs, pricing, chatbot, faq, seo, admin] = await Promise.all([
     import("../../messages/vi/common.json"), import("../../messages/vi/home.json"), import("../../messages/vi/marketplace.json"), import("../../messages/vi/skill-detail.json"),
-    import("../../messages/vi/leaderboard.json"), import("../../messages/vi/dashboard.json"), import("../../messages/vi/dashboard/collections.json"), import("../../messages/vi/creator-skills.json"), import("../../messages/vi/auth.json"), import("../../messages/vi/blog.json"), import("../../messages/vi/docs.json"), import("../../messages/vi/pricing.json"), import("../../messages/vi/chatbot.json"), import("../../messages/vi/faq.json"), import("../../messages/vi/seo.json"),
+    import("../../messages/vi/leaderboard.json"), import("../../messages/vi/dashboard.json"), import("../../messages/vi/dashboard/collections.json"), import("../../messages/vi/creator-skills.json"), import("../../messages/vi/auth.json"), import("../../messages/vi/blog.json"), import("../../messages/vi/docs.json"), import("../../messages/vi/pricing.json"), import("../../messages/vi/chatbot.json"), import("../../messages/vi/faq.json"), import("../../messages/vi/seo.json"), import("../../messages/vi/admin.json"),
   ]);
-  return mergeMessages(common.default, home.default, marketplace.default, skillDetail.default, leaderboard.default, dashboard.default, dashboardCollections.default, creatorSkills.default, auth.default, blog.default, docs.default, pricing.default, chatbot.default, faq.default, seo.default);
+  return mergeMessages(common.default, home.default, marketplace.default, skillDetail.default, leaderboard.default, dashboard.default, dashboardCollections.default, creatorSkills.default, auth.default, blog.default, docs.default, pricing.default, chatbot.default, faq.default, seo.default, admin.default);
 }
 
 export async function loadMessages(locale: Locale) {

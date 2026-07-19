@@ -1,5 +1,6 @@
 {
   "Dashboard": {
+    "adminSkills": "Platform skill admin",
     "hello": "Hello, {name}",
     "overviewTitle": "Dashboard",
     "description": "Monitor your skills, credits, MCP keys, recent usage, and payment orders from one place.",
