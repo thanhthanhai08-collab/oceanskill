@@ -1,3 +1,4 @@
+import type {Metadata} from "next";
 import {getTranslations} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {Link} from "@/i18n/navigation";
@@ -6,23 +7,53 @@ import SkillCard from "@/components/skills/SkillCard";
 import SkillReviews from "@/components/skills/SkillReviews";
 import CopyButton from "@/components/skills/CopyButton";
 import {getCategoryVisual} from "@/data/mockData";
-import {getPublicSkill, listRelatedSkills, listSkillsByAuthor} from "@/lib/catalog/skills";
+import {getPublicSkill, listRelatedSkills, listSkillsByAuthor, type SkillSummary} from "@/lib/catalog/skills";
 import {getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
 import {listSkillFaqs} from "@/lib/catalog/skill-faqs";
 import {getSkillDetailContent} from "@/lib/catalog/skill-details";
 import {getPublicCategory} from "@/lib/catalog/categories";
+import {getPlatformAdmin} from "@/lib/admin/auth";
+import {listPlatformSkillDrafts} from "@/lib/skills/platform-publishing";
 
 export const dynamic = "force-dynamic";
 
 export interface SkillDetailPageProps {
   readonly params: Promise<{slug: string; locale: string}>;
+  readonly searchParams: Promise<{preview?: string}>;
 }
 
-export default async function SkillDetailPage({params}: SkillDetailPageProps) {
+export async function generateMetadata({searchParams}: Pick<SkillDetailPageProps, "searchParams">): Promise<Metadata> {
+  return (await searchParams).preview ? {robots: {index: false, follow: false}} : {};
+}
+
+export default async function SkillDetailPage({params, searchParams}: SkillDetailPageProps) {
   const {slug, locale} = await params;
-  const skill = await getPublicSkill(slug, locale);
+  const previewId = (await searchParams).preview;
+  let skill: SkillSummary | null = null;
+  if (previewId) {
+    if (!await getPlatformAdmin()) notFound();
+    const draft = (await listPlatformSkillDrafts()).find((item) => item.id === previewId && item.status === "review" && item.skills?.slug === slug);
+    if (!draft) notFound();
+    skill = {
+      id: draft.skill_id,
+      slug,
+      title: locale === "vi" ? draft.title_vi : draft.title_en,
+      description: locale === "vi" ? draft.description_vi : draft.description_en,
+      category: draft.category,
+      compatible_clients: draft.compatible_clients,
+      license_spdx: draft.license_spdx,
+      source_url: draft.source_url,
+      current_version: draft.version,
+      updated_at: draft.updated_at,
+      author_id: null,
+      authors: null,
+    };
+  } else {
+    skill = await getPublicSkill(slug, locale);
+  }
   if (!skill) notFound();
+  const isPreview = Boolean(previewId);
   const t = await getTranslations("SkillDetail");
   const visual = getCategoryVisual(skill.category);
   const version = skill.current_version ?? "1.0.0";
@@ -37,7 +68,9 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
   ]);
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
+    <>
+      {isPreview && <div className="sticky top-20 z-40 mb-4 flex items-center justify-between gap-4 rounded-2xl border border-secondary/30 bg-background/95 px-4 py-3 shadow-lg backdrop-blur"><Link href="/admin/skills" className="text-sm font-semibold text-primary">← {locale === "vi" ? "Quay lại quản trị" : "Back to admin"}</Link><span className="rounded-full bg-secondary/15 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-secondary">Preview · noindex · read only</span></div>}
+      <main className={`mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8 ${isPreview ? "pointer-events-none" : ""}`}>
         <div className="min-w-0 space-y-10">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
             <Link href="/skills" className="transition hover:text-primary">{locale === "vi" ? "Kho skill" : "Skills"}</Link>
@@ -219,6 +252,7 @@ export default async function SkillDetailPage({params}: SkillDetailPageProps) {
             </section>
           )}
         </aside>
-    </main>
+      </main>
+    </>
   );
 }

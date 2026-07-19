@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 import type {Metadata} from "next";
 import Script from "next/script";
+import {Analytics} from "@vercel/analytics/next";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
@@ -54,6 +55,7 @@ export default async function LocaleLayout({children, params}: {children: React.
       </head>
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

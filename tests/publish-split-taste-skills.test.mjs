@@ -4,6 +4,7 @@ import test from "node:test";
 
 const migrationUrl = new URL("../supabase/migrations/20260718220252_publish_split_taste_skills_retire_parent.sql", import.meta.url);
 const balanceMigrationUrl = new URL("../supabase/migrations/20260718220525_preserve_retired_taste_skill_spent_credit.sql", import.meta.url);
+const pinnedTitlesMigrationUrl = new URL("../supabase/migrations/20260719081826_pin_fixed_split_skill_titles.sql", import.meta.url);
 
 test("split taste skills publish exact reviewed Storage artifacts", async () => {
   const sql = await readFile(migrationUrl, "utf8");
@@ -43,4 +44,17 @@ test("the live retirement correction preserves the spent credit without restorin
   assert.match(sql, /usage_event_id is null/);
   assert.match(sql, /on conflict \(idempotency_key\) do nothing/);
   assert.doesNotMatch(sql, /insert into public\.usage_events/);
+});
+
+test("split skill titles are pinned to exact slugs in English and Vietnamese", async () => {
+  const sql = await readFile(pinnedTitlesMigrationUrl, "utf8");
+  for (const slug of ["taste-skill-brutalist-skill", "taste-skill-brandkit", "imagegen-frontend-mobile"]) {
+    assert.match(sql, new RegExp(slug));
+  }
+  assert.match(sql, /update public\.skills[\s\S]+set title = slug/i);
+  assert.match(sql, /update public\.skill_translations[\s\S]+set title = skill\.slug/i);
+  assert.match(sql, /set title_en = skill\.slug, title_vi = skill\.slug/i);
+  assert.match(sql, /create trigger skills_pin_fixed_title/i);
+  assert.match(sql, /create trigger skill_translations_pin_fixed_title/i);
+  assert.match(sql, /create trigger platform_skill_drafts_pin_fixed_titles/i);
 });

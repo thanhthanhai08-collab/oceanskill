@@ -27,6 +27,8 @@ export type BlogPost = Readonly<Omit<BlogSource, "title" | "excerpt" | "sections
   excerpt: string;
   sections: BlogSection[];
   contentMarkdown?: string;
+  coverImagePath?: string | null;
+  coverImageUrl?: string | null;
 }>;
 
 const blogSources: BlogSource[] = [

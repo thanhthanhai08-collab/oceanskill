@@ -1,11 +1,13 @@
 import "server-only";
 import {createAdminClient} from "@/lib/supabase/admin";
+import {blogCoverBucket, blogCoverPublicUrl} from "@/lib/blog/covers";
 
 export type CollectionDraft = Readonly<{id:string; collection_id:string|null; slug:string; name_en:string; name_vi:string; description_en:string; description_vi:string; accent:"primary"|"secondary"|"tertiary"; skill_ids:string[]; status:"review"|"published"; updated_at:string}>;
 export type PlatformCollectionAdmin = Readonly<{id:string; slug:string; name:string; description:string; accent:"primary"|"secondary"|"tertiary"; skill_ids:string[]}>;
 export type CatalogSkillOption = Readonly<{id:string; slug:string; title:string}>;
-export type BlogDraft = Readonly<{id:string; published_slug:string|null; slug:string; title_en:string; title_vi:string; excerpt_en:string; excerpt_vi:string; content_en:string; content_vi:string; category:string; author_name:string; icon:string; reading_minutes:number; status:"review"|"published"; updated_at:string}>;
-export type PublishedBlogAdmin = Readonly<{slug:string; title_en:string; title_vi:string; excerpt_en:string; excerpt_vi:string; content_en:string; content_vi:string; category:string; author_name:string; icon:string; reading_minutes:number}>;
+export type BlogDraft = Readonly<{id:string; published_slug:string|null; slug:string; title_en:string; title_vi:string; excerpt_en:string; excerpt_vi:string; content_en:string; content_vi:string; category:string; author_name:string; reading_minutes:number; cover_image_path:string|null; status:"review"|"published"; updated_at:string}>;
+export type PublishedBlogAdmin = Readonly<{slug:string; title_en:string; title_vi:string; excerpt_en:string; excerpt_vi:string; content_en:string; content_vi:string; category:string; author_name:string; reading_minutes:number; cover_image_path:string|null}>;
+export type BlogCoverOption = Readonly<{path:string; name:string; publicUrl:string}>;
 
 export async function listAdminCollectionContent() {
   const admin = createAdminClient();
@@ -29,14 +31,16 @@ export async function getCollectionDraft(id:string) {
 
 export async function listAdminBlogContent() {
   const admin=createAdminClient();
-  const [drafts, posts]=await Promise.all([
-    admin.from("blog_post_drafts").select("id,published_slug,slug,title_en,title_vi,excerpt_en,excerpt_vi,content_en,content_vi,category,author_name,icon,reading_minutes,status,updated_at").order("updated_at",{ascending:false}),
-    admin.from("blog_posts").select("slug,locale,title,excerpt,content_markdown,category,author_name,icon,reading_minutes").eq("status","published").order("published_at",{ascending:false}),
+  const [drafts, posts, coverFiles]=await Promise.all([
+    admin.from("blog_post_drafts").select("id,published_slug,slug,title_en,title_vi,excerpt_en,excerpt_vi,content_en,content_vi,category,author_name,reading_minutes,cover_image_path,status,updated_at").order("updated_at",{ascending:false}),
+    admin.from("blog_posts").select("slug,locale,title,excerpt,content_markdown,category,author_name,reading_minutes,cover_image_path").eq("status","published").order("published_at",{ascending:false}),
+    admin.storage.from(blogCoverBucket).list("blog", {limit: 200, sortBy: {column: "created_at", order: "desc"}}),
   ]);
-  if(drafts.error) throw drafts.error; if(posts.error) throw posts.error;
+  if(drafts.error) throw drafts.error; if(posts.error) throw posts.error; if(coverFiles.error) throw coverFiles.error;
   const grouped=new Map<string, PublishedBlogAdmin>();
-  for(const row of posts.data ?? []) { const old=grouped.get(row.slug); grouped.set(row.slug,{slug:row.slug,title_en:row.locale==="en"?row.title:old?.title_en??"",title_vi:row.locale==="vi"?row.title:old?.title_vi??"",excerpt_en:row.locale==="en"?(row.excerpt??""):old?.excerpt_en??"",excerpt_vi:row.locale==="vi"?(row.excerpt??""):old?.excerpt_vi??"",content_en:row.locale==="en"?(row.content_markdown??""):old?.content_en??"",content_vi:row.locale==="vi"?(row.content_markdown??""):old?.content_vi??"",category:row.category??old?.category??"Guide",author_name:row.author_name??old?.author_name??"OceanSkill",icon:row.icon??old?.icon??"article",reading_minutes:row.reading_minutes??old?.reading_minutes??5}); }
-  return {drafts:(drafts.data??[]) as BlogDraft[], posts:[...grouped.values()]};
+  for(const row of posts.data ?? []) { const old=grouped.get(row.slug); grouped.set(row.slug,{slug:row.slug,title_en:row.locale==="en"?row.title:old?.title_en??"",title_vi:row.locale==="vi"?row.title:old?.title_vi??"",excerpt_en:row.locale==="en"?(row.excerpt??""):old?.excerpt_en??"",excerpt_vi:row.locale==="vi"?(row.excerpt??""):old?.excerpt_vi??"",content_en:row.locale==="en"?(row.content_markdown??""):old?.content_en??"",content_vi:row.locale==="vi"?(row.content_markdown??""):old?.content_vi??"",category:row.category??old?.category??"Guide",author_name:row.author_name??old?.author_name??"OceanSkill",reading_minutes:row.reading_minutes??old?.reading_minutes??5,cover_image_path:row.cover_image_path??old?.cover_image_path??null}); }
+  const covers=(coverFiles.data??[]).filter((file)=>file.id).flatMap((file)=>{const path=`blog/${file.name}`;const publicUrl=blogCoverPublicUrl(path);return publicUrl?[{path,name:file.name,publicUrl}]:[]}) as BlogCoverOption[];
+  return {drafts:(drafts.data??[]) as BlogDraft[], posts:[...grouped.values()], covers};
 }
 
-export async function getBlogDraft(id:string) { const admin=createAdminClient(); const {data,error}=await admin.from("blog_post_drafts").select("id,published_slug,slug,title_en,title_vi,excerpt_en,excerpt_vi,content_en,content_vi,category,author_name,icon,reading_minutes,status,updated_at").eq("id",id).maybeSingle(); if(error) throw error; return data as BlogDraft|null; }
+export async function getBlogDraft(id:string) { const admin=createAdminClient(); const {data,error}=await admin.from("blog_post_drafts").select("id,published_slug,slug,title_en,title_vi,excerpt_en,excerpt_vi,content_en,content_vi,category,author_name,reading_minutes,cover_image_path,status,updated_at").eq("id",id).maybeSingle(); if(error) throw error; return data as BlogDraft|null; }

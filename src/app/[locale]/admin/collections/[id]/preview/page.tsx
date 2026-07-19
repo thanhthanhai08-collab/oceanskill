@@ -1,9 +1,15 @@
 import type {Metadata} from "next";
-import Link from "next/link";
-import {notFound} from "next/navigation";
-import SkillCard from "@/components/skills/SkillCard";
+import {notFound, redirect} from "next/navigation";
 import {getPlatformAdmin} from "@/lib/admin/auth";
 import {getCollectionDraft} from "@/lib/admin/content";
-import {listPublicSkills,type SkillSummary} from "@/lib/catalog/skills";
-export const dynamic="force-dynamic";export const metadata:Metadata={robots:{index:false,follow:false}};
-export default async function CollectionPreview({params}:{params:Promise<{locale:string;id:string}>}){const{locale,id}=await params;if(!await getPlatformAdmin())notFound();const[draft,skills]=await Promise.all([getCollectionDraft(id),listPublicSkills(locale)]);if(!draft||draft.status!=="review")notFound();const byId=new Map(skills.map(s=>[s.id,s]));const chosen=draft.skill_ids.map(x=>byId.get(x)).filter((x):x is SkillSummary=>Boolean(x));return <main className="mx-auto max-w-7xl px-5 py-10"><div className="mb-5 flex items-center justify-between"><Link href={`/${locale}/admin/collections`} className="text-sm font-semibold text-primary">← {locale==="vi"?"Quay lại quản trị":"Back to admin"}</Link><span className="rounded-full bg-secondary/15 px-3 py-1 text-xs text-secondary">PREVIEW · NOINDEX</span></div><section className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-surface-container-low to-background p-7 sm:p-10"><p className="font-mono text-xs uppercase tracking-[.2em] text-primary">{locale==="vi"?"Bộ sưu tập nền tảng":"Platform collection"}</p><h1 className="mt-4 font-geist text-4xl font-bold">{locale==="vi"?draft.name_vi:draft.name_en}</h1><p className="mt-4 max-w-2xl text-on-surface-variant">{locale==="vi"?draft.description_vi:draft.description_en}</p><p className="mt-5 font-mono text-xs uppercase text-on-surface-variant">{chosen.length} skills</p></section><div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{chosen.map(s=><SkillCard key={s.id} skill={s} actionLabel={locale==="vi"?"Xem skill":"View skill"}/>)}</div></main>}
+
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = {robots: {index: false, follow: false}};
+
+export default async function CollectionPreview({params}: {params: Promise<{locale: string; id: string}>}) {
+  const {locale, id} = await params;
+  if (!await getPlatformAdmin()) notFound();
+  const draft = await getCollectionDraft(id);
+  if (!draft || draft.status !== "review") notFound();
+  redirect(`/${locale}/skills/collections/${draft.slug}?preview=${draft.id}`);
+}

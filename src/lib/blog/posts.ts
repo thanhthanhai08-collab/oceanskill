@@ -2,6 +2,7 @@ import "server-only";
 import type {Locale} from "@/i18n/locales";
 import {getBlogPost as getLocalBlogPost, getBlogPosts as getLocalBlogPosts, getRelatedPosts as getLocalRelatedPosts, type BlogPost, type BlogSection} from "@/content/blog";
 import {createClient} from "@/lib/supabase/server";
+import {blogCoverPublicUrl} from "@/lib/blog/covers";
 
 type BlogPostRow = {
   slug: string;
@@ -12,6 +13,7 @@ type BlogPostRow = {
   author_name: string | null;
   icon: string | null;
   glow_class: string | null;
+  cover_image_path: string | null;
   reading_minutes: number | null;
   sections: unknown;
   content_markdown: string | null;
@@ -40,6 +42,8 @@ function mapRow(row: BlogPostRow): BlogPost {
     excerpt: row.excerpt ?? "",
     sections,
     contentMarkdown: row.content_markdown ?? "",
+    coverImagePath: row.cover_image_path,
+    coverImageUrl: blogCoverPublicUrl(row.cover_image_path),
   };
 }
 
@@ -47,7 +51,7 @@ export async function getBlogPosts(locale: Locale): Promise<BlogPost[]> {
   const supabase = await createClient();
   const {data, error} = await supabase
     .from("blog_posts")
-    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,published_at,updated_at")
+    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,cover_image_path,published_at,updated_at")
     .eq("locale", locale)
     .eq("status", "published")
     .lte("published_at", new Date().toISOString())
@@ -62,7 +66,7 @@ export async function getBlogPost(slug: string, locale: Locale): Promise<BlogPos
   const supabase = await createClient();
   const {data, error} = await supabase
     .from("blog_posts")
-    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,published_at,updated_at")
+    .select("slug,locale,title,excerpt,category,author_name,icon,glow_class,reading_minutes,sections,content_markdown,cover_image_path,published_at,updated_at")
     .eq("slug", slug)
     .eq("locale", locale)
     .eq("status", "published")

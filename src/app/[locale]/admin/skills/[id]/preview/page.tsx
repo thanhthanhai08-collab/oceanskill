@@ -1,8 +1,15 @@
 import type {Metadata} from "next";
-import Link from "next/link";
-import {notFound} from "next/navigation";
+import {notFound, redirect} from "next/navigation";
 import {getPlatformAdmin} from "@/lib/admin/auth";
 import {listPlatformSkillDrafts} from "@/lib/skills/platform-publishing";
-import {getCategoryVisual} from "@/data/mockData";
-export const dynamic="force-dynamic";export const metadata:Metadata={robots:{index:false,follow:false}};
-export default async function SkillDraftPreview({params}:{params:Promise<{locale:string;id:string}>}){const{locale,id}=await params;if(!await getPlatformAdmin())notFound();const draft=(await listPlatformSkillDrafts()).find(d=>d.id===id);if(!draft||draft.status!=="review")notFound();const vi=locale==="vi",visual=getCategoryVisual(draft.category);return <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[minmax(0,1fr)_340px]"><div className="space-y-8"><div className="flex justify-between gap-4"><Link href={`/${locale}/admin/skills`} className="text-sm font-semibold text-primary">← {vi?"Quay lại quản trị":"Back to admin"}</Link><span className="rounded-full bg-secondary/15 px-3 py-1 text-xs text-secondary">PREVIEW · NOINDEX</span></div><section className="rounded-2xl border border-white/10 bg-surface-container-low/55 p-6 shadow-[0_18px_60px_rgba(0,0,0,.2)]"><div className="flex items-start gap-6"><div className={`flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl border border-primary/50 bg-surface-container-lowest ${visual.accentClass}`}><span className="material-symbols-outlined text-5xl">{visual.icon}</span></div><div><div className="flex flex-wrap gap-2"><span className="rounded-full bg-surface-container-highest px-3 py-1 font-mono text-[10px] uppercase">{draft.category}</span><span className="rounded-full bg-secondary/10 px-3 py-1 font-mono text-[10px] text-secondary">OceanSkill</span><span className="rounded-full bg-surface-container-highest px-3 py-1 font-mono text-[10px]">v{draft.version}</span></div><h1 className="mt-4 font-geist text-4xl font-bold sm:text-5xl">{vi?draft.title_vi:draft.title_en}</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">{vi?draft.description_vi:draft.description_en}</p></div></div></section><section className="rounded-2xl border border-outline-variant/35 bg-surface-container-low/55 p-6"><h2 className="font-geist text-2xl font-bold">{vi?"Mô tả":"Description"}</h2><p className="mt-4 leading-8 text-on-surface-variant">{vi?draft.description_vi:draft.description_en}</p></section></div><aside className="h-fit rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/20 via-surface-container-low to-secondary/15 p-6"><h2 className="font-geist text-lg font-bold">{vi?"Thông tin skill":"Skill information"}</h2><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-on-surface-variant">Version</dt><dd>{draft.version}</dd></div><div className="flex justify-between"><dt className="text-on-surface-variant">License</dt><dd>{draft.license_spdx??"—"}</dd></div></dl><div className="mt-6 flex flex-wrap gap-2">{draft.compatible_clients.map(c=><span key={c} className="rounded-md bg-surface-container-lowest px-3 py-2 font-mono text-xs">{c}</span>)}</div></aside></main>}
+
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = {robots: {index: false, follow: false}};
+
+export default async function SkillDraftPreview({params}: {params: Promise<{locale: string; id: string}>}) {
+  const {locale, id} = await params;
+  if (!await getPlatformAdmin()) notFound();
+  const draft = (await listPlatformSkillDrafts()).find((item) => item.id === id && item.status === "review");
+  if (!draft?.skills?.slug) notFound();
+  redirect(`/${locale}/skills/${draft.skills.slug}?preview=${draft.id}`);
+}
