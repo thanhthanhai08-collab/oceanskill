@@ -1,30 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useLayoutEffect, useState} from "react";
+import {useLocale} from "next-intl";
+
+type Theme = "light" | "dark";
+
+function getPreferredTheme(): Theme {
+  const stored = localStorage.getItem("theme");
+  if (stored === "dark" || stored === "light") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(theme: Theme) {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+  document.documentElement.style.colorScheme = theme;
+}
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const locale = useLocale();
+  const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const preferredTheme = getPreferredTheme();
+    applyTheme(preferredTheme);
     const frame = window.requestAnimationFrame(() => {
+      setTheme(preferredTheme);
       setMounted(true);
-      const isDark = document.documentElement.classList.contains("dark");
-      setTheme(isDark ? "dark" : "light");
     });
     return () => window.cancelAnimationFrame(frame);
-  }, []);
+  }, [locale]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
+    applyTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
   };
 
   if (!mounted) {

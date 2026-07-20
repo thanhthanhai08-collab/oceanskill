@@ -41,6 +41,9 @@ test("dashboard navigation stays within its layout and creator slot UX follows t
   assert.doesNotMatch(sidebar, /roleLabel/);
   assert.doesNotMatch(layout, /roleLabel/);
   assert.match(sidebar, /fixed inset-y-0 left-0/);
+  assert.match(sidebar, /invisible -translate-x-full pointer-events-none/);
+  assert.match(sidebar, /visible translate-x-0/);
+  assert.match(sidebar, /overflow-y-auto overscroll-contain/);
   assert.match(sidebar, /lg:max-h-\[calc\(100dvh-6rem\)\]/);
   assert.match(sidebar, /lg:overflow-y-auto/);
   assert.match(sidebar, /scrollbar-hidden/);

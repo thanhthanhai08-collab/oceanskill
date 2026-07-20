@@ -32,7 +32,7 @@ export default function DashboardSidebar({displayName, avatarUrl, balance, local
     };
   }, [menuOpen]);
   return (
-    <aside className="scrollbar-hidden border-b border-outline-variant/45 bg-background/90 py-5 backdrop-blur lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-8 lg:pr-6">
+    <aside className="scrollbar-hidden border-b border-outline-variant/45 bg-background py-5 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-background/90 lg:py-8 lg:pr-6 lg:backdrop-blur">
       <div className="flex h-full flex-col gap-5">
         <div className="flex items-center gap-3 lg:border-b lg:border-outline-variant/40 lg:pb-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -46,7 +46,7 @@ export default function DashboardSidebar({displayName, avatarUrl, balance, local
           </button>
         </div>
         <button type="button" aria-label={labels.menuClose} tabIndex={menuOpen ? 0 : -1} onClick={() => setMenuOpen(false)} className={`fixed inset-0 z-[70] bg-black/55 transition-opacity duration-200 lg:hidden ${menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`} />
-        <div id="dashboard-mobile-menu" role={menuOpen ? "dialog" : undefined} aria-modal={menuOpen ? true : undefined} aria-label={labels.menuOpen} className={`scrollbar-hidden fixed inset-y-0 left-0 z-[80] w-[min(82vw,300px)] flex-col gap-5 overflow-y-auto border-r border-outline-variant/50 bg-background p-5 shadow-2xl lg:static lg:z-auto lg:flex lg:min-h-0 lg:w-auto lg:flex-1 lg:overflow-visible lg:border-r-0 lg:bg-transparent lg:p-0 lg:shadow-none ${menuOpen ? "flex" : "hidden"}`}>
+        <div id="dashboard-mobile-menu" role={menuOpen ? "dialog" : undefined} aria-modal={menuOpen ? true : undefined} aria-label={labels.menuOpen} className={`scrollbar-hidden fixed inset-y-0 left-0 z-[80] flex w-[min(86vw,320px)] flex-col gap-5 overflow-y-auto overscroll-contain border-r border-outline-variant/50 bg-background p-5 shadow-2xl transition-[transform,visibility] duration-300 ease-out will-change-transform lg:static lg:z-auto lg:flex lg:min-h-0 lg:w-auto lg:flex-1 lg:translate-x-0 lg:overflow-visible lg:border-r-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:transition-none ${menuOpen ? "visible translate-x-0" : "invisible -translate-x-full pointer-events-none lg:visible lg:pointer-events-auto"}`}>
           <div className="flex items-center justify-between gap-3 border-b border-outline-variant/40 pb-5 lg:hidden">
             <span className="truncate font-geist text-sm font-semibold">{displayName}</span>
             <button type="button" onClick={() => setMenuOpen(false)} aria-label={labels.menuClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-outline-variant/50 bg-surface-container-low text-on-surface">
