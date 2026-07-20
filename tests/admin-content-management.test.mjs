@@ -4,6 +4,7 @@ import test from "node:test";
 
 const migration = new URL("../supabase/migrations/20260719040940_admin_collections_and_blog_markdown.sql", import.meta.url);
 const blogCoverMigration = new URL("../supabase/migrations/20260719085857_blog_cover_images.sql", import.meta.url);
+const blogCoverConstraintFix = new URL("../supabase/migrations/20260719120133_fix_blog_cover_path_check.sql", import.meta.url);
 
 test("admin collection and blog drafts stay private until transactional publish", async () => {
   const sql = await readFile(migration, "utf8");
@@ -42,8 +43,9 @@ test("Gemini uses 2.5 Flash and previews share safe public renderers", async () 
 });
 
 test("blog covers come from a constrained public Storage prefix and replace decorative post icons", async () => {
-  const [sql, card, actions, editor, publicPosts] = await Promise.all([
+  const [sql, constraintFix, card, actions, editor, publicPosts] = await Promise.all([
     readFile(blogCoverMigration, "utf8"),
+    readFile(blogCoverConstraintFix, "utf8"),
     readFile(new URL("../src/components/blog/BlogCard.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/app/[locale]/admin/blog/actions.ts", import.meta.url), "utf8"),
     readFile(new URL("../src/components/admin/AdminBlogEditor.tsx", import.meta.url), "utf8"),
@@ -53,11 +55,16 @@ test("blog covers come from a constrained public Storage prefix and replace deco
   assert.match(sql, /array\['image\/jpeg', 'image\/png', 'image\/webp', 'image\/avif'\]/i);
   assert.match(sql, /cover_image_path[\s\S]+\^blog\//i);
   assert.match(sql, /storage\.objects[\s\S]+bucket_id = 'blog-assets'/i);
+  assert.match(constraintFix, /length\(cover_image_path\) between 6 and 505/i);
+  assert.doesNotMatch(constraintFix, /\{2,500\}/);
   assert.doesNotMatch(card, /post\.icon|post\.glowClass/);
   assert.match(card, /aspect-video/);
   assert.match(actions, /detectImage/);
   assert.match(actions, /maxCoverBytes/);
-  assert.match(actions, /blog\/\$\{postSlug\}/);
+  assert.match(actions, /sharp\(bytes/);
+  assert.match(actions, /\.webp\(\{quality: 82, effort: 4\}\)/);
+  assert.match(actions, /blog\/\$\{postSlug\}-\$\{crypto\.randomUUID\(\)\}\.webp/);
+  assert.match(actions, /contentType: "image\/webp"/);
   assert.doesNotMatch(editor, /Material icon/);
   assert.match(editor, /coverFile/);
   assert.match(publicPosts, /cover_image_path/);

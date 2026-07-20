@@ -2,6 +2,7 @@
 
 import {revalidatePath} from "next/cache";
 import {getLocale} from "next-intl/server";
+import sharp from "sharp";
 import {requirePlatformAdmin} from "@/lib/admin/auth";
 import {blogCoverBucket} from "@/lib/blog/covers";
 import {createAdminClient} from "@/lib/supabase/admin";
@@ -10,6 +11,7 @@ import type {AdminContentState} from "../collections/actions";
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const coverPathPattern = /^blog\/[a-z0-9][a-z0-9._-]{2,500}$/;
 const maxCoverBytes = 5 * 1024 * 1024;
+const maxCoverPixels = 40_000_000;
 const clean = (value: FormDataEntryValue | null) => typeof value === "string" ? value.trim() : "";
 const fail = (error: unknown): AdminContentState => ({status: "error", message: error instanceof Error ? error.message : "operation_failed"});
 
@@ -42,8 +44,22 @@ async function resolveCover(fd: FormData, postSlug: string) {
   const bytes = new Uint8Array(await upload.arrayBuffer());
   const detected = detectImage(bytes);
   if (!detected || upload.type !== detected.mime) throw new Error("invalid_blog_cover_file");
-  const path = `blog/${postSlug}-${crypto.randomUUID()}.${detected.extension}`;
-  const {error} = await createAdminClient().storage.from(blogCoverBucket).upload(path, bytes, {contentType: detected.mime, upsert: false});
+  let webp: Buffer;
+  try {
+    webp = await sharp(bytes, {limitInputPixels: maxCoverPixels})
+      .rotate()
+      .webp({quality: 82, effort: 4})
+      .toBuffer();
+  } catch {
+    throw new Error("invalid_blog_cover_file");
+  }
+  if (webp.byteLength > maxCoverBytes) throw new Error("blog_cover_too_large");
+  const path = `blog/${postSlug}-${crypto.randomUUID()}.webp`;
+  const {error} = await createAdminClient().storage.from(blogCoverBucket).upload(path, webp, {
+    cacheControl: "31536000",
+    contentType: "image/webp",
+    upsert: false,
+  });
   if (error) throw error;
   return {path, uploadedPath: path};
 }
