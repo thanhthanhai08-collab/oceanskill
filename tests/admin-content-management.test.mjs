@@ -115,3 +115,29 @@ test("admin content lists stay compact until an administrator expands an editor"
   assert.match(viDashboard, /Quản trị nền tảng/);
   assert.match(enDashboard, /Platform administration/);
 });
+
+test("platform and private skill uploads accept ZIP and RAR without weakening archive checks", async () => {
+  const [form, versionForm, creatorForm, packageSource, nextConfig, viAdmin, enAdmin] = await Promise.all([
+    readFile(new URL("../src/components/admin/AdminSkillUploadForm.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/admin/AdminNewVersionForm.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/dashboard/CreatorSkillForm.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/lib/skills/package.ts", import.meta.url), "utf8"),
+    readFile(new URL("../next.config.ts", import.meta.url), "utf8"),
+    readFile(new URL("../messages/vi/admin.json", import.meta.url), "utf8"),
+    readFile(new URL("../messages/en/admin.json", import.meta.url), "utf8"),
+  ]);
+
+  for (const uploadForm of [form, versionForm, creatorForm]) {
+    assert.match(uploadForm, /accept="\.zip,\.rar,/);
+  }
+  assert.match(form, /code === "invalid_bundle_type"[\s\S]+labels\.errorArchiveType/);
+  assert.match(packageSource, /hasRarSignature/);
+  assert.match(packageSource, /createExtractorFromData/);
+  assert.match(packageSource, /headerEncrypted/);
+  assert.match(packageSource, /maxCompressionRatio/);
+  assert.match(packageSource, /maxExpandedBytes/);
+  assert.match(packageSource, /rarExtractionQueue/);
+  assert.match(nextConfig, /serverExternalPackages: \["node-unrar-js"\]/);
+  assert.match(viAdmin, /"errorArchiveType"/);
+  assert.match(enAdmin, /"errorArchiveType"/);
+});

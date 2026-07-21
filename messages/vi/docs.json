@@ -34,7 +34,7 @@
     },
     "publishingEyebrow": "Skill thuộc sở hữu của bạn", "publishingTitle": "Đăng skill riêng tư và mua thêm slot khi cần", "publishingDescription": "Mỗi tài khoản có 5 slot skill tự đăng. Dashboard hiển thị chính user là tác giả; nội dung và hash kiểm chứng vẫn được bảo vệ ở tầng Storage và MCP.", "publishingCta": "Mua thêm slot skill",
     "publishingSteps": {
-      "upload": {"title": "Tải gói skill", "description": "Mở Dashboard → Skills của tôi → Skills tự đăng, nhập metadata rồi tải SKILL.md hoặc gói ZIP đã kiểm tra."},
+      "upload": {"title": "Tải gói skill", "description": "Mở Dashboard → Skills của tôi → Skills tự đăng, nhập metadata rồi tải SKILL.md hoặc gói ZIP/RAR đã kiểm tra."},
       "limit": {"title": "Dùng 5 slot miễn phí", "description": "Skill nền tảng đã thêm không tính vào quota này. Chỉ skill riêng do bạn đăng mới sử dụng slot."},
       "payment": {"title": "5.000₫ cho mỗi slot thêm", "description": "Khi hết quota, trang nạp tiền mở sẵn mức 5.000₫. Chọn bội số lớn hơn để mua nhiều slot trong một giao dịch."}
     },

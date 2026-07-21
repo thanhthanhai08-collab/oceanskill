@@ -6,7 +6,10 @@ import {preflightSkillZip} from "@/lib/skills/zip-preflight";
 const maxArchiveBytes = 5 * 1024 * 1024;
 const maxReferenceBytes = 1024 * 1024;
 const maxExpandedBytes = 5 * 1024 * 1024;
+const maxArchiveEntries = 128;
+const maxCompressionRatio = 200;
 const maxReferenceFiles = 50;
+let rarExtractionQueue: Promise<void> = Promise.resolve();
 
 const textExtensions = new Set([
   "md", "txt", "json", "yaml", "yml", "js", "mjs", "cjs", "ts", "tsx", "jsx",
@@ -75,11 +78,30 @@ function decodeUtf8(bytes: Uint8Array, errorCode: string) {
   }
 }
 
-async function unzipWithLimits(file: File) {
-  if (file.size <= 0 || file.size > maxArchiveBytes) throw new Error("invalid_bundle_size");
-  if (!file.name.toLowerCase().endsWith(".zip")) throw new Error("invalid_bundle_type");
+function hasZipSignature(bytes: Uint8Array) {
+  return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b
+    && ((bytes[2] === 0x03 && bytes[3] === 0x04) || (bytes[2] === 0x05 && bytes[3] === 0x06));
+}
 
-  const archiveBytes = new Uint8Array(await file.arrayBuffer());
+function hasRarSignature(bytes: Uint8Array) {
+  if (bytes.length < 7) return false;
+  const rar4 = [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x00];
+  const rar5 = [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x01, 0x00];
+  return rar4.every((value, index) => bytes[index] === value)
+    || (bytes.length >= 8 && rar5.every((value, index) => bytes[index] === value));
+}
+
+function ensureSafeExpandedSize(expanded: number, compressed: number) {
+  if (!Number.isSafeInteger(expanded) || !Number.isSafeInteger(compressed) || expanded < 0 || compressed < 0) {
+    throw new Error("invalid_bundle_archive");
+  }
+  if (expanded > maxReferenceBytes) throw new Error("invalid_bundle_expanded_size");
+  if (expanded > 0 && (compressed === 0 || expanded / compressed > maxCompressionRatio)) {
+    throw new Error("invalid_bundle_compression_ratio");
+  }
+}
+
+function unzipWithLimits(archiveBytes: Uint8Array) {
   preflightSkillZip(archiveBytes);
   const entries = new Map<string, Uint8Array>();
   const names = new Set<string>();
@@ -145,9 +167,112 @@ async function unzipWithLimits(file: File) {
   return entries;
 }
 
+function rarFailure(error: unknown) {
+  if (error instanceof Error && error.message.startsWith("invalid_bundle")) return error;
+  const reason = typeof error === "object" && error && "reason" in error ? String(error.reason) : "";
+  if (reason === "ERAR_MISSING_PASSWORD" || reason === "ERAR_BAD_PASSWORD") return new Error("invalid_bundle_encrypted");
+  return new Error("invalid_bundle_rar");
+}
+
+async function withRarExtractionLock<T>(task: () => Promise<T>) {
+  const previous = rarExtractionQueue;
+  let release: () => void = () => undefined;
+  rarExtractionQueue = new Promise<void>((resolve) => { release = resolve; });
+  await previous;
+  try {
+    return await task();
+  } finally {
+    release();
+  }
+}
+
+async function unrarWithLimitsUnlocked(archiveBuffer: ArrayBuffer) {
+  try {
+    const {createExtractorFromData} = await import("node-unrar-js");
+    const extractor = await createExtractorFromData({data: archiveBuffer});
+    const listing = extractor.getFileList();
+    if (listing.arcHeader.flags.headerEncrypted) throw new Error("invalid_bundle_encrypted");
+    if (listing.arcHeader.flags.volume) throw new Error("invalid_bundle_multidisk");
+
+    const requestedNames: string[] = [];
+    const safePaths = new Map<string, string>();
+    const foldedNames = new Set<string>();
+    let totalEntries = 0;
+    let expandedBytes = 0;
+
+    // Always consume the lazy iterator completely so the underlying UnRAR
+    // allocation is released, even when the archive exceeds our entry cap.
+    let listingFailure: Error | null = null;
+    for (const header of listing.fileHeaders) {
+      totalEntries += 1;
+      if (totalEntries > maxArchiveEntries) {
+        listingFailure ??= new Error("invalid_bundle_entry_count");
+        continue;
+      }
+      if (listingFailure || header.flags.directory) continue;
+      try {
+        if (header.flags.encrypted) throw new Error("invalid_bundle_encrypted");
+        ensureSafeExpandedSize(header.unpSize, header.packSize);
+        expandedBytes += header.unpSize;
+        if (expandedBytes > maxExpandedBytes) throw new Error("invalid_bundle_expanded_size");
+        const path = validateArchivePath(header.name);
+        const folded = path.toLocaleLowerCase("en-US");
+        if (foldedNames.has(folded)) throw new Error("invalid_bundle_duplicate_path");
+        foldedNames.add(folded);
+        requestedNames.push(header.name);
+        safePaths.set(header.name, path);
+      } catch (error) {
+        listingFailure = error instanceof Error ? error : new Error("invalid_bundle_rar");
+      }
+    }
+    if (listingFailure) throw listingFailure;
+    if (totalEntries === 0 || requestedNames.length === 0) throw new Error("invalid_bundle_entry_count");
+
+    const extracted = extractor.extract({files: requestedNames});
+    if (extracted.arcHeader.flags.headerEncrypted) throw new Error("invalid_bundle_encrypted");
+    const entries = new Map<string, Uint8Array>();
+    let actualExpandedBytes = 0;
+    for (const file of extracted.files) {
+      if (file.fileHeader.flags.directory) continue;
+      const path = safePaths.get(file.fileHeader.name);
+      if (!path || !file.extraction) throw new Error("invalid_bundle_rar");
+      actualExpandedBytes += file.extraction.byteLength;
+      if (file.extraction.byteLength > maxReferenceBytes || actualExpandedBytes > maxExpandedBytes) {
+        throw new Error("invalid_bundle_expanded_size");
+      }
+      entries.set(path, file.extraction);
+    }
+    if (entries.size !== requestedNames.length) throw new Error("invalid_bundle_rar");
+    return entries;
+  } catch (error) {
+    throw rarFailure(error);
+  }
+}
+
+async function unrarWithLimits(archiveBuffer: ArrayBuffer) {
+  // node-unrar-js uses one WASM singleton whose active extractor is mutable.
+  // Serialize RAR work to prevent concurrent requests from swapping its input.
+  return withRarExtractionLock(() => unrarWithLimitsUnlocked(archiveBuffer));
+}
+
+async function extractArchiveWithLimits(file: File) {
+  if (file.size <= 0 || file.size > maxArchiveBytes) throw new Error("invalid_bundle_size");
+  const extension = file.name.toLowerCase().split(".").at(-1);
+  if (extension !== "zip" && extension !== "rar") throw new Error("invalid_bundle_type");
+
+  const archiveBuffer = await file.arrayBuffer();
+  const archiveBytes = new Uint8Array(archiveBuffer);
+  if (extension === "zip") {
+    if (!hasZipSignature(archiveBytes)) throw new Error("invalid_bundle_type");
+    return unzipWithLimits(archiveBytes);
+  }
+  if (!hasRarSignature(archiveBytes)) throw new Error("invalid_bundle_type");
+  return unrarWithLimits(archiveBuffer);
+}
+
 export async function parsePrivateSkillPackage(value: FormDataEntryValue | null): Promise<PrivateSkillPackage | null> {
   if (!(value instanceof File) || value.size === 0) return null;
-  const entries = await unzipWithLimits(value);
+  const entries = await extractArchiveWithLimits(value);
   const skillMdPaths = [...entries.keys()].filter((path) => /(^|\/)skill\.md$/i.test(path));
   if (skillMdPaths.length !== 1) throw new Error("invalid_bundle_skill_md");
 
@@ -188,7 +313,7 @@ export async function parsePrivateSkillPackage(value: FormDataEntryValue | null)
     checks: [
       {id: "bundlePaths", passed: true, message: "Safe relative package paths"},
       {id: "bundleSize", passed: true, message: `Expanded package within 5 MiB (${expandedBytesLabel(entries)})`},
-      {id: "bundleBomb", passed: true, message: "ZIP structure and compression ratio preflight passed"},
+      {id: "bundleBomb", passed: true, message: "Archive structure and compression ratio preflight passed"},
       {id: "bundleSecrets", passed: true, message: "No recognizable secrets or credential files"},
       {id: "bundleExecution", passed: true, message: "Scripts stored as references and never executed by OceanSkill"},
       {id: "bundleFiles", passed: true, message: `${references.length} verified reference files`},

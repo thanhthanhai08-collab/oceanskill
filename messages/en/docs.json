@@ -34,7 +34,7 @@
     },
     "publishingEyebrow": "Skills you own", "publishingTitle": "Publish private skills and add slots when needed", "publishingDescription": "Every account includes 5 private-skill slots. The dashboard identifies the signed-in user as the author, while verified content and hashes remain protected behind Storage and MCP.", "publishingCta": "Buy more skill slots",
     "publishingSteps": {
-      "upload": {"title": "Upload a skill package", "description": "Open Dashboard → My skills → Uploaded skills, enter metadata, then provide SKILL.md or a reviewed ZIP package."},
+      "upload": {"title": "Upload a skill package", "description": "Open Dashboard → My skills → Uploaded skills, enter metadata, then provide SKILL.md or a reviewed ZIP/RAR package."},
       "limit": {"title": "Use 5 included slots", "description": "Platform skills added to your library do not count. Only private skills you publish consume these slots."},
       "payment": {"title": "5,000 VND per extra slot", "description": "When the allowance is full, Billing opens at 5,000 VND. Choose a larger multiple to buy several slots in one payment."}
     },
