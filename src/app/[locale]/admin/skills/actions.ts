@@ -18,6 +18,7 @@ export type AdminSkillActionState = Readonly<{
 
 const semver = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const authorIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function clean(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -26,8 +27,42 @@ function clean(value: FormDataEntryValue | null) {
 function publicError(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   if (message === "platform_admin_required") return "forbidden";
-  if (message.startsWith("gemini_") || message.startsWith("invalid_") || ["skill_slug_owned_by_user", "platform_skill_version_exists"].includes(message)) return message;
+  if (message.startsWith("gemini_") || message.startsWith("invalid_") || message.startsWith("platform_skill_") || ["skill_slug_owned_by_user"].includes(message)) return message;
   return "operation_failed";
+}
+
+function detailGroup(formData: FormData, locale: "En" | "Vi") {
+  const values = {
+    headline: clean(formData.get(`detailHeadline${locale}`)),
+    overview: clean(formData.get(`detailOverview${locale}`)),
+    featureOneTitle: clean(formData.get(`detailFeatureOneTitle${locale}`)),
+    featureOneDescription: clean(formData.get(`detailFeatureOneDescription${locale}`)),
+    featureTwoTitle: clean(formData.get(`detailFeatureTwoTitle${locale}`)),
+    featureTwoDescription: clean(formData.get(`detailFeatureTwoDescription${locale}`)),
+  };
+  const lengths = Object.values(values).map((value) => value.length);
+  if (lengths.every((length) => length === 0)) return values;
+  if (!lengths.every((length) => length > 0)
+    || values.headline.length > 180 || values.overview.length > 1200
+    || values.featureOneTitle.length > 120 || values.featureTwoTitle.length > 120
+    || values.featureOneDescription.length > 600 || values.featureTwoDescription.length > 600
+  ) throw new Error("invalid_skill_details");
+  return values;
+}
+
+function faqFields(formData: FormData) {
+  const result: Record<string, string | boolean> = {faqs_touched: true};
+  for (const locale of ["En", "Vi"] as const) {
+    for (const order of [1, 2, 3] as const) {
+      const question = clean(formData.get(`faqQuestion${locale}${order}`));
+      const answer = clean(formData.get(`faqAnswer${locale}${order}`));
+      if (Boolean(question) !== Boolean(answer) || question.length > 300 || answer.length > 1200) throw new Error("invalid_skill_faq");
+      const dbLocale = locale.toLowerCase();
+      result[`faq_question_${dbLocale}_${order}`] = question;
+      result[`faq_answer_${dbLocale}_${order}`] = answer;
+    }
+  }
+  return result;
 }
 
 export async function savePlatformSkillDraft(_previous: AdminSkillActionState, formData: FormData): Promise<AdminSkillActionState> {
@@ -68,6 +103,11 @@ export async function updatePlatformSkillDraft(_previous: AdminSkillActionState,
     await requirePlatformAdmin();
     const draftId = clean(formData.get("draftId"));
     if (!uuid.test(draftId)) throw new Error("invalid_draft_id");
+    const authorId = clean(formData.get("authorId"));
+    if (!authorIdPattern.test(authorId)) throw new Error("invalid_author_id");
+    const detailsEn = detailGroup(formData, "En");
+    const detailsVi = detailGroup(formData, "Vi");
+    const faqs = faqFields(formData);
     const metadata = validateGeminiSkillMetadata({
       titleEn: clean(formData.get("titleEn")),
       titleVi: clean(formData.get("titleVi")),
@@ -80,6 +120,9 @@ export async function updatePlatformSkillDraft(_previous: AdminSkillActionState,
       tags: formData.getAll("tags").map(String),
     });
     const admin = createAdminClient();
+    const {data: author, error: authorError} = await admin.from("authors").select("id").eq("id", authorId).eq("verified", true).maybeSingle();
+    if (authorError) throw authorError;
+    if (!author) throw new Error("platform_skill_author_not_published");
     const {data, error} = await admin.from("platform_skill_drafts").update({
       title_en: metadata.titleEn,
       title_vi: metadata.titleVi,
@@ -90,6 +133,20 @@ export async function updatePlatformSkillDraft(_previous: AdminSkillActionState,
       source_url: metadata.sourceUrl,
       license_spdx: metadata.licenseSpdx,
       tags: metadata.tags,
+      author_id: authorId,
+      detail_headline_en: detailsEn.headline,
+      detail_overview_en: detailsEn.overview,
+      detail_feature_one_title_en: detailsEn.featureOneTitle,
+      detail_feature_one_description_en: detailsEn.featureOneDescription,
+      detail_feature_two_title_en: detailsEn.featureTwoTitle,
+      detail_feature_two_description_en: detailsEn.featureTwoDescription,
+      detail_headline_vi: detailsVi.headline,
+      detail_overview_vi: detailsVi.overview,
+      detail_feature_one_title_vi: detailsVi.featureOneTitle,
+      detail_feature_one_description_vi: detailsVi.featureOneDescription,
+      detail_feature_two_title_vi: detailsVi.featureTwoTitle,
+      detail_feature_two_description_vi: detailsVi.featureTwoDescription,
+      ...faqs,
       metadata_source: "manual",
       gemini_error: null,
     }).eq("id", draftId).eq("status", "review").select("id").maybeSingle();

@@ -27,7 +27,7 @@ export async function createPlatformSkillDraft(input: {
   if (!slug || slug.length > 100) throw new Error("invalid_slug");
 
   const {data: existingSkill, error: lookupError} = await admin.from("skills")
-    .select("id,owner_id")
+    .select("id,owner_id,author_id")
     .eq("slug", slug)
     .maybeSingle();
   if (lookupError) throw lookupError;
@@ -48,7 +48,7 @@ export async function createPlatformSkillDraft(input: {
         status: "draft",
         visibility: "private",
         owner_id: null,
-        compatible_clients: input.metadata.compatibleClients.length ? input.metadata.compatibleClients : ["generic-mcp"],
+        compatible_clients: input.metadata.compatibleClients.length ? input.metadata.compatibleClients : ["codex"],
         source_url: input.metadata.sourceUrl,
         license_spdx: input.metadata.licenseSpdx,
       }).select("id").single();
@@ -119,6 +119,21 @@ export async function createPlatformSkillDraft(input: {
       if (error) throw error;
     }
 
+    const {data: existingDetails, error: detailsError} = await admin.from("skill_details")
+      .select("locale,headline,overview,feature_one_title,feature_one_description,feature_two_title,feature_two_description")
+      .eq("skill_id", skillId)
+      .in("locale", ["en", "vi"]);
+    if (detailsError) throw detailsError;
+    const {data: existingFaqs, error: faqsError} = await admin.from("skill_faqs")
+      .select("locale,question,answer,sort_order")
+      .eq("skill_id", skillId)
+      .in("locale", ["en", "vi"])
+      .order("sort_order");
+    if (faqsError) throw faqsError;
+    const detailEn = existingDetails?.find((detail) => detail.locale === "en");
+    const detailVi = existingDetails?.find((detail) => detail.locale === "vi");
+    const faq = (locale: "en" | "vi", order: number) => existingFaqs?.find((item) => item.locale === locale && item.sort_order === order);
+
     const {data: draft, error: draftError} = await admin.from("platform_skill_drafts").insert({
       skill_id: skillId,
       skill_version_id: versionId,
@@ -132,6 +147,32 @@ export async function createPlatformSkillDraft(input: {
       source_url: input.metadata.sourceUrl,
       license_spdx: input.metadata.licenseSpdx,
       tags: input.metadata.tags,
+      author_id: existingSkill?.author_id ?? null,
+      detail_headline_en: detailEn?.headline ?? "",
+      detail_overview_en: detailEn?.overview ?? "",
+      detail_feature_one_title_en: detailEn?.feature_one_title ?? "",
+      detail_feature_one_description_en: detailEn?.feature_one_description ?? "",
+      detail_feature_two_title_en: detailEn?.feature_two_title ?? "",
+      detail_feature_two_description_en: detailEn?.feature_two_description ?? "",
+      detail_headline_vi: detailVi?.headline ?? "",
+      detail_overview_vi: detailVi?.overview ?? "",
+      detail_feature_one_title_vi: detailVi?.feature_one_title ?? "",
+      detail_feature_one_description_vi: detailVi?.feature_one_description ?? "",
+      detail_feature_two_title_vi: detailVi?.feature_two_title ?? "",
+      detail_feature_two_description_vi: detailVi?.feature_two_description ?? "",
+      faq_question_en_1: faq("en", 1)?.question ?? "",
+      faq_answer_en_1: faq("en", 1)?.answer ?? "",
+      faq_question_en_2: faq("en", 2)?.question ?? "",
+      faq_answer_en_2: faq("en", 2)?.answer ?? "",
+      faq_question_en_3: faq("en", 3)?.question ?? "",
+      faq_answer_en_3: faq("en", 3)?.answer ?? "",
+      faq_question_vi_1: faq("vi", 1)?.question ?? "",
+      faq_answer_vi_1: faq("vi", 1)?.answer ?? "",
+      faq_question_vi_2: faq("vi", 2)?.question ?? "",
+      faq_answer_vi_2: faq("vi", 2)?.answer ?? "",
+      faq_question_vi_3: faq("vi", 3)?.question ?? "",
+      faq_answer_vi_3: faq("vi", 3)?.answer ?? "",
+      faqs_touched: false,
       created_by: input.adminId,
       gemini_model: geminiMetadataModel,
       metadata_source: input.metadataSource ?? "gemini",
@@ -161,6 +202,32 @@ export type PlatformSkillDraft = Readonly<{
   source_url: string | null;
   license_spdx: string | null;
   tags: string[];
+  author_id: string | null;
+  detail_headline_en: string;
+  detail_overview_en: string;
+  detail_feature_one_title_en: string;
+  detail_feature_one_description_en: string;
+  detail_feature_two_title_en: string;
+  detail_feature_two_description_en: string;
+  detail_headline_vi: string;
+  detail_overview_vi: string;
+  detail_feature_one_title_vi: string;
+  detail_feature_one_description_vi: string;
+  detail_feature_two_title_vi: string;
+  detail_feature_two_description_vi: string;
+  faq_question_en_1: string;
+  faq_answer_en_1: string;
+  faq_question_en_2: string;
+  faq_answer_en_2: string;
+  faq_question_en_3: string;
+  faq_answer_en_3: string;
+  faq_question_vi_1: string;
+  faq_answer_vi_1: string;
+  faq_question_vi_2: string;
+  faq_answer_vi_2: string;
+  faq_question_vi_3: string;
+  faq_answer_vi_3: string;
+  faqs_touched: boolean;
   status: "review" | "published";
   gemini_model: string;
   metadata_source: "gemini" | "manual_required" | "manual";
@@ -174,7 +241,7 @@ export type PlatformSkillDraft = Readonly<{
 export async function listPlatformSkillDrafts() {
   const admin = createAdminClient();
   const {data, error} = await admin.from("platform_skill_drafts")
-    .select("id,skill_id,version,title_en,title_vi,description_en,description_vi,category,compatible_clients,source_url,license_spdx,tags,status,gemini_model,metadata_source,gemini_error,created_at,updated_at,skills(slug),skill_versions(skill_md_hash,skill_md_size_bytes,scan_status)")
+    .select("id,skill_id,version,title_en,title_vi,description_en,description_vi,category,compatible_clients,source_url,license_spdx,tags,author_id,detail_headline_en,detail_overview_en,detail_feature_one_title_en,detail_feature_one_description_en,detail_feature_two_title_en,detail_feature_two_description_en,detail_headline_vi,detail_overview_vi,detail_feature_one_title_vi,detail_feature_one_description_vi,detail_feature_two_title_vi,detail_feature_two_description_vi,faq_question_en_1,faq_answer_en_1,faq_question_en_2,faq_answer_en_2,faq_question_en_3,faq_answer_en_3,faq_question_vi_1,faq_answer_vi_1,faq_question_vi_2,faq_answer_vi_2,faq_question_vi_3,faq_answer_vi_3,faqs_touched,status,gemini_model,metadata_source,gemini_error,created_at,updated_at,skills(slug),skill_versions(skill_md_hash,skill_md_size_bytes,scan_status)")
     .order("updated_at", {ascending: false});
   if (error) throw error;
   return (data ?? []).map((row) => ({

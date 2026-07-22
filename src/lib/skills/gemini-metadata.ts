@@ -2,7 +2,7 @@ import "server-only";
 import {serverEnv} from "@/lib/env/server";
 
 export const platformCategories = ["ai-agent", "security", "productivity", "design", "marketing", "development", "research"] as const;
-export const platformClients = ["codex", "claude-code", "cursor", "generic-mcp"] as const;
+export const platformClients = ["codex", "claude-code", "cursor", "antigravity"] as const;
 export const platformTags = ["ai-agent", "automation", "design-system", "frontend", "mcp", "productivity", "research", "security", "ui-ux"] as const;
 export const geminiMetadataModel = "gemini-2.5-flash";
 

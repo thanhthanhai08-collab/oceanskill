@@ -8,6 +8,7 @@ import AdminNewVersionForm from "@/components/admin/AdminNewVersionForm";
 import AdminSkillDraftCard from "@/components/admin/AdminSkillDraftCard";
 import AdminSkillUploadForm from "@/components/admin/AdminSkillUploadForm";
 import {getPlatformAdmin} from "@/lib/admin/auth";
+import {listPlatformAuthors} from "@/lib/skills/platform-authors";
 import {listPlatformSkillDrafts, listPublishedPlatformSkills} from "@/lib/skills/platform-publishing";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ export default async function AdminSkillsPage({params}: {params: Promise<{locale
     notFound();
   }
 
-  const [t, drafts, platformSkills] = await Promise.all([getTranslations("AdminSkills"), listPlatformSkillDrafts(), listPublishedPlatformSkills()]);
+  const [t, drafts, platformSkills, authors] = await Promise.all([getTranslations("AdminSkills"), listPlatformSkillDrafts(), listPublishedPlatformSkills(), listPlatformAuthors()]);
   const labels = t.raw("labels") as Record<string, string>;
   const reviewDrafts = drafts.filter((draft) => draft.status === "review");
   const skillsWithReviewDraft = new Set(reviewDrafts.map((draft) => draft.skill_id));
@@ -41,6 +42,6 @@ export default async function AdminSkillsPage({params}: {params: Promise<{locale
       </AdminDisclosure>;
     })}</div></section>
 
-    <section className="mt-12"><div className="mb-5 flex items-end justify-between gap-4"><div><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">{t("queueEyebrow")}</p><h2 className="mt-2 font-geist text-2xl font-bold">{t("queueTitle")}</h2></div><span className="font-mono text-xs text-on-surface-variant">{reviewDrafts.length}</span></div>{reviewDrafts.length ? <div className="space-y-3">{reviewDrafts.map((draft) => <AdminDisclosure key={draft.id} title={draft.skills?.slug ?? draft.title_en} meta={`v${draft.version} · ${draft.metadata_source === "manual_required" ? labels.manualRequiredTitle : labels.review}`} icon="pending_actions" badge={<span className="hidden rounded-full bg-secondary/12 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-secondary sm:inline">{labels.review}</span>}><AdminSkillDraftCard draft={draft} labels={labels}/></AdminDisclosure>)}</div> : <div className="rounded-3xl border border-dashed border-outline-variant/55 p-12 text-center text-sm text-on-surface-variant">{t("empty")}</div>}</section>
+    <section className="mt-12"><div className="mb-5 flex items-end justify-between gap-4"><div><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">{t("queueEyebrow")}</p><h2 className="mt-2 font-geist text-2xl font-bold">{t("queueTitle")}</h2></div><span className="font-mono text-xs text-on-surface-variant">{reviewDrafts.length}</span></div>{reviewDrafts.length ? <div className="space-y-3">{reviewDrafts.map((draft) => <AdminDisclosure key={draft.id} title={draft.skills?.slug ?? draft.title_en} meta={`v${draft.version} · ${draft.metadata_source === "manual_required" ? labels.manualRequiredTitle : labels.review}`} icon="pending_actions" badge={<span className="hidden rounded-full bg-secondary/12 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-secondary sm:inline">{labels.review}</span>}><AdminSkillDraftCard draft={draft} authors={authors} labels={labels}/></AdminDisclosure>)}</div> : <div className="rounded-3xl border border-dashed border-outline-variant/55 p-12 text-center text-sm text-on-surface-variant">{t("empty")}</div>}</section>
   </main>;
 }

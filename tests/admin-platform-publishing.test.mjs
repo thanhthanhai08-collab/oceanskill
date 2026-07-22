@@ -5,6 +5,8 @@ import test from "node:test";
 const migrationUrl = new URL("../supabase/migrations/20260719021548_admin_platform_skill_publishing.sql", import.meta.url);
 const storageMigrationUrl = new URL("../supabase/migrations/20260719030224_expand_skill_artifact_mime_types.sql", import.meta.url);
 const manualMetadataMigrationUrl = new URL("../supabase/migrations/20260719075714_allow_manual_platform_skill_metadata.sql", import.meta.url);
+const authorDetailsMigrationUrl = new URL("../supabase/migrations/20260722021427_admin_authors_skill_details_antigravity.sql", import.meta.url);
+const faqMigrationUrl = new URL("../supabase/migrations/20260722024025_admin_skill_faqs.sql", import.meta.url);
 
 test("platform admin is an exact Auth user and non-admin roles cannot read drafts", async () => {
   const [sql, auth] = await Promise.all([
@@ -89,4 +91,59 @@ test("Gemini failure creates an editable manual draft but incomplete metadata ca
   assert.match(sql, /metadata_source in \('gemini', 'manual_required', 'manual'\)/);
   assert.match(sql, /platform_skill_metadata_incomplete/);
   assert.match(card, /manualRequiredDescription/);
+});
+
+test("platform authors are admin-managed and skill publishing atomically assigns localized details", async () => {
+  const [sql, authorActions, authorPage, authorManager, skillActions, skillCard, clients] = await Promise.all([
+    readFile(authorDetailsMigrationUrl, "utf8"),
+    readFile(new URL("../src/app/[locale]/admin/authors/actions.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/admin/authors/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/admin/AdminAuthorManager.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/admin/skills/actions.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/admin/AdminSkillDraftCard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/lib/skills/gemini-metadata.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(authorPage, /getPlatformAdmin\(\)/);
+  for (const action of ["createPlatformAuthor", "updatePlatformAuthor", "setPlatformAuthorPublished", "deletePlatformAuthor"]) {
+    assert.match(authorActions, new RegExp(`export async function ${action}`));
+  }
+  assert.match(authorActions, /requirePlatformAdmin\(\)/g);
+  assert.match(skillActions, /eq\("verified", true\)/);
+  assert.match(authorActions, /author_in_use/);
+  assert.match(authorManager, /window\.confirm/);
+  assert.match(sql, /author_id text references public\.authors/);
+  assert.match(sql, /platform_skill_author_not_published/);
+  assert.match(sql, /insert into public\.skill_details[\s\S]+on conflict \(skill_id, locale\) do update/);
+  assert.match(sql, /revoke all on function public\.publish_platform_skill_draft[\s\S]+to service_role/i);
+  assert.match(skillActions, /detailGroup\(formData, "En"\)/);
+  assert.match(skillCard, /Published author|labels\.author/);
+  assert.match(skillCard, /label: "Codex"/);
+  assert.match(skillCard, /label: "Claude Code"/);
+  assert.match(skillCard, /label: "Cursor"/);
+  assert.match(skillCard, /label: "Antigravity"/);
+  assert.match(clients, /"antigravity"/);
+});
+
+test("admin skill FAQs are bilingual, previewable, and synchronized atomically on publish", async () => {
+  const [sql, actions, publisher, card, preview] = await Promise.all([
+    readFile(faqMigrationUrl, "utf8"),
+    readFile(new URL("../src/app/[locale]/admin/skills/actions.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/lib/skills/platform-publishing.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/admin/AdminSkillDraftCard.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/app/[locale]/skills/[slug]/page.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(sql, /add column faq_question_en_1/);
+  assert.match(sql, /add column faq_answer_vi_3/);
+  assert.match(sql, /faqs_touched boolean not null default false/);
+  assert.match(sql, /create trigger platform_skill_drafts_publish_faqs/);
+  assert.match(sql, /old\.status = 'review' and new\.status = 'published'/i);
+  assert.match(sql, /delete from public\.skill_faqs/);
+  assert.match(sql, /on conflict \(skill_id, locale, sort_order\) do update/);
+  assert.match(sql, /skills\.status = 'active'[\s\S]+skills\.visibility = 'public'/);
+  assert.match(actions, /function faqFields/);
+  assert.match(actions, /faqs_touched: true/);
+  assert.match(publisher, /faqs_touched: false/);
+  assert.match(card, /skillFaqsNote/);
+  assert.match(card, /faqQuestion\$\{localeCode\}\$\{order\}/);
+  assert.match(preview, /previewFaqs/);
 });

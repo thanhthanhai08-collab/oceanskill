@@ -2,7 +2,7 @@ import "server-only";
 import {createHash} from "node:crypto";
 
 const categories = new Set(["ai-agent", "security", "productivity", "design", "marketing", "development", "research"]);
-const clients = new Set(["codex", "claude-code", "cursor", "generic-mcp"]);
+const clients = new Set(["codex", "claude-code", "cursor", "antigravity"]);
 const secretPatterns = [
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
   /\b(?:sk|ghp|github_pat|xox[baprs])-[_a-z0-9-]{16,}\b/i,

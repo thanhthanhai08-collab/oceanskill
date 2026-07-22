@@ -11,7 +11,7 @@ export type CreatorSkillFormLabels = Readonly<{
 
 const initialState: CreateSkillState = {status: "idle"};
 const categories = ["ai-agent", "security", "productivity", "design", "marketing", "development", "research"];
-const clients = ["codex", "claude-code", "cursor", "generic-mcp"];
+const clients = ["codex", "claude-code", "cursor", "antigravity"];
 
 function SubmitButton({labels}: {labels: CreatorSkillFormLabels}) {
   const {pending} = useFormStatus();

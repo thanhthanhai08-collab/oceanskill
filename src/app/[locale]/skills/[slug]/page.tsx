@@ -8,10 +8,10 @@ import SkillReviews from "@/components/skills/SkillReviews";
 import CopyButton from "@/components/skills/CopyButton";
 import {getCategoryVisual} from "@/data/mockData";
 import {getPublicSkill, listRelatedSkills, listSkillsByAuthor, type SkillSummary} from "@/lib/catalog/skills";
-import {getSkillAuthor} from "@/lib/catalog/authors";
+import {getAuthorProfile, getSkillAuthor} from "@/lib/catalog/authors";
 import {getSkillReviewState} from "@/lib/skills/reviews";
-import {listSkillFaqs} from "@/lib/catalog/skill-faqs";
-import {getSkillDetailContent} from "@/lib/catalog/skill-details";
+import {listSkillFaqs, type SkillFaq} from "@/lib/catalog/skill-faqs";
+import {getSkillDetailContent, type SkillDetailContent} from "@/lib/catalog/skill-details";
 import {getPublicCategory} from "@/lib/catalog/categories";
 import {getPlatformAdmin} from "@/lib/admin/auth";
 import {listPlatformSkillDrafts} from "@/lib/skills/platform-publishing";
@@ -31,10 +31,31 @@ export default async function SkillDetailPage({params, searchParams}: SkillDetai
   const {slug, locale} = await params;
   const previewId = (await searchParams).preview;
   let skill: SkillSummary | null = null;
+  let previewDetail: SkillDetailContent | null = null;
+  let previewFaqs: SkillFaq[] | null = null;
   if (previewId) {
     if (!await getPlatformAdmin()) notFound();
     const draft = (await listPlatformSkillDrafts()).find((item) => item.id === previewId && item.status === "review" && item.skills?.slug === slug);
     if (!draft) notFound();
+    const draftAuthor = draft.author_id ? await getAuthorProfile(draft.author_id, locale) : null;
+    const detailLocale = locale === "vi" ? "vi" : "en";
+    const detailValues = detailLocale === "vi" ? {
+      headline: draft.detail_headline_vi, overview: draft.detail_overview_vi,
+      feature_one_title: draft.detail_feature_one_title_vi, feature_one_description: draft.detail_feature_one_description_vi,
+      feature_two_title: draft.detail_feature_two_title_vi, feature_two_description: draft.detail_feature_two_description_vi,
+    } : {
+      headline: draft.detail_headline_en, overview: draft.detail_overview_en,
+      feature_one_title: draft.detail_feature_one_title_en, feature_one_description: draft.detail_feature_one_description_en,
+      feature_two_title: draft.detail_feature_two_title_en, feature_two_description: draft.detail_feature_two_description_en,
+    };
+    previewDetail = Object.values(detailValues).every(Boolean) ? {locale: detailLocale, ...detailValues} : null;
+    previewFaqs = ([1, 2, 3] as const).flatMap((order) => {
+      const localizedQuestion = locale === "vi" ? draft[`faq_question_vi_${order}`] : draft[`faq_question_en_${order}`];
+      const localizedAnswer = locale === "vi" ? draft[`faq_answer_vi_${order}`] : draft[`faq_answer_en_${order}`];
+      const question = localizedQuestion || draft[`faq_question_en_${order}`];
+      const answer = localizedAnswer || draft[`faq_answer_en_${order}`];
+      return question && answer ? [{id: `preview-${order}`, locale: detailLocale, question, answer, sort_order: order}] : [];
+    });
     skill = {
       id: draft.skill_id,
       slug,
@@ -46,8 +67,8 @@ export default async function SkillDetailPage({params, searchParams}: SkillDetai
       source_url: draft.source_url,
       current_version: draft.version,
       updated_at: draft.updated_at,
-      author_id: null,
-      authors: null,
+      author_id: draft.author_id,
+      authors: draftAuthor,
     };
   } else {
     skill = await getPublicSkill(slug, locale);
@@ -62,8 +83,8 @@ export default async function SkillDetailPage({params, searchParams}: SkillDetai
     listSkillsByAuthor(skill.author_id ?? author.id, skill.slug, 2, locale),
     listRelatedSkills(skill.category, skill.slug, 3, locale),
     getSkillReviewState(skill.id),
-    listSkillFaqs(skill.id, locale),
-    getSkillDetailContent(skill.id, locale),
+    previewFaqs ?? listSkillFaqs(skill.id, locale),
+    previewDetail ? Promise.resolve(previewDetail) : getSkillDetailContent(skill.id, locale),
     getPublicCategory(skill.category, locale),
   ]);
 

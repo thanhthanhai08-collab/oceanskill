@@ -40,7 +40,7 @@
     "fields": {"title": "Skill title", "slug": "Unique slug", "description": "Description", "category": "Category", "version": "Version", "clients": "Compatible clients", "sourceUrl": "Source URL (optional)", "license": "SPDX license (optional)", "content": "SKILL.md content (or use ZIP/RAR)", "bundle": "Skill package (.zip or .rar)"},
     "placeholders": {"title": "My research workflow", "slug": "my-research-workflow", "description": "Explain what this skill helps your agent accomplish.", "sourceUrl": "https://github.com/...", "license": "MIT", "content": "# My skill\n\nPaste SKILL.md here, or upload the ZIP/RAR package beside it...", "bundle": "Optional ZIP or RAR with exactly one SKILL.md and up to 50 reference files. Scripts are scanned, hash-pinned, and never executed by OceanSkill."},
     "categories": {"ai-agent": "AI Agent", "security": "Security", "productivity": "Productivity", "design": "Design", "marketing": "Marketing", "development": "Development", "research": "Research"},
-    "clients": {"codex": "Codex", "claude-code": "Claude Code", "cursor": "Cursor", "generic-mcp": "Other MCP client"},
+    "clients": {"codex": "Codex", "claude-code": "Claude Code", "cursor": "Cursor", "antigravity": "Antigravity"},
     "securityTitle": "7-step private publishing gate",
     "securityDescription": "Uploads are identity-checked, owner-scoped by RLS, normalized, scanned, forced private, and re-authorized on every MCP request.",
     "submit": "Scan and add skill",
